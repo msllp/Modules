@@ -1,20 +1,22 @@
 {
-"name": "msllp/modules",
-"type": "library",
-"license": "MIT",
-"authors": [
-{
-"name": "Million Solutions LLP",
-"email": "dev@millionsllp.com"
-}
-],
-"require": {
-"php": "^7.1.3",
-"msllp/core": "*"
+    "name": "msllp/modules",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Million Solutions LLP",
+            "email": "dev@millionsllp.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3",
+        "msllp/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MS\\Mod\\B\\": "src/Modules/B"
+        }
+    },
 
-},
-"autoload": {
-"psr-4": {
-"MS\\Modules\\": "src/Modules"}
-}
+    "description": "For Million Solutions LLP Private Code"
 }

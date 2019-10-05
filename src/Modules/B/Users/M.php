@@ -6,7 +6,7 @@
  * Time: 03:06 AM
  */
 
-namespace B\MAS;
+namespace MS\Mod\B\Users;
 
 use MS\Core\Model\Master;
 

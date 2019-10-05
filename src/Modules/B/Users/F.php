@@ -6,7 +6,7 @@
  * Time: 06:18 PM
  */
 
-namespace B\MAS;
+namespace MS\Mod\B\Users;
 use Faker\Generator as Faker;
 //use Faker\Provider\Miscellaneous as Faker;
 class F
@@ -33,5 +33,17 @@ public static function genAPISecrete(){
 
     return $faker->sha256();
 }
+
+
+public static function getRootUserModel(){
+    return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_User');
+}
+
+public static function makeUser($data,$model){
+
+
+
+}
+
 
 }

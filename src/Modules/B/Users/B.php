@@ -22,126 +22,49 @@ class B extends Master
     public static $route=[
 
         [
-            'name'=>'MAS.Index',
-            'route'=>'/',
+            'name'=>'MOD.User.Index',
+            'route'=>'/dashboard',
             'method'=>'index',
             'type'=>'get',
         ],
 
-        [
-            'name'=>'Test.FormLink',
-            'route'=>'test/form',
-            'method'=>'testFormLink',
-            'type'=>'get'
-        ],
 
         [
-            'name'=>'Test.StoreDataLink',
-            'route'=>'test/store',
-            'method'=>'storeDataLink',
-            'type'=>'post'
-        ],
-        [
-            'name'=>'Test.SideBarData',
-            'route'=>'test/getSidebar',
-            'method'=>'testGetSideBarData',
-            'type'=>'get'
-        ],
-
-        [
-            'name'=>'Test.NewRab',
-            'route'=>'test/NewTab',
-            'method'=>'testNewTab',
-            'type'=>'get'
-
+            'name'=>'MOD.User.Data',
+            'route'=>'/dashboard/data',
+            'method'=>'index',
+            'type'=>'get',
         ],
 
 
-
-
-[
-    'name'=>'paginationLink.Test',
-    'route'=>'/pagination',
-    'method'=>'paginationTest',
-    'type'=>'get',
-
-],
+/////User Routes
 
         [
-            'name'=>'MAS.core.encryptRequest',
-            'route'=>'::',
-            'method'=>'MS:Helper.MSSign@check',
-
+            'name'=>'MOD.User.Master.AddForm',
+            'route'=>'/master/Users/action/add/from',
+            'method'=>'addUserFrom',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'MOD.User.Master.Add.toDB',
+            'route'=>'/master/Users/action/save',
+            'method'=>'saveUser',
+            'type'=>'post',
         ],
 
-//        [
-//            'name'=>'MAS.Index.data',
-//            'route'=>'/data',
-//            'method'=>'indexData',
-//            'type'=>'get',
-//        ],
-
-
-
         [
-            'name'=>'PM.Add.Product',
-            'route'=>'/addProduct',
-            'method'=>'productAddForm',
+            'name'=>'MOD.User.Master.View.All',
+            'route'=>'/master/Users/view/all',
+            'method'=>'viewAllUser',
             'type'=>'get',
         ],
 
         [
-            'name'=>'BM.Generate.Invoice.PDF.Post',
-            'route'=>'/fromAppGenaratePdf',
-            'method'=>'genarateInvoicePDFPost',
-            'type'=>'post',
+            'name'=>'MOD.User.Master.View.All.Proccess',
+            'route'=>'/master/Users/view/all/proccess',
+            'method'=>'viewAllUser',
+            'type'=>'get',
         ],
-
-        [
-            'name'=>'Test.Post.With.Data',
-            'route'=>'/test/post',
-            'method'=>'postLinkTest',
-            'type'=>'post',
-        ],
-
-
-
-//
-//        [
-//            'name'=>'BM.Generate.Invoice.PDF',
-//            'route'=>'/fromAppGenaratePdf',
-//            'method'=>'genarateInvoicePDF',
-//            'type'=>'get',
-//        ],
-
-
-//        [
-//            'name'=>'BM.Generate.Invoice.PDF',
-//            'route'=>'/getHsnCode',
-//            'method'=>'findGst',
-//            'type'=>'get',
-//        ],
-
-//
-//        [
-//            'name'=>'BM.Generate.Invoice.for.App',
-//            'route'=>'/gen/invoice/app',
-//            'method'=>'genInvFroApp',
-//            'type'=>'get',
-//        ],
-//
-//        [
-//            'name'=>'BM.Generate.Invoice.for.App',
-//            'route'=>'/get/gstrate/from/code',
-//            'method'=>'findGstRate',
-//            'type'=>'get',
-//        ],
-
-
-
-
-
-
 
 
     ];

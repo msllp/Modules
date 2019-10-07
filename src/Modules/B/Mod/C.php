@@ -40,11 +40,11 @@ class C extends BaseController
 
                     [
                         'type'=> 'title',
-                        'text'=> 'Manage Root User',
+                        'text'=> 'Master User Functions ',
                         'icon'=> 'fas fa-users-cog'
                     ], [
                         'type'=> 'link',
-                        'text'=> 'Add Root User',
+                        'text'=> 'Add Master User',
                         'link'=> route('MOD.User.Master.AddForm'),
                         'icon'=>'fas fa-user-plus'
                     ]

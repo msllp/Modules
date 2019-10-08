@@ -6,7 +6,7 @@
  * Time: 03:13 AM
  */
 
-namespace MS\Mod\B\Users;
+namespace MS\Mod\B\Mod;
 
 
 
@@ -15,8 +15,8 @@ use MS\Core\Module\Master;
 class B extends Master
 {
 
-    public static $controller="MS\Mod\B\Users\C";
-    public static $model="MS\Mod\B\Users\M";
+    public static $controller="MS\Mod\B\Mod\C";
+    public static $model="MS\Mod\B\Mod\M";
   //  public static $dir="MS.B.MAS";
 
     public static $route=[
@@ -40,31 +40,18 @@ class B extends Master
 /////User Routes
 
         [
-            'name'=>'MOD.User.Master.AddForm',
-            'route'=>'/master/Users/action/add/from',
-            'method'=>'addUserFrom',
+            'name'=>'MOD.Mod.Master.AddForm',
+            'route'=>'/master/Modules/action/add/from',
+            'method'=>'addModuleFrom',
             'type'=>'get',
         ],
         [
-            'name'=>'MOD.User.Master.Add.toDB',
-            'route'=>'/master/Users/action/save',
+            'name'=>'MOD.Mod.Master.Add.toDB',
+            'route'=>'/master/Modules/action/save',
             'method'=>'saveUser',
             'type'=>'post',
         ],
 
-        [
-            'name'=>'MOD.User.Master.View.All',
-            'route'=>'/master/Users/view/all',
-            'method'=>'viewAllUser',
-            'type'=>'get',
-        ],
-
-        [
-            'name'=>'MOD.User.Master.View.All.Proccess',
-            'route'=>'/master/Users/view/all/proccess',
-            'method'=>'viewAllUserPagination',
-            'type'=>'get',
-        ],
 
 
     ];

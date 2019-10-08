@@ -1,6 +1,6 @@
 <?php
 
-namespace MS\Mod\B\Users;
+namespace MS\Mod\B\Mod;
 
 //use B\MAS\R\AddMSCoreModule;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -97,8 +97,8 @@ class C extends BaseController
     }
 
 
-    public function addUserFrom(){
-        $m=F::getRootUserModel();
+    public function addModuleFrom(){
+        $m=F::getRootModuleModel();
         return $m->displayForm('add_user');
     }
 

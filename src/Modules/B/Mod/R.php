@@ -7,4 +7,4 @@
  */
 
 
-\MS\Core\Helper\Comman::load_Route("B\Users",true);
+\MS\Core\Helper\Comman::load_Route("B\Mod",true);

@@ -10,6 +10,11 @@ Route::prefix('User')->group(function () {
 });
 
 
+    Route::prefix('Mod')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Mod.R'],'b',true);
+    });
+
+
 
 
 });

@@ -6,7 +6,7 @@
  * Time: 03:06 AM
  */
 
-namespace MS\Mod\B\Mod;
+namespace MS\Mod\B\MSSetup;
 
 use MS\Core\Model\Master;
 

@@ -6,7 +6,7 @@
  * Time: 03:00 AM
  */
 
-namespace MS\Mod\B\Users;
+namespace MS\Mod\B\Mod;
 
 use MS\Core\Notification\Master;
 class N extends Master

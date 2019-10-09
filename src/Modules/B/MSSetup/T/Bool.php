@@ -10,7 +10,7 @@ return [
 
     "Master_Bool_1"=>[
 
-        'tableName'=>'MAS_Bool_1',
+        'tableName'=>'MS_Bool_1',
         'connection'=>'MS_UI',
         'fields'=>
             [

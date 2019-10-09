@@ -10,7 +10,7 @@ return [
 
     "Master_Mod"=>[
 
-        'tableName'=>'MAS_Master_Mod',
+        'tableName'=>'MS_Master_Mod',
         'connection'=>'MS_Master',
         'fields'=>
             [
@@ -73,18 +73,11 @@ return [
                     "validation"=>['required'=>true,'existIn'=>MSCORE_UI_BOOL_1]
                 ],
 
-
-
-
-
-
-
-
             ],
         'fieldGroup'=>[
             'Add Module'=>['UniqId','ModuleName','ModuleIcon','ModuleDesc','ModuleRoute','Status'],
             'Public_User'=>['UniqId','MSUsername'],
-          //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
+            //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
             // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
             // 'Login Details'=>['modName','modDesc','modCode','modIcon',],
             //   'Login Details 2'=>['Username','Password','ConfirmPassword','Role']

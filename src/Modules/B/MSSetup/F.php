@@ -25,6 +25,13 @@ class F
             'fillDataInBool1'=>'UI Bool 1 Configuration finished',
             'createIconTable'=>'UI Icon 1 Configuration started',
             'fillDataInIcon'=>'UI Icon 1 Configuration finished',
+            'createModTable'=>'Module Core File Configuration started',
+            'createRouteTypeTable'=>'Master Routes Types Configuration started',
+            'fillDataInRoute'=>'Master Routes Types Configuration finished',
+            //''=>'Master Routes Configuration started',
+            //''=>'Master Routes Configuration finished',
+            //''=>'Master Events Configuration started',
+            //''=>'Master Events Configuration finished',
 
         ];
         $c=new self();
@@ -92,33 +99,34 @@ class F
     }
 
     public function fillDataInIcon():bool{
+        $iconDataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','IconData.php']));
 
-
+        $iconData=require($iconDataFilePath);
+      //  dd();
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Icon_1');
-        $data=[
-
-            [
-                'IconName'=>'Admin User',
-                'IconType'=>'class',
-                'IconValue'=>'msicon-admin-user',
-                'Status'=>1,
-
-            ],
-            [
-                'IconName'=>'Modules',
-                'IconType'=>'class',
-                'IconValue'=>'msicon-modules',
-                'Status'=>1,
-
-            ],
-
-        ];
+        $data=$iconData;
 
         return $this->ftD($m,$data,['IconName']);
 
     }
 
+    public function createModTable(){
+        return $this->cNmWM(\MS\Mod\B\Mod\F::getRootModuleModel());
+    }
 
+    public function createRouteTypeTable(){
+        return $this->cNm(__NAMESPACE__, 'MS_Route_Type');
+    }
+
+    public function  fillDataInRoute(){
+
+        $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','RouteData.php']));
+     //   dd($DataFilePath);
+        $Data=require($DataFilePath);
+        $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'MS_Route_Type');
+        $data=$Data;
+        return $this->ftD($m,$data,['RouteTypeCode']);
+    }
 
 
 
@@ -128,7 +136,12 @@ class F
     public function ftD($m,$d,$ua=[]){
         $err=[];
         foreach ($d as $v){
-            if(!$m->rowAdd($v,$ua))$err[$v['BoolName']]=$v;
+            if(!$m->rowAdd($v,$ua)){
+             if(array_key_exists('BoolName',$v))$err[$v['BoolName']]=$v;
+                $err[]=$m->rowAdd($v,$ua);
+               // dd($err);
+            }
+
         }
         return (count($err) < 1);
 

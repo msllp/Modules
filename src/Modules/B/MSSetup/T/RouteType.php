@@ -8,9 +8,9 @@
 
 return [
 
-    "Master_Icon_1"=>[
+    "MS_Route_Type"=>[
 
-        'tableName'=>'MS_ICON_1',
+        'tableName'=>'MS_Route_Type',
         'connection'=>'MS_UI',
         'fields'=>
             [
@@ -18,23 +18,16 @@ return [
 
 
                 [
-                    'name'=>'IconName',
+                    'name'=>'RouteTypeName',
                     'type'=>'string',
                     'input'=>'text',
                     "validation"=>['required'=>true,]
                 ],
 
                 [
-                    'name'=>'IconType',
+                    'name'=>'RouteTypeCode',
                     'type'=>'string',
-                    'input'=>'option',
-                    "validation"=>['required'=>true,]
-                ],
-
-                [
-                    'name'=>'IconValue',
-                    'type'=>'string',
-                    'input'=>'option',
+                   'input'=>'text',
                     "validation"=>['required'=>true,]
                 ],
 

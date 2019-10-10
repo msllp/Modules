@@ -10,22 +10,21 @@ return [
 'fields'=>
 [
 
-[
-'name'=>'UniqId',
-'vName'=>'ID',
-'type'=>'string',
-'input'=>'text',
-"validation"=>['required'=>true,]
-],
+    [
+    'name'=>'UniqId',
+    'vName'=>'ID',
+    'type'=>'string',
+    'input'=>'text',
+    "validation"=>['required'=>true,]
+    ],
 
-[
-'name'=>'RouteName',
-'vName'=>'Route Name',
-'type'=>'string',
-'input'=>'text',
-"validation"=>['required'=>true,]
-],
-
+    [
+    'name'=>'RouteName',
+    'vName'=>'Route Name',
+    'type'=>'string',
+    'input'=>'text',
+    "validation"=>['required'=>true,]
+    ],
 
     [
         'name'=>'RouteType',
@@ -35,47 +34,41 @@ return [
         "validation"=>['required'=>true,]
     ],
 
-[
-'name'=>'ModuleIcon',
-'vName'=>'Module Icon',
-'type'=>'string',
-'input'=>'option',
-"validation"=>['required'=>true,'existIn'=>MSCORE_UI_ICON_1]
-],
+    [
+    'name'=>'ModuleCode',
+    'vName'=>'Module Code',
+    'type'=>'string',
+    'input'=>'option',
+    "validation"=>['required'=>true,'existIn'=>MSCORE_MOD_MASTER]
+    ],
 
-[
-'name'=>'ModuleDesc',
-'vName'=>'Module Description',
-'type'=>'string',
-'input'=>'text',
-"validation"=>['required'=>true,]
-],
-
-[
-'name'=>'ModuleRoute',
-'vName'=>'Module Route Prefix',
-'type'=>'string',
-'input'=>'text',
-"validation"=>['required'=>true,]
-],
+    [
+    'name'=>'RouteMethod',
+    'vName'=>'Method Name',
+    'type'=>'string',
+    'input'=>'text',
+    "validation"=>['required'=>true,]],
 
 
-[
-'name'=>'ModuleAccess',
-'vName'=>'Module Permission',
-'type'=>'string',
-'input'=>'text',
-"validation"=>['required'=>true,]
-],
+    [
+        'name'=>'RouteUrl',
+        'vName'=>'Route URL',
+        'type'=>'string',
+        'input'=>'text',
+        "validation"=>['required'=>true,]
+    ],
 
 
-[
-'name'=>'Status',
-'vName'=>'Status',
-'type'=>'boolean',
-'input'=>'radio',
-"validation"=>['required'=>true,'existIn'=>MSCORE_UI_BOOL_1]
-],
+
+        [
+            'name'=>'Status',
+            'vName'=>'Status',
+            'type'=>'boolean',
+            'input'=>'radio',
+            "validation"=>['required'=>true,'existIn'=>MSCORE_UI_BOOL_1]
+        ],
+
+
 
 ],
 'fieldGroup'=>[

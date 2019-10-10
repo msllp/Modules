@@ -39,11 +39,35 @@ public static function getRootModuleModel(){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Mod');
 }
 
-public static function makeUser($data,$model){
-
-
-
+public static function getRouteModel(){
+    return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Route');
 }
 
+public static function checkRouteExist($r):array{
+    $returnArray=['pathFound'=>false];
+    $m=self::getRouteModel();
+
+    $data=[
+        'path'=>$r->path()
+    ];
+
+    $DBdata= $m->rowGet([
+        'RouteUrl'=>$data['path'],
+        'Status'=>1
+    ]);
+    //dd(count($DBdata));
+    if (count($DBdata) == 1){
+
+
+            $returnArray['pathFound']=true;
+
+    }
+
+
+
+    //return $data;
+    return $returnArray;
+
+}
 
 }

@@ -18,7 +18,7 @@ Route::prefix('User')->group(function () {
 
 
 });
-Route::get('mpanel','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel');
+Route::get('mpanel','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel')->middleware(\MS\Middlelwares\checkValidRoute::class);
 Route::get('getMpanelData','\MS\Mod\B\Users\C@SideNavForMaintainaceDashboard')->name('mPanel.SideNav');
 
 

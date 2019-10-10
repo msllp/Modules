@@ -27,9 +27,9 @@ class F
             'fillDataInIcon'=>'UI Icon 1 Configuration finished',
             'createModTable'=>'Module Core File Configuration started',
             'createRouteTypeTable'=>'Master Routes Types Configuration started',
-            'fillDataInRoute'=>'Master Routes Types Configuration finished',
-            //''=>'Master Routes Configuration started',
-            //''=>'Master Routes Configuration finished',
+            'fillDataInRouteTypes'=>'Master Routes Types Configuration finished',
+            'createRouteTable'=>'Master Routes Configuration started',
+            'fillDataInRoute'=>'Master Routes Configuration finished',
             //''=>'Master Events Configuration started',
             //''=>'Master Events Configuration finished',
 
@@ -68,7 +68,6 @@ class F
         return $this->cNm(__NAMESPACE__,'Master_Bool_1');
     }
 
-
     public function fillDataInBool1():bool{
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Bool_1');
         $data=[
@@ -89,9 +88,6 @@ class F
 
 
     }
-
-
-
 
     public function createIconTable():bool
     {
@@ -118,7 +114,7 @@ class F
         return $this->cNm(__NAMESPACE__, 'MS_Route_Type');
     }
 
-    public function  fillDataInRoute(){
+    public function  fillDataInRouteTypes(){
 
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','RouteData.php']));
      //   dd($DataFilePath);
@@ -129,6 +125,19 @@ class F
     }
 
 
+    public function createRouteTable(){
+
+        return $this->cNmWM(\MS\Mod\B\Mod\F::getRouteModel());
+    }
+
+    public function fillDataInRoute(){
+        $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterRoutes.php']));
+      //  dd($DataFilePath);
+        $Data=require($DataFilePath);
+        $m=\MS\Mod\B\Mod\F::getRouteModel();
+        $data=$Data;
+        return $this->ftD($m,$data,['RouteUrl','UniqId','RouteName']);
+    }
 
 
 

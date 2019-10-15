@@ -47,10 +47,12 @@ public static function checkRouteExist($r):array{
     $returnArray=['pathFound'=>false];
     $m=self::getRouteModel();
 
+
+
     $data=[
         'path'=>$r->path()
     ];
-
+   // dd($data);
     $DBdata= $m->rowGet([
         'RouteUrl'=>$data['path'],
         'Status'=>1

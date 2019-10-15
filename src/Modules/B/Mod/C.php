@@ -102,14 +102,15 @@ class C extends BaseController
         return $m->displayForm('add_user');
     }
 
-    public function  saveUser(Request $r){
+    public function  saveMethodForMod(Request $r){
 
-        $m=F::getRootUserModel();
+        $m=F::getRootModuleModel();
         $m->attachR($r);
         // $m->migrate();
         $d=$r->all();
         $valid=$m->checkRulesForData();
 
+      //  $m->dataToProcess['ModuleAccess']='00';
         $nextData=[
 
             "modCode"=>"Core",
@@ -141,15 +142,15 @@ class C extends BaseController
 
     }
 
-    public function  viewAllUser(){
-        $m=F::getRootUserModel();
+    public function  viewAllMod(){
+        $m=F::getRootModuleModel();
      //   $m->migrate();
         return $m->viewData('view_all');
     }
 
-    public function viewAllUserPagination(Request $r){
+    public function viewAllModPagination(Request $r){
 
-        $m=F::getRootUserModel();
+        $m=F::getRootModuleModel();
         return $m->ForPagination($r);
     }
 }

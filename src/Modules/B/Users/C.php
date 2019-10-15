@@ -78,12 +78,26 @@ class C extends BaseController
                         'link'=> route('MOD.Mod.Master.AddForm'),
                         'icon'=>'msicon-add'
                     ]
-
-                    ,
-
-                    [
+                    ,[
                         'type'=> 'link',
                         'text'=> 'View All Modules',
+                        'link'=> route('MOD.Mod.Master.View.All'),
+                        'icon'=>'msicon-list'
+                    ],
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Routes',
+                        'icon'=> 'msicon-route'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add Route',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'msicon-add'
+                    ]
+                    ,[
+                        'type'=> 'link',
+                        'text'=> 'View All Routes',
                         'link'=> route('MOD.User.Master.View.All'),
                         'icon'=>'msicon-list'
                     ],

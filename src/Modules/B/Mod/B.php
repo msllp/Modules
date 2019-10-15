@@ -37,7 +37,7 @@ class B extends Master
         ],
 
 
-/////User Routes
+/////Module Routes
 
         [
             'name'=>'MOD.Mod.Master.AddForm',
@@ -48,10 +48,23 @@ class B extends Master
         [
             'name'=>'MOD.Mod.Master.Add.toDB',
             'route'=>'/master/Modules/action/save',
-            'method'=>'saveUser',
+            'method'=>'saveMethodForMod',
             'type'=>'post',
         ],
 
+        [
+            'name'=>'MOD.Mod.Master.View.All',
+            'route'=>'/master/Modules/view/all',
+            'method'=>'viewAllMod',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.Mod.Master.View.All.Proccess',
+            'route'=>'/master/Modules/view/all/proccess',
+            'method'=>'viewAllModPagination',
+            'type'=>'get',
+        ],
 
 
     ];

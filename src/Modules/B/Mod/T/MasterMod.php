@@ -32,6 +32,14 @@ return [
                 ],
 
                 [
+                    'name'=>'ModuleDesc',
+                    'vName'=>'Module Description',
+                    'type'=>'string',
+                    'input'=>'text',
+                    "validation"=>['required'=>true,]
+                ],
+
+                [
                     'name'=>'ModuleIcon',
                     'vName'=>'Module Icon',
                     'type'=>'string',
@@ -39,13 +47,7 @@ return [
                     "validation"=>['required'=>true,'existIn'=>MSCORE_UI_ICON_1]
                 ],
 
-                [
-                    'name'=>'ModuleDesc',
-                    'vName'=>'Module Description',
-                    'type'=>'string',
-                    'input'=>'text',
-                    "validation"=>['required'=>true,]
-                ],
+
 
                 [
                     'name'=>'ModuleRoute',
@@ -61,7 +63,7 @@ return [
                     'vName'=>'Module Permission',
                     'type'=>'string',
                     'input'=>'text',
-                    "validation"=>['required'=>true,]
+                    "validation"=>['required'=>false,]
                 ],
 
 
@@ -76,7 +78,7 @@ return [
             ],
         'fieldGroup'=>[
             'Add Module'=>['UniqId','ModuleName','ModuleIcon','ModuleDesc','ModuleRoute','Status'],
-            'Public_User'=>['UniqId','MSUsername'],
+            'View All Module'=>['ModuleName','ModuleDesc','ModuleRoute','Status'],
             //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
             // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
             // 'Login Details'=>['modName','modDesc','modCode','modIcon',],
@@ -130,13 +132,13 @@ return [
             'view_all'=>[
                 'title'=>'View all Master Mod',
                 'icon'=>'fas fa-users',
-                'groups'=>['Public_User'],
+                'groups'=>['View All Module'],
                 'searchable'=>true,
                 'actions'=>['add'],
                 'massAction'=>['add'],
                 'searchAllowed'=>[],
                 'pagination'=>true,
-                'paginationLink'=>'MOD.User.Master.View.All.Proccess'
+                'paginationLink'=>'MOD.Mod.Master.View.All.Proccess'
 
 
             ]

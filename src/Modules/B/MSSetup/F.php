@@ -116,11 +116,16 @@ class F
 
     public function  fillDataInRouteTypes(){
 
+        //dd(\MS\Mod\B\Mod\B::migrateRoutesToDb());
+
+
+
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','RouteData.php']));
      //   dd($DataFilePath);
         $Data=require($DataFilePath);
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'MS_Route_Type');
         $data=$Data;
+    //    dd($data);
         return $this->ftD($m,$data,['RouteTypeCode']);
     }
 
@@ -131,11 +136,18 @@ class F
     }
 
     public function fillDataInRoute(){
+
+        $Mdata=[
+            'Modules'=>\MS\Mod\B\Mod\B::migrateRoutesToDb(),
+
+        ];
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterRoutes.php']));
       //  dd($DataFilePath);
         $Data=require($DataFilePath);
         $m=\MS\Mod\B\Mod\F::getRouteModel();
+        $Data=array_merge($Data,$Mdata['Modules']);
         $data=$Data;
+    //  dd($data);
         return $this->ftD($m,$data,['RouteUrl','UniqId','RouteName']);
     }
 

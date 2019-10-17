@@ -36,7 +36,7 @@ return [
 
     [
     'name'=>'ModuleCode',
-    'vName'=>'Module Code',
+    'vName'=>'Module',
     'type'=>'string',
     'input'=>'option',
     "validation"=>['required'=>true,'existIn'=>MSCORE_MOD_MASTER]
@@ -72,7 +72,7 @@ return [
 
 ],
 'fieldGroup'=>[
-'Add Module'=>['UniqId','ModuleName','ModuleIcon','ModuleDesc','ModuleRoute','Status'],
+'View Module Routes'=>['UniqId','RouteType','RouteName','ModuleCode','RouteUrl','Status',],
 'Public_User'=>['UniqId','MSUsername'],
 //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
 // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
@@ -125,15 +125,15 @@ return [
 'MSViews'=>[
 
 'view_all'=>[
-'title'=>'View all Master Mod',
+'title'=>'View all Master Routes',
 'icon'=>'fas fa-users',
-'groups'=>['Public_User'],
+'groups'=>['View Module Routes'],
 'searchable'=>true,
 'actions'=>['add'],
 'massAction'=>['add'],
 'searchAllowed'=>[],
 'pagination'=>true,
-'paginationLink'=>'MOD.User.Master.View.All.Proccess'
+'paginationLink'=>'MOD.Mod.Master.Route.View.All.Proccess'
 
 
 ]

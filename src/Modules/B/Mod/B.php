@@ -67,6 +67,22 @@ class B extends Master
         ],
 
 
+
+        [
+            'name'=>'MOD.Mod.Master.Route.View.All',
+            'route'=>'/master/Modules/routes/view/all',
+            'method'=>'viewAllModRoutes',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.Mod.Master.Route.View.All.Proccess',
+            'route'=>'/master/Modules/routes/view/all/proccess',
+            'method'=>'viewAllModRoutesPagination',
+            'type'=>'get',
+        ],
+
+
     ];
 
 

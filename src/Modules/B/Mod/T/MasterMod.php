@@ -97,6 +97,13 @@ return [
                 'btnText'=>"add module"
             ],
 
+            'addBtn'=>[
+                "btnColor"=>"bg-green-500",
+                "btnIcon"=>"msicon-add",
+                'btnText'=>"add module",
+                'route'=>'MOD.Mod.Master.AddForm'
+            ]
+
 //            'edit'=>[
 //                "btnColor"=>"btn-info",
 //                "route"=>"MAS.Index",
@@ -134,7 +141,7 @@ return [
                 'icon'=>'fas fa-users',
                 'groups'=>['View All Module'],
                 'searchable'=>true,
-                'actions'=>['add'],
+                'actions'=>['addBtn'],
                 'massAction'=>['add'],
                 'searchAllowed'=>[],
                 'pagination'=>true,

@@ -139,13 +139,14 @@ class F
 
         $Mdata=[
             'Modules'=>\MS\Mod\B\Mod\B::migrateRoutesToDb(),
+            'Users'=>\MS\Mod\B\Users\B::migrateRoutesToDb(),
 
         ];
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterRoutes.php']));
       //  dd($DataFilePath);
         $Data=require($DataFilePath);
         $m=\MS\Mod\B\Mod\F::getRouteModel();
-        $Data=array_merge($Data,$Mdata['Modules']);
+        $Data=array_merge($Data,$Mdata['Modules'],$Mdata['Users']);
         $data=$Data;
     //  dd($data);
         return $this->ftD($m,$data,['RouteUrl','UniqId','RouteName']);

@@ -153,4 +153,14 @@ class C extends BaseController
         $m=F::getRootModuleModel();
         return $m->ForPagination($r);
     }
+
+    public function viewAllModRoutes(){
+        $m=F::getRouteModel();
+        return $m->viewData('view_all');
+    }
+    public function viewAllModRoutesPagination(Request $r){
+        $m=F::getRouteModel();
+        return $m->ForPagination($r);
+    }
+
 }

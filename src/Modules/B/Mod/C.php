@@ -115,7 +115,7 @@ class C extends BaseController
 
             "modCode"=>"Core",
             "modDView"=>"New Tab",
-            "modUrl"=>route('MOD.User.Master.View.All'),
+            "modUrl"=>route('MOD.Mod.Master.View.All'),
         ];
        // dd($m->CurrentError);
 

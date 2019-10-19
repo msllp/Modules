@@ -102,7 +102,9 @@ return [
                 "btnIcon"=>"msicon-add",
                 'btnText'=>"add module",
                 'route'=>'MOD.Mod.Master.AddForm'
-            ]
+            ],
+
+
 
 //            'edit'=>[
 //                "btnColor"=>"btn-info",
@@ -144,6 +146,8 @@ return [
                 'actions'=>['addBtn'],
                 'massAction'=>['add'],
                 'searchAllowed'=>[],
+                'rowView'=>'',
+                'rowId'=>'UniqId',
                 'pagination'=>true,
                 'paginationLink'=>'MOD.Mod.Master.View.All.Proccess'
 

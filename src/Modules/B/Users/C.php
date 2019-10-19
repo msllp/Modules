@@ -76,7 +76,7 @@ class C extends BaseController
                         'type'=> 'link',
                         'text'=> 'Add Module',
                         'link'=> route('MOD.Mod.Master.AddForm'),
-                        'icon'=>'msicon-add'
+                        'icon'=>'fi flaticon-add'
                     ]
                     ,[
                         'type'=> 'link',

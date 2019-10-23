@@ -35,18 +35,18 @@ class C extends BaseController
             [
                 'text'=>'Users',
                 'type'=>'mainNav',
-                'icon'=>'msicon-admin-user',
+                'icon'=>'fi flaticon-user',
                 'sub' =>[
 
                     [
                         'type'=> 'title',
                         'text'=> 'Manage Root User',
-                        'icon'=> 'fas fa-users-cog'
+                        'icon'=> 'fi flaticon-problem'
                     ], [
                         'type'=> 'link',
                         'text'=> 'Add Root User',
                         'link'=> route('MOD.User.Master.AddForm'),
-                        'icon'=>'fas fa-user-plus'
+                        'icon'=>'fi flaticon-partner'
                     ]
 
                     ,
@@ -55,7 +55,7 @@ class C extends BaseController
                         'type'=> 'link',
                         'text'=> 'View All Root Users',
                         'link'=> route('MOD.User.Master.View.All'),
-                        'icon'=>'fas fa-users'
+                        'icon'=>'fi flaticon-users-group'
                     ],
 
                 ],
@@ -65,13 +65,13 @@ class C extends BaseController
             [
                 'text'=>'Modules',
                 'type'=>'mainNav',
-                'icon'=>'msicon-modules',
+                'icon'=>'fi flaticon-distributed',
                 'sub' =>[
 
                     [
                         'type'=> 'title',
                         'text'=> 'Manage Modules',
-                        'icon'=> 'msicon-manage-module'
+                        'icon'=> 'fi flaticon-execution'
                     ], [
                         'type'=> 'link',
                         'text'=> 'Add Module',
@@ -82,24 +82,43 @@ class C extends BaseController
                         'type'=> 'link',
                         'text'=> 'View All Modules',
                         'link'=> route('MOD.Mod.Master.View.All'),
-                        'icon'=>'msicon-list'
+                        'icon'=>'fi flaticon-plan'
                     ],
                     [
                         'type'=> 'title',
                         'text'=> 'Manage Routes',
-                        'icon'=> 'msicon-route'
+                        'icon'=> 'fi flaticon-execution'
                     ],
-//                    [
-//                        'type'=> 'link',
-//                        'text'=> 'Add Route',
-//                        'link'=> route('MOD.Mod.Master.AddForm'),
-//                        'icon'=>'msicon-add'
-//                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add Route',
+                        'link'=> route('MOD.Mod.Master.Route.AddForm'),
+                        'icon'=>'fi flaticon-add'
+                    ],
                     [
                         'type'=> 'link',
                         'text'=> 'View All Routes',
                         'link'=> route('MOD.Mod.Master.Route.View.All'),
-                        'icon'=>'msicon-list'
+                        'icon'=>'fi flaticon-plan'
+                    ],
+
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Events',
+                        'icon'=> 'fi flaticon-commerce-and-shopping-1'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add Event',
+                        'link'=> route('MOD.Mod.Master.Event.AddForm'),
+                        'icon'=>'fi flaticon-add'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'View All Events',
+                        'link'=> route('MOD.Mod.Master.Route.View.All'),
+                        'icon'=>'fi flaticon-plan'
                     ],
 
                 ],

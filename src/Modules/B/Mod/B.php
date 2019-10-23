@@ -58,7 +58,6 @@ class B extends Master
             'method'=>'viewAllMod',
             'type'=>'get',
         ],
-
         [
             'name'=>'MOD.Mod.Master.View.All.Proccess',
             'route'=>'/master/Modules/view/all/proccess',
@@ -66,7 +65,18 @@ class B extends Master
             'type'=>'get',
         ],
 
-
+        [
+            'name'=>'MOD.Mod.Master.Route.AddForm',
+            'route'=>'/master/Modules/routes/action/add/from',
+            'method'=>'addModuleRoutesFrom',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'MOD.Mod.Master.Route.toDB',
+            'route'=>'/master/Modules/routes/action/save',
+            'method'=>'saveMethodForModRoutes',
+            'type'=>'post',
+        ],
 
         [
             'name'=>'MOD.Mod.Master.Route.View.All',
@@ -74,7 +84,6 @@ class B extends Master
             'method'=>'viewAllModRoutes',
             'type'=>'get',
         ],
-
         [
             'name'=>'MOD.Mod.Master.Route.View.All.Proccess',
             'route'=>'/master/Modules/routes/view/all/proccess',
@@ -82,6 +91,25 @@ class B extends Master
             'type'=>'get',
         ],
 
+        ///Event
+        ///
+        ///
+        ///
+
+
+        [
+            'name'=>'MOD.Mod.Master.Event.AddForm',
+            'route'=>'/master/Modules/event/action/add/from',
+            'method'=>'addModuleEventFrom',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.Mod.Master.Event.toDB',
+            'route'=>'/master/Modules/event/action/save',
+            'method'=>'addModuleEventFrom',
+            'type'=>'get',
+        ],
 
     ];
 

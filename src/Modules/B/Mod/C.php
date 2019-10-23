@@ -154,6 +154,63 @@ class C extends BaseController
         return $m->ForPagination($r);
     }
 
+
+    public function addModuleRoutesFrom(){
+        $m=F::getRouteModel();
+        return $m->displayForm('add_routes');
+
+    }
+
+    public function saveMethodForModRoutes(Request $r){
+        $m=F::getRouteModel();
+        $m->attachR($r);
+        // $m->migrate();
+        $d=$r->all();
+        $valid=$m->checkRulesForData();
+
+        //  $m->dataToProcess['ModuleAccess']='00';
+        $nextData=[
+
+            "modCode"=>"Core",
+            "modDView"=>"View All Routes",
+            "modUrl"=>route('MOD.Mod.Master.Route.View.All'),
+        ];
+        // dd($m->CurrentError);
+
+        if($valid){
+
+            //F::makeUser($r,$m);
+
+            $ModM=F::getRootModuleModel();
+            $ModMData=$ModM->rowGet(['UniqId'=>$d['ModuleCode']]);
+            $mod=reset($ModMData);
+
+            $d['RouteUrl']=implode('/',[$mod['ModuleRoute'] , $d['RouteUrl'] ]);
+            $d['RouteName']=implode('.',[ $mod['UniqId'],$d['RouteName'] ]);
+
+
+
+
+
+            return response()->json(['ms'=>[
+
+                'status'=>200,
+                // 'Rdata'=> $r->input(),
+                'ProcessStatus'=>[
+                'User added to DB'=>$m->rowAdd($d)],
+                'nextData'=>$nextData
+
+            ]],200);
+        }
+        else{
+            return response()->json([
+                'errors' => $m->CurrentError
+            ],418);
+            return $m->CurrentError;
+        }
+    }
+
+
     public function viewAllModRoutes(){
         $m=F::getRouteModel();
         return $m->viewData('view_all');
@@ -161,6 +218,12 @@ class C extends BaseController
     public function viewAllModRoutesPagination(Request $r){
         $m=F::getRouteModel();
         return $m->ForPagination($r);
+    }
+
+
+    public function addModuleEventFrom(){
+        $m=F::getEventModel();
+        return $m->displayForm('add_event');
     }
 
 }

@@ -30,7 +30,7 @@ class F
             'fillDataInRouteTypes'=>'Master Routes Types Configuration finished',
             'createRouteTable'=>'Master Routes Configuration started',
             'fillDataInRoute'=>'Master Routes Configuration finished',
-            //''=>'Master Events Configuration started',
+            'createMasterEventTable'=>'Master Events Configuration started',
             //''=>'Master Events Configuration finished',
 
         ];
@@ -152,7 +152,21 @@ class F
         return $this->ftD($m,$data,['RouteUrl','UniqId','RouteName']);
     }
 
+    public function createMasterEventTable(){
 
+    $m=\MS\Mod\B\Mod\F::getEventSubModel();
+
+
+        dd($m->migrate());
+
+        $d=[
+            'ebfsCz','hRAbQx'
+
+        ];
+        dd(\MS\Mod\B\Mod\F::createModuleEventSub('JwpWQp',$d));
+
+        return $this->cNmWM(\MS\Mod\B\Mod\F::getEventModel());
+    }
 
 
     public function ftD($m,$d,$ua=[]){

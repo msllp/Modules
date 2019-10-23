@@ -14,7 +14,8 @@ return [
     'name'=>'UniqId',
     'vName'=>'ID',
     'type'=>'string',
-    'input'=>'text',
+    'input'=>'auto',
+    'callback'=>'genUniqId',
     "validation"=>['required'=>true,]
     ],
 
@@ -30,8 +31,8 @@ return [
         'name'=>'RouteType',
         'vName'=>'Route Type',
         'type'=>'string',
-        'input'=>'text',
-        "validation"=>['required'=>true,]
+        'input'=>'option',
+        "validation"=>['required'=>true,'existIn'=>MSCORE_ROUTE_TYPE_MASTER]
     ],
 
     [
@@ -59,6 +60,15 @@ return [
     ],
 
 
+    [
+        'name'=>'EventCode',
+        'vName'=>'Events Code',
+        'type'=>'string',
+        'input'=>'text',
+        "validation"=>['required'=>false,]
+    ],
+
+
 
         [
             'name'=>'Status',
@@ -74,6 +84,8 @@ return [
 'fieldGroup'=>[
 'View Module Routes'=>['UniqId','RouteType','RouteName','ModuleCode','RouteUrl','Status',],
 'Public_User'=>['UniqId','MSUsername'],
+
+    'Add Master Routes'=>['UniqId','ModuleCode','RouteUrl','RouteType','RouteName','RouteMethod','Status']
 //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
 // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
 // 'Login Details'=>['modName','modDesc','modCode','modIcon',],
@@ -85,12 +97,12 @@ return [
 ],
 
 'action'=>[
-'add'=>[
-"btnColor"=>"bg-green",
-"route"=>"MOD.Mod.Master.Add.toDB",
-"btnIcon"=>"msicon-add",
-'btnText'=>"add module"
-],
+    'add'=>[
+            "btnColor"=>"bg-green",
+            "route"=>"MOD.Mod.Master.Route.toDB",
+            "btnIcon"=>"fi flaticon-add",
+            'btnText'=>"add routes"
+            ],
 
 //            'edit'=>[
 //                "btnColor"=>"btn-info",
@@ -113,12 +125,13 @@ return [
 
 
 'MSforms'=>[
-'add_user'=>[
-'title'=>'Add Master Module',
-'groups'=>['Add Module'],
-'actions'=>['add']
 
-],
+    'add_routes'=>[
+        'title'=>'Add Routes',
+        'groups'=>['Add Master Routes'],
+        'actions'=>['add']
+
+    ]
 ],
 
 

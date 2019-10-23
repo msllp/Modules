@@ -43,6 +43,29 @@ public static function getRouteModel(){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Route');
 }
 
+    public static function getEventModel(){
+        return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Events');
+    }
+
+    public static function getEventSubModel($eventId='JwpWQp'){
+        return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Events_sub',[$eventId]);
+    }
+
+
+    public static function createModuleEventSub($eventId='JwpWQp',$d=[]){
+
+
+
+    $m1=self::getEventSubModel($eventId);
+      //  $m->migrate();
+    foreach ($d as $routeId){
+        $m1->rowAdd(['RouteCode'=>$routeId]);
+    }
+
+    dd($m);
+
+    }
+
 public static function checkRouteExist($r):array{
     $returnArray=['pathFound'=>false];
     $m=self::getRouteModel();

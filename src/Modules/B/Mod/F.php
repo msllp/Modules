@@ -54,15 +54,45 @@ public static function getRouteModel(){
 
     public static function createModuleEventSub($eventId='JwpWQp',$d=[]){
 
-
-
     $m1=self::getEventSubModel($eventId);
-      //  $m->migrate();
+    $m2=self::getEventModel();
+    $er=[];
+
+    if(count($m2->rowGet(['UniqId'=>$eventId])) >0)$m1->migrate();
+
+
     foreach ($d as $routeId){
-        $m1->rowAdd(['RouteCode'=>$routeId]);
+        if(!$m1->rowAdd(['RouteCode'=>$routeId] ,['RouteCode']))$er[]=$routeId;
     }
 
-    dd($m);
+
+    if(count($er) < 1)return true;
+        return false;
+
+
+    }
+
+    public static function deleteModuleEventSub($eventId='JwpWQp'){
+        $m2=self::getEventModel();
+        $m2->rowDelete(['UniqId'=>$eventId]);
+        $m1=self::getEventSubModel($eventId);
+        $m1->delete();
+    }
+
+    public static function updateModuleEventSub($eventId='JwpWQp',$d=[]){
+
+        $m2=self::getEventModel();
+        $m1=self::getEventSubModel($eventId);
+        $m1->delete();
+        if(count($m2->rowGet(['UniqId'=>$eventId])) >0)$m1->migrate();
+        $er=[];
+
+        foreach ($d as $routeId){
+            if(!$m1->rowAdd(['RouteCode'=>$routeId] ,['RouteCode']))$er[]=$routeId;
+        }
+
+        if(count($er) < 1)return true;
+        return false;
 
     }
 

@@ -107,7 +107,20 @@ class B extends Master
         [
             'name'=>'MOD.Mod.Master.Event.toDB',
             'route'=>'/master/Modules/event/action/save',
-            'method'=>'addModuleEventFrom',
+            'method'=>'addModuleEventtoDB',
+            'type'=>'post',
+        ],
+
+        [
+            'name'=>'MOD.Mod.Master.Event.View.All',
+            'route'=>'/master/Modules/event/view/all',
+            'method'=>'viewAllModEvents',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'MOD.Mod.Master.Event.View.All.Proccess',
+            'route'=>'/master/Modules/event/view/all/proccess',
+            'method'=>'viewAsllModEventsPagination',
             'type'=>'get',
         ],
 

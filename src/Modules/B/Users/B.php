@@ -38,6 +38,7 @@ class B extends Master
 
 
 /////User Routes
+/// For Root User
 
         [
             'name'=>'MOD.User.Master.AddForm',
@@ -66,6 +67,80 @@ class B extends Master
             'type'=>'get',
         ],
 
+    /// For Users Roles
+
+        [
+            'name'=>'MOD.User.Master.Roles.AddForm',
+            'route'=>'/master/Users/Sub/Roles/action/add/from',
+            'method'=>'addUserRolesFrom',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'MOD.User.Master.Roles.Add.toDB',
+            'route'=>'/master/Users/Sub/Roles/action/save',
+            'method'=>'saveUserRoles',
+            'type'=>'get',
+        ],
+
+
+
+        [
+            'name'=>'MOD.User.Master.Roles.View.All',
+            'route'=>'/master/Users/Sub/Roles/view/all',
+            'method'=>'viewAllUserRoles',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.User.Master.Roles.View.All.Proccess',
+            'route'=>'/master/Users/Sub/Roles/view/all/proccess',
+            'method'=>'viewAllUserPaginationRoles',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'MOD.User.Master.Roles.Login.Owner',
+            'route'=>'/master/Users/Sub/Roles/login/Owner',
+            'method'=>'viewAllUserPaginationRoles',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.User.Master.Roles.Login.Employee',
+            'route'=>'/master/Users/Sub/Roles/login/Employee',
+            'method'=>'viewAllUserPaginationRoles',
+            'type'=>'get',
+        ],
+
+/// For Users for application
+
+        [
+            'name'=>'MOD.User.AddForm',
+            'route'=>'/master/Users/Sub/action/add/from',
+            'method'=>'addAppUserFrom',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.User.Add.toDB',
+            'route'=>'/master/Users/Sub/action/save',
+            'method'=>'saveAppUser',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'MOD.User.View.All',
+            'route'=>'/master/Users/Sub/view/all',
+            'method'=>'viewAllUserRoles',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.User.View.All.Proccess',
+            'route'=>'/master/Users/Sub/view/all/proccess',
+            'method'=>'viewAllUserPaginationRoles',
+            'type'=>'get',
+        ],
 
     ];
 

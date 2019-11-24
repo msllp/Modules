@@ -121,7 +121,7 @@ return [
                 'massAction'=>['add'],
                 'searchAllowed'=>[],
                 'pagination'=>true,
-                'paginationLink'=>'MOD.Mod.Master.Route.View.All.Proccess'
+                'paginationLink'=>'MOD.Mod.Master.Event.View.All.Proccess'
 
 
             ]

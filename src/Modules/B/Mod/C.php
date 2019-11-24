@@ -7,6 +7,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use MS\Core\Helper\MSDB;
 use mysql_xdevapi\Exception;
 use Razorpay\Api;
 
@@ -226,4 +227,49 @@ class C extends BaseController
         return $m->displayForm('add_event');
     }
 
+    public function addModuleEventtoDB(Request $r){
+        $m=F::getEventModel();
+        $bd=$r->all();
+        $d=$r->all();
+
+        if(!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\comman::random(4);
+        while(count($m->rowGet(['UniqId'=>$d['UniqId']])) > 0){
+            $d['UniqId']=\MS\Core\Helper\comman::random(4);
+        }
+
+        if(array_key_exists('Routes',$d) && is_array($d['Routes'])){
+       unset($d['Routes']);
+            ///  $d['Routes']=collect($d['Routes'])->toJson();
+        }
+
+        $nextData=[
+            "modCode"=>"Core",
+            "modDView"=>"View All Events",
+            "modUrl"=>route('MOD.Mod.Master.Route.View.All'),
+        ];
+
+
+
+        return response()->json(['ms'=>[
+
+            'status'=>200,
+             'Rdata'=> $bd['Routes'],
+            'ProcessStatus'=>[
+                'User Roles to DB'=>$m->rowAdd($d,['UniqId','EventName']),
+                'User Role Table Created'=>F::createModuleEventSub($d['UniqId'],$bd['Routes'])
+            ],
+            'nextData'=>$nextData
+
+        ]],200);
+      //  return $m->rowAdd($d);
+
+    }
+    public function viewAllModEvents(){
+        $m=F::getEventModel();
+        return $m->viewData('view_all');
+    }
+    public function viewAllModEventsPagination(Request $r){
+        $m=F::getEventModel();
+        return $m->ForPagination($r);
+    }
 }

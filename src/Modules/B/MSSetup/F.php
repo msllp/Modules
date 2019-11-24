@@ -32,6 +32,10 @@ class F
             'fillDataInRoute'=>'Master Routes Configuration finished',
             'createMasterEventTable'=>'Master Events Configuration started',
             //''=>'Master Events Configuration finished',
+            /////////Master User Module///////////
+            'createUserTypeTable'=>'Master User Module Configuration started',
+            'fillDataInUserType'=>'Master User Type Configuration 10 % finished',
+            'createAppUser'=>'Master User Type Configuration 20 % finished',
 
         ];
         $c=new self();
@@ -154,22 +158,84 @@ class F
 
     public function createMasterEventTable(){
 
-    $m=\MS\Mod\B\Mod\F::getEventSubModel();
-
-
-        dd($m->migrate());
-
-        $d=[
-            'ebfsCz','hRAbQx'
-
-        ];
-        dd(\MS\Mod\B\Mod\F::createModuleEventSub('JwpWQp',$d));
-
-        return $this->cNmWM(\MS\Mod\B\Mod\F::getEventModel());
+    $m=\MS\Mod\B\Mod\F::getEventModel();
+    return $m->migrate();
+//        dd($m->migrate());
+//
+//        $d=[
+//            'ebfsCz','hRAbQx'
+//
+//        ];
+//        dd(\MS\Mod\B\Mod\F::createModuleEventSub('JwpWQp',$d));
+//
+//        return $this->cNmWM(\MS\Mod\B\Mod\F::getEventModel());
     }
 
 
-    public function ftD($m,$d,$ua=[]){
+    public function createUserTypeTable():bool
+    {
+        //dd(\MS\Mod\B\Users\F::getUserTypeModel());
+        $msm=\MS\Mod\B\Users\F::getUserTypeModel();
+        return $this->cNmWM($msm);
+
+
+
+    }
+
+    public function fillDataInUserType(){
+        $msm=\MS\Mod\B\Users\F::getUserTypeModel();
+        $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Users','D','UserType.php']));
+        $Data=require($DataFilePath);
+        $m=$msm;
+        $data=$Data;
+        $action=['\MS\Mod\B\Users\F::makeRole'];
+        return $this->ftdfa($data,$action);
+        return $this->ftD($m,$data,['UserTypeName','UniqId']);
+    }
+
+    public function createAppUser(){
+        $msm=\MS\Mod\B\Users\F::getAppUserModel();
+        return $this->cNmWM($msm);
+
+    }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////Do not edit /////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function ftdfa($data,$actions){
+
+        $err=[];
+        foreach ($data as $row){
+
+            foreach ($actions as $ac){
+                $err[$ac($row)][]=$ac;
+            }
+
+
+        }
+
+        if(count($actions) == count($err[1])){
+            return true;
+        }
+        return false;
+
+
+
+    }
+
+
+    /**
+     * @param $m
+     * @param $d
+     * @param array $ua
+     * @return bool
+     */
+    public function ftD($m, $d, $ua=[]){
         $err=[];
         foreach ($d as $v){
             if(!$m->rowAdd($v,$ua)){
@@ -184,23 +250,34 @@ class F
     }
 
 
-    public function cNm($n,$id):bool{
+    /**
+     * To create tables with model & id of th table
+     * @param $n
+     * @param $id
+     * @return bool
+     */
+    public function cNm($n, $id):bool{
         $m=new \MS\Core\Helper\MSDB($n,$id);
 
         if(!$m->checkTableExist()){
             return $m->migrate();
         }
 
-        return true;
+        return false;
 
     }
 
+    /**
+     * create table from given MSDB class
+     * @param $m
+     * @return bool
+     */
     public function cNmWM($m){
         if(!$m->checkTableExist()){
             return $m->migrate();
         }
 
-        return true;
+        return false;
     }
 
 

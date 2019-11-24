@@ -42,7 +42,8 @@ class C extends BaseController
                         'type'=> 'title',
                         'text'=> 'Manage Root User',
                         'icon'=> 'fi flaticon-problem'
-                    ], [
+                    ],
+                    [
                         'type'=> 'link',
                         'text'=> 'Add Root User',
                         'link'=> route('MOD.User.Master.AddForm'),
@@ -56,6 +57,34 @@ class C extends BaseController
                         'text'=> 'View All Root Users',
                         'link'=> route('MOD.User.Master.View.All'),
                         'icon'=>'fi flaticon-users-group'
+                    ],
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage App User Roles',
+                        'icon'=> 'fas fa-cogs'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add User Role',
+                        'link'=> route('MOD.User.Master.Roles.AddForm'),
+                        'icon'=>'fi flaticon-partner'
+                    ]
+
+                    ,
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'View All User Roles',
+                        'link'=> route('MOD.User.Master.Roles.View.All'),
+                        'icon'=>'fi flaticon-users-group'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add App User',
+                        'link'=> route('MOD.User.AddForm'),
+                        'icon'=>'fi flaticon-add'
                     ],
 
                 ],
@@ -117,19 +146,25 @@ class C extends BaseController
                     [
                         'type'=> 'link',
                         'text'=> 'View All Events',
-                        'link'=> route('MOD.Mod.Master.Route.View.All'),
+                        'link'=> route('MOD.Mod.Master.Event.View.All'),
                         'icon'=>'fi flaticon-plan'
                     ],
+
+
 
                 ],
             ],
 
 
         ];
+        //dd(route('MOD.Mod.Master.Event.View.All'));
         return \MS\Core\Helper\Comman::proccessReqNGetSideNavDataForDashboard($r,$data, $rdata);
     }
 
-
+public function addAppUserFrom(){
+    $m=F::getAppUserModel();
+    return $m->displayForm('add_app_user');
+}
     public function addUserFrom(){
         $m=F::getRootUserModel();
         return $m->displayForm('add_user');
@@ -184,5 +219,53 @@ class C extends BaseController
 
         $m=F::getRootUserModel();
         return $m->ForPagination($r);
+    }
+
+    public function addUserRolesFrom(){
+        $m=F::getUserTypeModel();
+        return $m->displayForm('add_user_type');
+    }
+
+    public function saveUserRoles(Request $r){
+        $m=F::getUserTypeModel();
+        $d1=$r->all();
+        $d=[];
+        $t=[
+            'Create User Role'=>F::makeRoles($d1
+            )
+        ];
+        dd($m->processForSave($r,$d,$t));
+
+
+
+        F::makeRoles($r->all());
+    }
+
+    public function viewAllUserRoles(Request $r){
+        $m=F::getUserTypeModel();
+        //   $m->migrate();
+        return $m->viewData('view_all');
+    }
+
+    public function viewAllUserPaginationRoles(Request $r){
+        $m=F::getUserTypeModel();
+        return $m->ForPagination($r);
+    }
+
+    public function  saveAppUser(Request $r){
+
+        $m=F::getAppUserModel();
+        $d1=$r->all();
+        $d=[];
+        $t=[
+            'Create User Role'=>F::makeAppUser($d1
+            )
+        ];
+        dd($m->processForSave($r,$d,$t));
+
+
+
+        F::makeRoles($r->all());
+
     }
 }

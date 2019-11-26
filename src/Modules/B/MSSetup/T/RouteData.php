@@ -9,14 +9,14 @@
 return [
 
     [
-        'RouteTypeName'=>'Get',
-        'RouteTypeCode'=>'GET',
+        'RouteTypeName'=>'GET',
+        'RouteTypeCode'=>'get',
         'Status'=>1,
 
     ],
     [
-        'RouteTypeName'=>'post',
-        'RouteTypeCode'=>'POST',
+        'RouteTypeName'=>'POST',
+        'RouteTypeCode'=>'post',
         'Status'=>1,
 
     ],

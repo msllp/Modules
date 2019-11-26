@@ -70,12 +70,11 @@ public static function makeAppUser($d){
 public static function makeRole($d){
     $db=$d;
     if (!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\Comman::random(4);
-
     $m1=self::getUserTypeModel();
     $err=[];
     $err[$m1->rowAdd($d,['UniqId','UserTypeName'])][]='Entery in Role Table' ;
     $m2=self::getUserRolePermission($d['UniqId']);
-    $err[$m2->migrate()][]='Migrate User Role Permission Table' ;
+   if(array_key_exists(1,$err) && (count($err[1]) ==1)) $err[$m2->migrate()][]='Migrate User Role Permission Table' ;
     return true;
 }
 
@@ -93,14 +92,47 @@ public static function updateRole($id,$d){
 
 }
 
-public static function deleteUser($id){}
 
+public static function getRole($id){
+
+
+
+    }
 public static function makeUser($data){
 
 
 
+    }
+
+public static function deleteUser($id){
+
+
 }
 
+public static function updateUser($data){
 
+
+
+    }
+
+    public static function getUser($data){
+
+
+
+    }
+
+
+    public static function getCurrentUser($data){
+
+
+
+    }
+    public static function checkCurrentOkForUser($data){
+
+
+
+    }
+
+    public static function upgradeUser($id){}
 
 }

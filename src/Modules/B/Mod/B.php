@@ -120,7 +120,7 @@ class B extends Master
         [
             'name'=>'MOD.Mod.Master.Event.View.All.Proccess',
             'route'=>'/master/Modules/event/view/all/proccess',
-            'method'=>'viewAsllModEventsPagination',
+            'method'=>'viewAllModEventsPagination',
             'type'=>'get',
         ],
 

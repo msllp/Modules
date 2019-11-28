@@ -54,6 +54,13 @@ class B extends Master
             'type'=>'get',
         ],
 
+        [
+            'name'=>'MOD.User.Master.EditForm.Post',
+            'route'=>'/master/Users/action/edit/from/{id?}',
+            'method'=>'updateUser',
+            'type'=>'post',
+        ],
+
 
         [
             'name'=>'MOD.User.Master.Add.toDB',

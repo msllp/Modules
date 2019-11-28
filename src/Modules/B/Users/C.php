@@ -283,6 +283,29 @@ public function addAppUserFrom(){
         return $m->editForm('edit_user',$d);
     }
 
+    public function updateUser(Request $r,$id){
+        $m=F::getRootUserModel();
+        $d1=$m->rowGet(['UniqId'=>$id]);
+        $rA=$r->all();
+        $fData=\MS\Core\Helper\Comman::checkNGetOnlyDiffrent($d1,$rA);
+
+ //      dd(\MS\Core\Helper\Comman::checkNGetOnlyDiffrent($d1,$rA));
+
+        if(!(count($d1) >0)){
+            return $m->jsonOutError(['Oppes, Root user not found in my system.']);
+        }elseif (count($d1) ==1) {
+            if (!(count($fData) > 0)) {
+                return $m->jsonOutError(['Every things upto date in my system.']);
+            } elseif (count($d1) > 0) {
+                $m->rowEdit(['UniqId' => $id], $fData);
+            }
+        }
+        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','Succegully added in our sysetem',route('MOD.User.Master.View.All'));
+        return $m->jsonOut([true],$nextDat);
+
+
+    }
+
 
 
 }

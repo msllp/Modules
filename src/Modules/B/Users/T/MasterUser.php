@@ -68,11 +68,24 @@ return [
 
             'edit'=>[
                 "btnColor"=>"btn-info",
-                "route"=>"MOD.User.Master.EditForm",
+                "route"=>"MOD.User.Master.EditForm.Post",
+                "routePara"=>['id'=>'UniqId'],
                 "btnIcon"=>"fi flaticon-edit",
                 'btnText'=>"edit Module",
                 'msLinkKey'=>'UniqId',
                 'msLinkText'=>'MSUsername',
+               // 'msNextAction'=>'MOD.User.Master.View.All'
+
+            ],
+
+            'editPost'=>[
+                "btnColor"=>"btn-info",
+                "route"=>"MOD.User.Master.EditForm.Post",
+                "btnIcon"=>"fi flaticon-edit",
+                'btnText'=>"edit Module",
+                'msLinkKey'=>'UniqId',
+                'msLinkText'=>'MSUsername',
+                // 'msNextAction'=>'MOD.User.Master.View.All'
 
             ],
             // 'edit'=>"",

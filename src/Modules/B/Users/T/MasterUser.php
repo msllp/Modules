@@ -97,7 +97,7 @@ return [
 
             ],
 
-            'EDIT_user'=>[
+            'edit_user'=>[
                 'title'=>'Edit Root User',
                 'groups'=>['Edit User Details'],
                 'actions'=>['edit']

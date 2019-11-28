@@ -42,10 +42,12 @@ return [
 
 
 
+
             ],
         'fieldGroup'=>[
             'Add_User'=>['UniqId','MSUsername','MSPassword'],
             'Public_User'=>['UniqId','MSUsername'],
+            'Edit User Details'=>['MSUsername','MSPassword']
           //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
             // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
             // 'Login Details'=>['modName','modDesc','modCode','modIcon',],
@@ -66,9 +68,12 @@ return [
 
             'edit'=>[
                 "btnColor"=>"btn-info",
-                "route"=>"MAS.Index",
-                "btnIcon"=>"fa fa-home",
-                'btnText'=>"edit Module"
+                "route"=>"MOD.User.Master.EditForm",
+                "btnIcon"=>"fi flaticon-edit",
+                'btnText'=>"edit Module",
+                'msLinkKey'=>'UniqId',
+                'msLinkText'=>'MSUsername',
+
             ],
             // 'edit'=>"",
 
@@ -91,6 +96,13 @@ return [
                 'actions'=>['add']
 
             ],
+
+            'EDIT_user'=>[
+                'title'=>'Edit Root User',
+                'groups'=>['Edit User Details'],
+                'actions'=>['edit']
+
+            ],
         ],
 
 
@@ -101,8 +113,8 @@ return [
                 'icon'=>'fas fa-users',
                 'groups'=>['Public_User'],
                 'searchable'=>true,
-                'actions'=>['add'],
-                'massAction'=>['add'],
+                'actions'=>['edit'],
+                'massAction'=>[],
                 'searchAllowed'=>[],
                 'pagination'=>true,
                 'paginationLink'=>'MOD.User.Master.View.All.Proccess'

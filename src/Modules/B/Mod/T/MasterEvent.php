@@ -15,7 +15,8 @@ return [
                     'name'=>'UniqId',
                     'vName'=>'ID',
                     'type'=>'string',
-                    'input'=>'text',
+                    'input'=>'auto',
+                    'callback'=>'genUniqId',
                     "validation"=>['required'=>true,]
                 ],
 

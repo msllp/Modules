@@ -223,7 +223,7 @@ public function addAppUserFrom(){
 
     public function addUserRolesFrom(){
         $m=F::getUserTypeModel();
-        return $m->displayForm('add_user_type');
+        return $m->editForm('add_user_type');
     }
 
     public function saveUserRoles(Request $r){
@@ -268,4 +268,21 @@ public function addAppUserFrom(){
         F::makeRoles($r->all());
 
     }
+
+
+    public function editUserFrom(Request $r,$id){
+        $m=F::getRootUserModel();
+        $d1=$m->rowGet(['UniqId'=>$id]);
+     //   dd();
+
+        if(!count($d1) >0){
+        return $m->jsonOutError(['Oppes, Root user not found in my system.']);
+        }elseif (count($d1) ==1){
+            $d=$d1[0];
+        }
+        return $m->editForm('EDIT_user',$d);
+    }
+
+
+
 }

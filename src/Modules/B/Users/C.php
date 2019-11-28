@@ -280,7 +280,7 @@ public function addAppUserFrom(){
         }elseif (count($d1) ==1){
             $d=$d1[0];
         }
-        return $m->editForm('EDIT_user',$d);
+        return $m->editForm('edit_user',$d);
     }
 
 

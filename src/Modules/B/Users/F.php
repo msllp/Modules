@@ -47,24 +47,18 @@ public static function genAPISecrete(){
 public static function getRootUserModel(){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_User');
 }
-
 public static function getUserTypeModel(){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'User_User_Type');
 }
-
-    public static function getAppUserModel(){
+public static function getAppUserModel(){
         return new \MS\Core\Helper\MSDB(__NAMESPACE__,'User_App_User');
     }
-
 public static function getUserRolePermission($RoleId='JwpWQp'){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'User_User_Type_sub',[$RoleId]);
 }
 
 
-public static function makeAppUser($d){
 
-
-}
 
 
 public static function makeRole($d){
@@ -91,8 +85,6 @@ public static function deleteRole($roleCode){
 public static function updateRole($id,$d){
 
 }
-
-
 public static function getRole($id){
 
 
@@ -103,36 +95,74 @@ public static function makeUser($data){
 
 
     }
-
 public static function deleteUser($id){
 
 
 }
-
 public static function updateUser($data){
 
 
 
     }
-
-    public static function getUser($data){
-
-
-
-    }
-
-
-    public static function getCurrentUser($data){
+public static function getUser($data){
 
 
 
     }
-    public static function checkCurrentOkForUser($data){
+public static function getCurrentUser($data){
 
 
 
     }
+public static function checkCurrentOkForUser($data){}
+public static function upgradeUser($id){}
 
-    public static function upgradeUser($id){}
+
+public static function createRootUser($d){
+
+    $db=$d;
+    if (!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\Comman::random(4);
+    $m1=self::getRootUserModel();
+    $err=[];
+    $err[$m1->rowAdd($d,['UniqId','UserTypeName'])][]='Root User Created' ;
+
+    if(array_key_exists(0,$err) && is_array($err[0]) && count($err[0])>0)return false;
+    return true;
+}
+public static function editRootUser($i,$d){
+    $db=$d;
+    //$i['UniqId']=$i['UniqId']."asdasd";
+   // if (!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\Comman::random(4);
+    $m1=self::getRootUserModel();
+    $row=$m1->rowGet($i);
+    $err=[];
+
+    if(!(array_key_exists(0,$err) && is_array($err[0]) && count($err[0])>0) && (count($row) > 0) ){
+        $err[1][]='Root User Found';
+
+        $d1=$row;
+
+        $fData=\MS\Core\Helper\Comman::checkNGetOnlyDiffrent($d1,$d);
+       //dd($fData);
+        $err[$m1->rowEdit($i,$fData)][]='Root User Edited' ;
+    }else{$err[0][]='Root User Not Found';}
+
+    if(array_key_exists(0,$err) && is_array($err[0]) && count($err[0])>0)return false;
+    return true;
+}
+public static function deleteRootUser($i){
+   // $db=$d;
+  //  if (!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\Comman::random(4);
+    $m1=self::getRootUserModel();
+    $err=[];
+
+    if(count($m1->rowGet($i)) > 0){
+        $err[1][]='Root User Found';
+        $err[$m1->rowDelete($i)][]='Root User Deleted';
+    }else{$err[0][]='Root User Not Found';}
+
+    if(array_key_exists(0,$err) && is_array($err[0]) && count($err[0])>0)return false;
+    return true;
+}
 
 }

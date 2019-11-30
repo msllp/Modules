@@ -63,6 +63,14 @@ class B extends Master
 
 
         [
+            'name'=>'MOD.User.Master.Delete',
+            'route'=>'/master/Users/action/delete/{id?}',
+            'method'=>'deleteUser',
+            'type'=>'get',
+        ],
+
+
+        [
             'name'=>'MOD.User.Master.Add.toDB',
             'route'=>'/master/Users/action/save',
             'method'=>'saveUser',

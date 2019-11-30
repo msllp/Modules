@@ -7,8 +7,10 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use MS\Core\Helper\Comman;
 use mysql_xdevapi\Exception;
 use Razorpay\Api;
+use function GuzzleHttp\Promise\all;
 
 class C extends BaseController
 {
@@ -170,45 +172,78 @@ public function addAppUserFrom(){
         return $m->displayForm('add_user');
     }
 
-    public function  saveUser(Request $r){
-
+    public function saveUser(Request $r){
         $m=F::getRootUserModel();
+        $d1=$r->all();
         $m->attachR($r);
-        // $m->migrate();
-        $d=$r->all();
         $valid=$m->checkRulesForData();
-
-        $nextData=[
-
-            "modCode"=>"Core",
-            "modDView"=>"New Tab",
-            "modUrl"=>route('MOD.User.Master.View.All'),
-        ];
-       // dd($m->CurrentError);
-
+        $d=[];
+        $t=[];
+        $n=[];
         if($valid){
 
-            //F::makeUser($r,$m);
 
-            return response()->json(['ms'=>[
 
-                'status'=>200,
-               // 'Rdata'=> $r->input(),
-                'ProcessStatus'=>[
-                    'User added to DB'=>$m->add()],
-                'nextData'=>$nextData
+            $t=[
+                'Create Root User'=>F::createRootUser($d1)
+            ];
 
-            ]],200);
+            $n=\MS\Core\Helper\Comman::makeNextData('Users','View All User',route('MOD.User.Master.View.All'));
+
+
+
+
+        }else{
+           $t['Create Root User']=false;
         }
-        else{
-            return response()->json([
-                'errors' => $m->CurrentError
-            ],418);
-            return $m->CurrentError;
-        }
+
+        return $m->processForSave($r,$d,$t,$n);
 
     }
 
+
+    public function editUserFrom(Request $r,$id){
+        $m=F::getRootUserModel();
+
+
+        $d1=$m->rowGet(['UniqId'=>$id]);
+        //   dd();
+
+        if(! (count($d1) >0)){
+            return $m->jsonOutError(['Oppes, Root user not found in my system.']);
+        }elseif (count($d1) ==1){
+            $d=$d1[0];
+        }
+        return $m->editForm('edit_user',$d);
+    }
+
+    public function updateUser(Request $r,$id){
+        $m=F::getRootUserModel();
+        $d=$r->all();
+        $i=['UniqId'=>$id];
+        $t=[];
+        $t['Root User updated']=F::editRootUser($i,$d);
+        $valid=0;
+        $e=[];
+      //  dd(Comman::checkAllTrueArray($t));
+        if(!Comman::checkAllTrueArray($t)) return $m->jsonOutError(['Oppes, Root user not updated in my system.']);
+        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','View All Root Users',route('MOD.User.Master.View.All'));
+        return $m->jsonOut($t,$nextDat,$e);
+
+    }
+    public function deleteUser(Request $r,$id){
+        $m=F::getRootUserModel();
+        $d=$r->all();
+        $i=['UniqId'=>$id];
+        $t=[];
+        $t['Root User Deleted']=F::deleteRootUser($i);
+        $valid=0;
+        $e=[];
+        //  dd(Comman::checkAllTrueArray($t));
+        if(!Comman::checkAllTrueArray($t)) return $m->jsonOutError(['Oppes, Root user unable delete in my system.']);
+        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','View All Root Users',route('MOD.User.Master.View.All'));
+        return $m->jsonOutNext($t,$nextDat,$e);
+    }
     public function  viewAllUser(){
         $m=F::getRootUserModel();
      //   $m->migrate();
@@ -270,41 +305,6 @@ public function addAppUserFrom(){
     }
 
 
-    public function editUserFrom(Request $r,$id){
-        $m=F::getRootUserModel();
-        $d1=$m->rowGet(['UniqId'=>$id]);
-     //   dd();
-
-        if(!count($d1) >0){
-        return $m->jsonOutError(['Oppes, Root user not found in my system.']);
-        }elseif (count($d1) ==1){
-            $d=$d1[0];
-        }
-        return $m->editForm('edit_user',$d);
-    }
-
-    public function updateUser(Request $r,$id){
-        $m=F::getRootUserModel();
-        $d1=$m->rowGet(['UniqId'=>$id]);
-        $rA=$r->all();
-        $fData=\MS\Core\Helper\Comman::checkNGetOnlyDiffrent($d1,$rA);
-
- //      dd(\MS\Core\Helper\Comman::checkNGetOnlyDiffrent($d1,$rA));
-
-        if(!(count($d1) >0)){
-            return $m->jsonOutError(['Oppes, Root user not found in my system.']);
-        }elseif (count($d1) ==1) {
-            if (!(count($fData) > 0)) {
-                return $m->jsonOutError(['Every things upto date in my system.']);
-            } elseif (count($d1) > 0) {
-                $m->rowEdit(['UniqId' => $id], $fData);
-            }
-        }
-        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','Succegully added in our sysetem',route('MOD.User.Master.View.All'));
-        return $m->jsonOut([true],$nextDat);
-
-
-    }
 
 
 

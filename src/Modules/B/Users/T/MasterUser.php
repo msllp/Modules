@@ -45,7 +45,7 @@ return [
 
             ],
         'fieldGroup'=>[
-            'Add_User'=>['UniqId','MSUsername','MSPassword'],
+            'Root User Details'=>['UniqId','MSUsername','MSPassword'],
             'Public_User'=>['UniqId','MSUsername'],
             'Edit User Details'=>['MSUsername','MSPassword']
           //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
@@ -67,14 +67,29 @@ return [
             ],
 
             'edit'=>[
-                "btnColor"=>"btn-info",
+                "btnColor"=>"bg-blue-100",
                 "route"=>"MOD.User.Master.EditForm.Post",
                 "routePara"=>['id'=>'UniqId'],
                 "btnIcon"=>"fi flaticon-edit",
-                'btnText'=>"edit Module",
+                'btnText'=>"Edit Root User",
                 'msLinkKey'=>'UniqId',
                 'msLinkText'=>'MSUsername',
                // 'msNextAction'=>'MOD.User.Master.View.All'
+
+            ],
+
+            'delete'=>[
+                "btnColor"=>"bg-red-100",
+                "route"=>"MOD.User.Master.Delete",
+                "routePara"=>['id'=>'UniqId'],
+                "btnIcon"=>"fi flaticon-bin",
+                'btnText'=>"Delete Root User",
+                'msLinkKey'=>'UniqId',
+                'msLinkText'=>'MSUsername',
+                'doubleConfirm'=>'true',
+                'doubleConfirmText'=>'Are You Sure to remove Root User',
+                'ownTab'=>'true',
+                // 'msNextAction'=>'MOD.User.Master.View.All'
 
             ],
 
@@ -104,8 +119,8 @@ return [
 
         'MSforms'=>[
             'add_user'=>[
-                'title'=>'Add Master User',
-                'groups'=>['Add_User'],
+                'title'=>'Add Root User',
+                'groups'=>['Root User Details'],
                 'actions'=>['add']
 
             ],
@@ -126,7 +141,7 @@ return [
                 'icon'=>'fas fa-users',
                 'groups'=>['Public_User'],
                 'searchable'=>true,
-                'actions'=>['edit'],
+                'actions'=>['edit','delete'],
                 'massAction'=>[],
                 'searchAllowed'=>[],
                 'pagination'=>true,

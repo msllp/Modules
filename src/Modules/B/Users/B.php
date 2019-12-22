@@ -21,12 +21,7 @@ class B extends Master
 
     public static $route=[
 
-        [
-            'name'=>'MOD.User.Index',
-            'route'=>'/dashboard',
-            'method'=>'index',
-            'type'=>'get',
-        ],
+
 
 
         [
@@ -105,6 +100,27 @@ class B extends Master
             'method'=>'saveUserRoles',
             'type'=>'get',
         ],
+        [
+            'name'=>'MOD.User.Master.Roles.EditForm',
+            'route'=>'/master/Users/Sub/Roles/action/edit/from/{id?}',
+            'method'=>'editUserRolesFrom',
+            'type'=>'get',
+        ],
+
+        [
+            'name'=>'MOD.User.Master.Roles.EditForm.Post',
+            'route'=>'/master/Users/Sub/Roles/action/edit/from/{id?}',
+            'method'=>'updateUserRoles',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'MOD.User.Master.Roles.Delete',
+            'route'=>'/master/Users/Sub/Roles/action/delete/{id?}',
+            'method'=>'deleteUserRole',
+            'type'=>'get',
+        ],
 
 
 
@@ -124,7 +140,7 @@ class B extends Master
         [
             'name'=>'MOD.User.Master.Roles.Login.Owner',
             'route'=>'/master/Users/Sub/Roles/login/Owner',
-            'method'=>'viewAllUserPaginationRoles',
+            'method'=>'loginForRootUser',
             'type'=>'get',
         ],
 

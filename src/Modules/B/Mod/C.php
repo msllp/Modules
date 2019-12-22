@@ -22,11 +22,7 @@ class C extends BaseController
 
         ];
 
-    public function MaintainaceDashboard(){
 
-
-        return view("MS::core.layouts.MS.mpanel");
-    }
 
 
     public function SideNavForMaintainaceDashboard(Request $r){
@@ -229,27 +225,32 @@ class C extends BaseController
 
     public function addModuleEventtoDB(Request $r){
         $m=F::getEventModel();
+        //return $m->jsonOutError(['Oppes, Root user not updated in myrr system.']);
         $bd=$r->all();
         $d=$r->all();
-
+        dd($d);
         if(!array_key_exists('UniqId',$d))$d['UniqId']=\MS\Core\Helper\comman::random(4);
         while(count($m->rowGet(['UniqId'=>$d['UniqId']])) > 0){
             $d['UniqId']=\MS\Core\Helper\comman::random(4);
         }
 
         if(array_key_exists('Routes',$d) && is_array($d['Routes'])){
-       unset($d['Routes']);
+               unset($d['Routes']);
+            //$d['Routes']=[];
             ///  $d['Routes']=collect($d['Routes'])->toJson();
+        }elseif (array_key_exists('Routes',$d) && gettype($d['Routes'])=='string' && $d['Routes']=='RouteName'){
+            $bd['Routes']=[];
+            unset($d['Routes']);
         }
 
-        $nextData=[
-            "modCode"=>"Core",
-            "modDView"=>"View All Events",
-            "modUrl"=>route('MOD.Mod.Master.Route.View.All'),
+        $t=[
+            'User Roles to DB'=>$m->rowAdd($d,['UniqId','EventName']),
+            'User Role Table Created'=>F::createModuleEventSub($d['UniqId'],$bd['Routes'])
         ];
+dd($t);
+        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','View All Events',route('MOD.Mod.Master.Event.View.All'));
 
-
-
+        return $m->jsonOut($t,$nextDat);
         return response()->json(['ms'=>[
 
             'status'=>200,
@@ -272,5 +273,17 @@ class C extends BaseController
         $m=F::getEventModel();
         return $m->ForPagination($r);
     }
-    
+
+    public function deleteModEvent($id){
+
+        $t=[
+            'Mod Event delete'=> \MS\Mod\B\Mod\L\Mod::delete($id),
+
+        ];
+//dd($t);
+        $nextDat=\MS\Core\Helper\Comman::makeNextData('Core','View All Events',route('MOD.Mod.Master.Event.View.All'));
+
+        return \MS\Core\Helper\Comman::msJson($t,$nextDat);
+    }
+
 }

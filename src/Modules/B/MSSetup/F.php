@@ -26,16 +26,21 @@ class F
             'createIconTable'=>'UI Icon 1 Configuration started',
             'fillDataInIcon'=>'UI Icon 1 Configuration finished',
             'createModTable'=>'Module Core File Configuration started',
+            'fillDataForDefaultMod'=>'Module Core File Configuration finished',
             'createRouteTypeTable'=>'Master Routes Types Configuration started',
             'fillDataInRouteTypes'=>'Master Routes Types Configuration finished',
             'createRouteTable'=>'Master Routes Configuration started',
             'fillDataInRoute'=>'Master Routes Configuration finished',
             'createMasterEventTable'=>'Master Events Configuration started',
             //''=>'Master Events Configuration finished',
-            /////////Master User Module///////////
+            /////////Master Modules///////////
             'createUserTypeTable'=>'Master User Module Configuration started',
-            'fillDataInUserType'=>'Master User Type Configuration 10 % finished',
-            'createAppUser'=>'Master User Type Configuration 20 % finished',
+            'fillDataInUserType'=>'Progress 10% : Master User Type Configuration Started',
+            'createAppUser'=>'Progress 20%  : Master User Type Configuration finished',
+            'createAccountConfig'=>'Progress 30% :Master Account Configuration Started',
+            'fillDataInAccountConfig'=>'Progress 40% :Master Account Configuration finished',
+            'CreatCompanyMaster'=>'Progress 50% :Company Nodule Configuration finished',
+
 
         ];
         $c=new self();
@@ -113,6 +118,29 @@ class F
     public function createModTable(){
         return $this->cNmWM(\MS\Mod\B\Mod\F::getRootModuleModel());
     }
+    public function fillDataForDefaultMod(){
+
+        $d=[
+            [
+                'm'=>\MS\Mod\B\Mod\F::getRootModuleModel(),
+                'f'=>base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterMod.php'])),
+                'u'=>['ModuleName']
+            ],
+
+        ];
+        $e=[];
+        foreach ($d as $t){
+            $data=require($t['f']);
+           // dd($data);
+            if(!$this->ftD($t['m'],$data,$t['u']))$e[]=$t;
+
+        }
+
+
+
+        if(count($e)>0)return false;
+        return true;
+    }
 
     public function createRouteTypeTable(){
         return $this->cNm(__NAMESPACE__, 'MS_Route_Type');
@@ -144,6 +172,7 @@ class F
         $Mdata=[
             'Modules'=>\MS\Mod\B\Mod\B::migrateRoutesToDb(),
             'Users'=>\MS\Mod\B\Users\B::migrateRoutesToDb(),
+            'Accounts'=>\MS\Mod\B\Accounts\B::migrateRoutesToDb(),
 
         ];
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterRoutes.php']));
@@ -199,15 +228,110 @@ class F
 
     }
 
+public function createAccountConfig(){
+        $f=[
+            \MS\Mod\B\Accounts\F::getPaidStatusModel(),
+            \MS\Mod\B\Accounts\F::getIncomeTypeModel(),
+            \MS\Mod\B\Accounts\F::getExpenseTypeModel(),
+            \MS\Mod\B\Accounts\F::getIncomeModel(),
+            \MS\Mod\B\Accounts\F::getExpenseModel(),
+        ];
+        $e=[];
+        foreach ($f as $m){
+
+            if(!($this->cNmWM($m)))$e[]=$m;
+        }
+      //  dd( $f);
+    if(count($e)>0)return false;
+    return true;
+}
+
+public function fillDataInAccountConfig(){
+
+        $d=[
+            [
+                'm'=>\MS\Mod\B\Accounts\F::getPaidStatusModel(),
+                'f'=>base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Accounts','D','PaidStatus.php'])),
+                'u'=>['PaidStatusName']
+            ],
+            [
+                'm'=>\MS\Mod\B\Accounts\F::getIncomeTypeModel(),
+                'f'=>base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Accounts','D','IncomeType.php'])),
+                'u'=>['IncomeTypeName']
+            ],
+            [
+                'm'=>\MS\Mod\B\Accounts\F::getExpenseTypeModel(),
+                'f'=>base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Accounts','D','ExpenseType.php'])),
+                'u'=>['ExpenseTypeName']
+            ]
+        ];
+    $e=[];
+        foreach ($d as $t){
+            $data=require($t['f']);
+            if(!$this->ftD($t['m'],$data,$t['u']))$e[]=$t;
+
+        }
+
+
+
+    if(count($e)>0)return false;
+    return true;
+}
+
+
+
+public function CreatCompanyMaster(){
+
+
+
+    $this->cDB(['COMPANY']);
+    $f=[
+        \MS\Mod\B\Company\F::getCompanyModel(),
+
+    ];
+    $e=[];
+    foreach ($f as $m){
+
+        if(!($this->cNmWM($m)))$e[]=$m;
+    }
+    //  dd( $f);
+    if(count($e)>0)return false;
+    return true;
+
+}
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////Do not edit /////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function ftdfa($data,$actions){
+
+
+    private function cDB($dl){
+        $e=[];
+        if(is_array($dl))foreach ($dl as $db){
+            if(!\MS\Core\Helper\MSDB::checkDB($db))
+            {
+                $n1=implode('_',['MS',$db,'Master']);
+                $n2=implode('_',['MS',$db,'Config']);
+                $n3=implode('_',['MS',$db,'Data']);
+
+
+
+                if(!\MS\Core\Helper\MSDB::makeDB($n1))$e[$n1]=\MS\Core\Helper\MSDB::makeDB($n1);
+                if(!\MS\Core\Helper\MSDB::makeDB($n2))$e[$n2]=\MS\Core\Helper\MSDB::makeDB($n2);
+                if(!\MS\Core\Helper\MSDB::makeDB($n3))$e[$n3]=\MS\Core\Helper\MSDB::makeDB($n3);
+            }
+
+        }
+        if(count($e)==0)return true;
+        return false;
+    }
+    private function ftdfa($data,$actions){
 
         $err=[];
         foreach ($data as $row){
@@ -235,7 +359,7 @@ class F
      * @param array $ua
      * @return bool
      */
-    public function ftD($m, $d, $ua=[]){
+    private function ftD($m, $d, $ua=[]){
         $err=[];
         foreach ($d as $v){
             if(!$m->rowAdd($v,$ua)){
@@ -256,7 +380,7 @@ class F
      * @param $id
      * @return bool
      */
-    public function cNm($n, $id):bool{
+    private function cNm($n, $id):bool{
         $m=new \MS\Core\Helper\MSDB($n,$id);
 
         if(!$m->checkTableExist()){
@@ -272,7 +396,7 @@ class F
      * @param $m
      * @return bool
      */
-    public function cNmWM($m){
+    private function cNmWM($m){
         if(!$m->checkTableExist()){
             return $m->migrate();
         }

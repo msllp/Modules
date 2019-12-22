@@ -5,21 +5,28 @@
 
 Route::prefix('Core')->group(function () {
 
-Route::prefix('User')->group(function () {
-    \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Users.R'],'b',true);
-});
+    Route::prefix('User')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Users.R'],'b',true);
+    });
+
+    Route::prefix('Accounts')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Accounts.R'],'b',true);
+    });
 
 
     Route::prefix('Mod')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Mod.R'],'b',true);
     });
 
+    Route::prefix('Company')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Company.R'],'b',true);
+    });
 
 
 
 });
-Route::get('mpanel','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel')->middleware(\MS\Middlelwares\checkValidRoute::class);
-Route::get('getMpanelData','\MS\Mod\B\Users\C@SideNavForMaintainaceDashboard')->name('mPanel.SideNav');
+Route::get('mpanel/{ln?}','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel')->middleware('web');
+Route::get('getMpanelData','\MS\Mod\B\Users\C@SideNavForMaintainaceDashboard')->name('mPanel.SideNav')->middleware('web');
 
 
 

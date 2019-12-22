@@ -109,11 +109,15 @@ public static function getUser($data){
 
 
     }
-public static function getCurrentUser($data){
-
-
-
+public static function getCurrentUser(){
+    $sA=session()->all();
+    if(!array_key_exists('CurrentMSUser',$sA) && true)$sA['CurrentMSUser']='001';//TODO:Remove in Production
+    if(array_key_exists('CurrentMSUser',$sA))$user=new L\User($sA['CurrentMSUser']);
+    if(!isset($user))return [] ;
+    return $user->getUserData();
     }
+
+
 public static function checkCurrentOkForUser($data){}
 public static function upgradeUser($id){}
 

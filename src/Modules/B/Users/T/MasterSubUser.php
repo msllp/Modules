@@ -43,12 +43,14 @@ return [
                 ],
 
                 [
-                'name'=>'UserTypeAllowedEvents',
-                'vName'=>'Allowed Application Events',
-                'type'=>'string',
-                'input'=>'option',
-                "validation"=>['required'=>true,'existIn'=>MSCORE_MOD_EVENT_MASTER],
-                'dbOff'=>true
+                    'name'=>'UserTypeAllowedEvents',
+                    'vName'=>'Allowed Application Events',
+                    'type'=>'string',
+                    'input'=>'option',
+                    "validation"=>['required'=>true,'existIn'=>MSCORE_MOD_EVENT_MASTER],
+                    'dbOff'=>true,
+                    'msTableKey'=>'UniqId',
+                    'msTableLink'=>MSCORE_ROLE_PERMISSION
             ],
                 [
                     'name'=>'UserTypeLoginLink',
@@ -74,6 +76,7 @@ return [
         'fieldGroup'=>[
             'User Role Details'=>['UserTypeName','UserTypeIcon','UserTypeDesc','UserTypeLoginLink','Status'],
             'User Role Allowed Apllication Events'=>['UserTypeAllowedEvents'],
+          //  'User Role Details 2'=>['UserTypeName','UserTypeIcon','UserTypeDesc','UserTypeLoginLink','Status'],
 
         ],
         'fieldGroupMultiple'=>[
@@ -82,17 +85,22 @@ return [
 
         'action'=>[
             'add'=>[
-                "btnColor"=>"bg-green",
+                "btnColor"=>"bg-green-300",
                 "route"=>"MOD.User.Master.Roles.Add.toDB",
                 "btnIcon"=>"far fa-save",
                 'btnText'=>"add user role"
             ],
 
             'edit'=>[
-                "btnColor"=>"btn-info",
-                "route"=>"MAS.Index",
-                "btnIcon"=>"fa fa-home",
-                'btnText'=>"edit Module"
+                "btnColor"=>"bg-blue-300",
+                "route"=>"MOD.User.Master.Roles.EditForm.Post",
+                "routePara"=>['id'=>'UniqId'],
+                "btnIcon"=>"fi flaticon-edit",
+                'btnText'=>"Edit Root User",
+                'msLinkKey'=>'UniqId',
+                'msLinkText'=>'MSUsername',
+                // 'msNextAction'=>'MOD.User.Master.View.All'
+
             ],
             // 'edit'=>"",
 
@@ -110,6 +118,13 @@ return [
                 'actions'=>['add']
 
             ],
+
+            'edit_user_type'=>[
+                'title'=>'Edit User Role',
+                'groups'=>['User Role Details','User Role Allowed Apllication Events'],
+                'actions'=>['add']
+
+            ],
         ],
 
 
@@ -120,7 +135,7 @@ return [
                 'icon'=>'fas fa-users',
                 'groups'=>['User Role Details'],
                 'searchable'=>true,
-                'actions'=>['add'],
+                'actions'=>['edit'],
                 'massAction'=>['add'],
                 'searchAllowed'=>[],
                 'pagination'=>true,
@@ -168,11 +183,13 @@ return [
 
         'action'=>[
             'add'=>[
-                "btnColor"=>"bg-green",
+                "btnColor"=>"bg-green-300",
                 "route"=>"MOD.Mod.Master.Event.toDB",
                 "btnIcon"=>"fi flaticon-add",
                 'btnText'=>"add event"
             ],
+
+
 
 
         ],

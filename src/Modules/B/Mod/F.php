@@ -60,6 +60,7 @@ public static function getRouteModel(){
 
     if(count($m2->rowGet(['UniqId'=>$eventId])) >0)$m1->migrate();
 
+ //  dd($d);
 
     foreach ($d as $routeId){
         if(!$m1->rowAdd(['RouteCode'=>$routeId] ,['RouteCode']))$er[]=$routeId;

@@ -124,6 +124,13 @@ class B extends Master
             'type'=>'get',
         ],
 
+        [
+            'name'=>'MOD.Mod.Master.Event.Delete',
+            'route'=>'/master/Modules/event/action/delete/{id?}',
+            'method'=>'deleteModEvent',
+            'type'=>'get',
+        ],
+
     ];
 
 

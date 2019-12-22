@@ -22,22 +22,28 @@ class C extends BaseController
             'logo'=>"logo-a.png"
 
         ];
+    protected $ln='en';
 
-    public function MaintainaceDashboard(){
+    public function MaintainaceDashboard(Request $r,$ln=null){
 
-
+        if($ln==null)$ln=$this->ln;
+        $r->session()->put('ln', $ln);
+        session('ln',$ln);
+        \App::setlocale(session('ln'));
         return view("MS::core.layouts.MS.mpanel");
     }
 
 
     public function SideNavForMaintainaceDashboard(Request $r){
 
+        \App::setlocale(session('ln'));
+        //dd($r->session()->all());
         $rdata=['accessToken'=>'UserMitul'];
         $data=[
             [
-                'text'=>'Users',
+                'text'=>\Lang::get('UI.users'),
                 'type'=>'mainNav',
-                'icon'=>'fi flaticon-user',
+                'icon'=>'fi2 flaticon-user-2',
                 'sub' =>[
 
                     [
@@ -94,9 +100,9 @@ class C extends BaseController
 
 
             [
-                'text'=>'Modules',
+                'text'=>\Lang::get('UI.modules'),
                 'type'=>'mainNav',
-                'icon'=>'fi flaticon-distributed',
+                'icon'=>'fi2 flaticon-pyramid-graphic',
                 'sub' =>[
 
                     [
@@ -157,13 +163,304 @@ class C extends BaseController
                 ],
             ],
 
+            [
+
+            'text'=>\Lang::get('UI.company'),
+            'type'=>'mainNav',
+            'icon'=>'fi2 flaticon-architecture-and-city',
+            'sub' =>[
+                [
+                    'type'=> 'title',
+                    'text'=>\Lang::get('Company.commanage'),
+                    'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                ],
+                [
+                    'type'=> 'link',
+                    'text'=> \Lang::get('Company.comadd'),
+                    'link'=> route('Company.AddForm'),
+                    'icon'=>'fi2 flaticon-secure-payment'
+                ],
+                [
+                    'type'=> 'link',
+                    'text'=> \Lang::get('Company.comviewall'),
+                    'link'=> route('Company.viewForm'),
+                    'icon'=>'fi2 flaticon-news-report'
+                ],
+
+                [
+                    'type'=> 'link',
+                    'text'=> 'Manage Structure',
+                    'link'=> route('MOD.Mod.Master.AddForm'),
+                    'icon'=>'fi2 flaticon-diagram'
+                ],
+                [
+                    'type'=> 'link',
+                    'text'=> 'Manage Bank Accounts',
+                    'link'=> route('MOD.Mod.Master.AddForm'),
+                    'icon'=>'fi2 flaticon-rupee'
+                ],
+
+                [
+                'type'=> 'link',
+                'text'=> 'Manage Branch/Agency',
+                'link'=> route('MOD.Mod.Master.AddForm'),
+                'icon'=>'fi2 flaticon-hierarchical-structure-1'
+            ]
+
+
+
+
+            ]
+            ],
+            [
+
+                'text'=>\Lang::get('UI.purchase'),
+                'type'=>'mainNav',
+                'icon'=>'fi2 flaticon-payment msicon-fh-180',
+                'sub' =>[
+
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Purchase',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add Purchase/PO',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-plus '
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'View All Purchase',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-menu'
+                    ],
+
+
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Item/Metrial',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Add Items',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-plus'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'View All Items/Metrial',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-menu'
+                    ],
+
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Vendors',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> \Lang::get('UI.add_vendor'),
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-plus'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> \Lang::get('UI.view_all_vendor'),
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-menu'
+                    ]
+
+
+
+
+                ]
+            ],
+
+            [
+
+                'text'=>\Lang::get('UI.inventory'),
+                'type'=>'mainNav',
+                'icon'=>'fi2 flaticon-stats',
+                'sub' =>[
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Company Matser',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Basic Details',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-secure-payment'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Structure',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-diagram'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Bank Accounts',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-rupee'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Branch/Agency',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-hierarchical-structure-1'
+                    ]
+
+
+
+
+                ]
+            ],
+
+            [
+
+                'text'=>\Lang::get('UI.sales'),
+                'type'=>'mainNav',
+                'icon'=>'fi2 flaticon-payment ',
+                'sub' =>[
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Company Matser',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Basic Details',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-secure-payment'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Structure',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-diagram'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Bank Accounts',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-rupee'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Branch/Agency',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-hierarchical-structure-1'
+                    ]
+
+
+
+
+                ]
+            ],
+
+            [
+
+                'text'=>\Lang::get('UI.accounts'),
+                'type'=>'mainNav',
+                'icon'=>'fi2 flaticon-list',
+                'sub' =>[
+
+
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Dashboard',
+                        'link'=> route('Account.Index'),
+                        'icon'=>'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Master Ledgers',
+                        'icon'=> 'fi2 flaticon-agenda'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Income Ledger',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-down-left-arrow text-green-600'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Expense Ledger',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-down-left-arrow msicon-h-180 text-red-600'
+                    ],
+
+
+
+
+
+
+                ]
+            ]
+            ,
+            [
+
+                'text'=>\Lang::get('UI.hr'),
+                'type'=>'mainNav',
+                'icon'=>'fi2 flaticon-conference',
+                'sub' =>[
+                    [
+                        'type'=> 'title',
+                        'text'=> 'Manage Company Matser',
+                        'icon'=> 'fi2 flaticon-ui-3 msicon-r-270'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Basic Details',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-secure-payment'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Structure',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-diagram'
+                    ],
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Bank Accounts',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-rupee'
+                    ],
+
+                    [
+                        'type'=> 'link',
+                        'text'=> 'Manage Branch/Agency',
+                        'link'=> route('MOD.Mod.Master.AddForm'),
+                        'icon'=>'fi2 flaticon-hierarchical-structure-1'
+                    ]
+
+
+
+
+                ]
+            ]
+
+
 
         ];
         //dd(route('MOD.Mod.Master.Event.View.All'));
         return \MS\Core\Helper\Comman::proccessReqNGetSideNavDataForDashboard($r,$data, $rdata);
     }
 
-public function addAppUserFrom(){
+    ///Root User Start
+    public function addAppUserFrom(){
     $m=F::getAppUserModel();
     return $m->displayForm('add_app_user');
 }
@@ -171,7 +468,6 @@ public function addAppUserFrom(){
         $m=F::getRootUserModel();
         return $m->displayForm('add_user');
     }
-
     public function saveUser(Request $r){
         $m=F::getRootUserModel();
         $d1=$r->all();
@@ -200,8 +496,6 @@ public function addAppUserFrom(){
         return $m->processForSave($r,$d,$t,$n);
 
     }
-
-
     public function editUserFrom(Request $r,$id){
         $m=F::getRootUserModel();
 
@@ -216,7 +510,6 @@ public function addAppUserFrom(){
         }
         return $m->editForm('edit_user',$d);
     }
-
     public function updateUser(Request $r,$id){
         $m=F::getRootUserModel();
         $d=$r->all();
@@ -249,18 +542,18 @@ public function addAppUserFrom(){
      //   $m->migrate();
         return $m->viewData('view_all');
     }
-
     public function viewAllUserPagination(Request $r){
 
         $m=F::getRootUserModel();
         return $m->ForPagination($r);
     }
+    ///Root User End
 
+    ///User Role Start
     public function addUserRolesFrom(){
         $m=F::getUserTypeModel();
         return $m->editForm('add_user_type');
     }
-
     public function saveUserRoles(Request $r){
         $m=F::getUserTypeModel();
         $d1=$r->all();
@@ -276,6 +569,21 @@ public function addAppUserFrom(){
         F::makeRoles($r->all());
     }
 
+    public function editUserRolesFrom(Request $r,$id){
+        $m=F::getUserTypeModel();
+
+
+        $d1=$m->rowGet(['UniqId'=>$id]);
+        //   dd();
+
+        if(! (count($d1) >0)){
+            return $m->jsonOutError(['Oppes, User Role not found in my system.']);
+        }elseif (count($d1) ==1){
+            $d=$d1[0];
+        }
+        return $m->editForm('edit_user_type',$d);
+    }
+
     public function viewAllUserRoles(Request $r){
         $m=F::getUserTypeModel();
         //   $m->migrate();
@@ -286,7 +594,7 @@ public function addAppUserFrom(){
         $m=F::getUserTypeModel();
         return $m->ForPagination($r);
     }
-
+    ///User Role End
     public function  saveAppUser(Request $r){
 
         $m=F::getAppUserModel();
@@ -301,6 +609,13 @@ public function addAppUserFrom(){
 
 
         F::makeRoles($r->all());
+
+    }
+
+    public function loginForRootUser(Request $r){
+
+        $m=F::getRootUserModel();
+        return $m->loginPage();
 
     }
 

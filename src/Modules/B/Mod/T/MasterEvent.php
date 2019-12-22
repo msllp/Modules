@@ -92,7 +92,20 @@ return [
                 "btnIcon"=>"fi flaticon-add",
                 'btnText'=>"add event"
             ],
+            'delete'=>[
+                "btnColor"=>"bg-red-300",
+                "route"=>"MOD.Mod.Master.Event.Delete",
+                "routePara"=>['id'=>'UniqId'],
+                "btnIcon"=>"fi flaticon-bin",
+                'btnText'=>"Delete Mod Event",
+                'msLinkKey'=>'UniqId',
+                'msLinkText'=>'EventName',
+                'doubleConfirm'=>'true',
+                'doubleConfirmText'=>'Are you sure you want to remove Module Event',
+                'ownTab'=>'true',
+                // 'msNextAction'=>'MOD.User.Master.View.All'
 
+            ],
 
         ],
 

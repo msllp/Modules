@@ -56,7 +56,9 @@ public static function getAppUserModel(){
 public static function getUserRolePermission($RoleId='JwpWQp'){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'User_User_Type_sub',[$RoleId]);
 }
-
+public static function getUserSourceModel(){
+        return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_User_VerifyBy');
+    }
 
 
 

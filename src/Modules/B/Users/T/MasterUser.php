@@ -160,13 +160,19 @@ return [
 
             'LoginPage'=>[
                 'PageTitle'=>'Please Login to Proceed',
-                'groups'=>['Public_User'],
-                'actions'=>['add']
+                'groups'=>['add_user'],
+                'verifyBy'=>['MS ID','Google'],
+                'forgotPassword'=>false,
+                'loginPost'=>'',
+                'identifier'=>['MSUsername'=>'MSPassword'],
+                'RoleIcon'=>'',
+                'checkID'=>false
+             //   'on'=>
 
             ],
 
         ],
 
+    ]
 
-        ]
     ];

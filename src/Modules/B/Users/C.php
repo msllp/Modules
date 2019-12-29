@@ -11,7 +11,7 @@ use MS\Core\Helper\Comman;
 use mysql_xdevapi\Exception;
 use Razorpay\Api;
 use function GuzzleHttp\Promise\all;
-
+use Socialite;
 class C extends BaseController
 {
     use  DispatchesJobs, ValidatesRequests;
@@ -619,6 +619,20 @@ class C extends BaseController
 
     }
 
+    public function loginForRootUserFromOthers(){
+     //   config()->set('services.test',[]);
+        \MS\Mod\B\Users\L\OutLoginApi::checkOaAuthisOk();
+   //     dd(config());
+          return Socialite::driver('google')->redirect();
+    }
+
+
+    public function loginForRootUserFromOtherCallback(Request $r){
+
+        $user = Socialite::driver('google')->user();
+
+        dd($user);
+    }
 
 
 

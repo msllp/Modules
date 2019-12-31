@@ -15,9 +15,24 @@ $formId="testFormID";
 $formTitle="testFormTitle";
 $viewId="testViewId";
 
+$actionId='add';
+$actionData=[
+    "btnColor"=>"bg-green",
+    "route"=>"MOD.User.Master.Add.toDB",
+    "btnIcon"=>"far fa-save",
+    'btnText'=>"add root user"
+];
+$loginId='Tes';
+
 $m->addGroup($fieldGroupName)->addField($fieldGroupName,['UniqId','Table']);
-$m->addForm($formId)->addTitle4Form($formTitle)->addGroup4Form($formId,['UniqId','Table'])->addAction4Form($formId,['add'])->addIcon4Form($viewId);
+
+$m->addAction($actionId,$actionData);
+
+$m->addForm($formId)->addTitle4Form($formId,$formTitle)->addGroup4Form($formId,[$fieldGroupName])->addAction4Form($formId,['add'])->addIcon4Form($viewId);
+dd($m);
 $m->addView($viewId)->addTitle4View($formTitle)->addGroup4View($viewId,['UniqId','Table'])->addAction4View($viewId,['add'])->addIcon4View($viewId)->addMassAction4View(['add'])->pagination4View('paginationLink');
+$m->addLogin($loginId)->addTitle4Login($loginId,$formTitle)->addForm4Login($loginId,$formId);
+
 //TODO Finish below method & Test // Important //
 //dd($m);
 return $m->finalReturnForTableFile();

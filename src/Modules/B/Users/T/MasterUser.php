@@ -47,7 +47,8 @@ return [
         'fieldGroup'=>[
             'Root User Details'=>['UniqId','MSUsername','MSPassword'],
             'Public_User'=>['UniqId','MSUsername'],
-            'Edit User Details'=>['MSUsername','MSPassword']
+            'Edit User Details'=>['MSUsername','MSPassword'],
+            'singin'=>['MSUsername','MSPassword']
           //  'Add Module 2'=>['test5','test6','test7','test8','test9','test10','test11','created_at'],
             // 'Add Module2'=>['modName','modDesc','modCode','modIcon','modPrefix','modForSuperAdmin','modForAdmin','modStatus','modHomeAction','modDataAction'],
             // 'Login Details'=>['modName','modDesc','modCode','modIcon',],
@@ -93,6 +94,14 @@ return [
 
             ],
 
+            'signin'=>[
+
+                "btnColor"=>"bg-green",
+                "route"=>"MOD.User.Master.Add.toDB",
+                "btnIcon"=>"fi2 flaticon-unlocked",
+                'btnText'=>"Sign in"
+            ],
+
             'editPost'=>[
                 "btnColor"=>"btn-info",
                 "route"=>"MOD.User.Master.EditForm.Post",
@@ -131,6 +140,13 @@ return [
                 'actions'=>['edit']
 
             ],
+
+            'singin'=>[
+                'title'=>'Please sign in to processed',
+                'groups'=>['Edit User Details'],
+                'actions'=>['signin']
+
+            ],
         ],
 
 
@@ -160,12 +176,12 @@ return [
 
             'LoginPage'=>[
                 'PageTitle'=>'Please Login to Proceed',
-                'groups'=>['add_user'],
+                'groups'=>['singin'],
                 'verifyBy'=>['MS ID','Google'],
                 'forgotPassword'=>false,
                 'loginPost'=>'',
                 'identifier'=>['MSUsername'=>'MSPassword'],
-                'RoleIcon'=>'',
+                'CompanyIcon'=>asset('images/logo_v1_black.svg'),
                 'checkID'=>false
              //   'on'=>
 

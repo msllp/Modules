@@ -1,2 +1,2 @@
 <?php
-return MS\Mod\B\Sales\getProductTable();
+return MS\Mod\B\Sales\L\Products::getProductTableRaw();

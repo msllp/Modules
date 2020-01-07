@@ -203,6 +203,12 @@ class B extends Master
             'type'=>'get',
         ],
 
+        [
+            'name'=>'MOD.User.Test',
+            'route'=>'/Test',
+            'method'=>'cTest',
+            'type'=>'get',
+        ],
     ];
 
 

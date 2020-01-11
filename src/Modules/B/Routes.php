@@ -22,6 +22,10 @@ Route::prefix('Core')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Company.R'],'b',true);
     });
 
+    Route::prefix('Operation')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Operation.R'],'b',true);
+    });
+
 
 
 });

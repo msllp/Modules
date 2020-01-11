@@ -58,7 +58,7 @@ private $fData,$fromData;
         $bdata=[
             'type'=>'mainNav',
         ];
-        $setData=$this->getFromData();
+            $setData=$this->getFromData();
         $fData=[];
         if(is_array($setData))foreach ($setData as $id=>$data){
          if(!array_key_exists('name',$data)) $bdata['text']=$id;
@@ -109,6 +109,32 @@ private $fData,$fromData;
 
         $id=\Lang::get('UI.accounts');
         $this->addL1($id,['icon'=>'fi2 flaticon-list']);
+
+        $id=\Lang::get('Operation.mainTitle');
+        $this->addL1($id,['icon'=>'fi2 flaticon-msicon-for-mainoperation']);
+
+        $this->addL2Title($id,['text'=>\Lang::get('Operation.Navtitle1'),'icon'=> 'fi2 flaticon-msicon-for-managemachine']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub15'),'link'=> route('Operation.Machine.Cat.AddForm'),'icon'=>' fi2 flaticon-msicon-for-addmachine ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub11'),'link'=> route('Operation.Vendor.AddForm'),'icon'=>' fi2 flaticon-msicon-for-addmachine ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub12'),'link'=> route('Operation.Machine.AddForm'),'icon'=>' fi2 flaticon-msicon-for-addmake']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub16'),'link'=> route('Operation.Machine.Cat.View'),'icon'=>' fi2 flaticon-msicon-for-addmachine ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub14'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-viewmachine']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub13'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-viewmake ']);
+
+
+        $this->addL2Title($id,['text'=>\Lang::get('Operation.Navtitle2'),'icon'=> 'fi2 flaticon-msicon-for-managemachinehealth']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub21'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-checkmachinehealth ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub22'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-updateinsurence ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub23'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-managemachinehealth']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub24'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-viewinsurance ']);
+
+
+        $this->addL2Title($id,['text'=>\Lang::get('Operation.Navtitle3'),'icon'=> 'fi2 flaticon-msicon-for-managelnd']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub31'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-adddepartment']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub32'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-adddepartmentmachine']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub33'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-viewlocation ']);
+        $this->addL2Link($id,['text'=>\Lang::get('Operation.NavSub34'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-viewdepartment ']);
+
 
         return $this->processData();
        // dd();

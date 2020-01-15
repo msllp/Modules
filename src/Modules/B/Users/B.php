@@ -31,7 +31,6 @@ class B extends Master
             'type'=>'get',
         ],
 
-
 /////User Routes
 /// For Root User
 

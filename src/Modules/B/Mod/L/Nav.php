@@ -80,6 +80,8 @@ private $fData,$fromData;
 
         $user=\Lang::get('UI.sales');
         $this->addL1($user,['icon'=>'fi2 flaticon-payment']);
+        $this->addL2Link($user,['text'=>\Lang::get('Sales.NavSub0'),'link'=> route('MOD.Sales.Dashboard'),'icon'=>' fi2 flaticon-msicon-for-addlead ']);
+
         $this->addL2Title($user,['text'=>\Lang::get('Sales.Navtitle1'),'icon'=> 'fi2 flaticon-msicon-for-manageleadsnquataions']);
 
         $this->addL2Link($user,['text'=>\Lang::get('Sales.NavSub11'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>' fi2 flaticon-msicon-for-addlead ']);

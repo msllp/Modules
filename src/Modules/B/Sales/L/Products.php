@@ -21,8 +21,7 @@ class Products
         $c=new self();
         $d=[];
         foreach ($methodToCall as $method=>$data)if(method_exists($c,$method))$d=array_merge($d,$c->$method($data));
-dd($d);
-
+return $d;
 
 
     }

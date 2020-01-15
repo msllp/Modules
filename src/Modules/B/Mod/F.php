@@ -44,6 +44,7 @@ public static function getRouteModel(){
 }
 
     public static function getEventModel(){
+
         return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Events');
     }
 

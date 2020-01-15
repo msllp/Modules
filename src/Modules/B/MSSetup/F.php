@@ -45,21 +45,28 @@ class F
             'fillDataInAccountConfig'=>'Progress 40% :Master Account Configuration finished',
             'CreatCompanyMaster'=>'Progress 50% :Company Nodule Configuration finished',
 
+            'setupSalesModule'=>'Sales Module Configured',
+
 
         ];
         $c=new self();
+
         foreach ($function as $f=>$t){
             $setupStatus[$t]=$c->$f();
 
         }
+       // dd($setupStatus);
         return $setupStatus;
     }
 
 
+    public function setupSalesModule():bool{
+        $this->cDB(['Sales']);
+        return \MS\Mod\B\Sales\F::setupSalesModule();
+    }
     public function createRootUserTable():bool {
         return $this->cNmWM(\MS\Mod\B\Users\F::getRootUserModel());
     }
-
     public  function addMasterRootUser():bool{
 
         $m=new \MS\Core\Helper\MSDB('MS\Mod\B\Users','Master_User');
@@ -76,11 +83,9 @@ class F
 
 
     }
-
     public function createBool1Table():bool{
         return $this->cNm(__NAMESPACE__,'Master_Bool_1');
     }
-
     public function fillDataInBool1():bool{
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Bool_1');
         $data=[
@@ -101,24 +106,21 @@ class F
 
 
     }
-
     public function createIconTable():bool
     {
         return $this->cNm(__NAMESPACE__, 'Master_Icon_1');
     }
-
     public function fillDataInIcon():bool{
         $iconDataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','IconData.php']));
 
         $iconData=require($iconDataFilePath);
-      //  dd();
+
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Icon_1');
         $data=$iconData;
 
         return $this->ftD($m,$data,['IconName']);
 
     }
-
     public function createModTable(){
         return $this->cNmWM(\MS\Mod\B\Mod\F::getRootModuleModel());
     }
@@ -135,7 +137,7 @@ class F
         $e=[];
         foreach ($d as $t){
             $data=require($t['f']);
-           // dd($data);
+
             if(!$this->ftD($t['m'],$data,$t['u']))$e[]=$t;
 
         }
@@ -145,32 +147,25 @@ class F
         if(count($e)>0)return false;
         return true;
     }
-
     public function createRouteTypeTable(){
         return $this->cNm(__NAMESPACE__, 'MS_Route_Type');
     }
-
     public function  fillDataInRouteTypes(){
-
-        //dd(\MS\Mod\B\Mod\B::migrateRoutesToDb());
 
 
 
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','MSSetup','T','RouteData.php']));
-     //   dd($DataFilePath);
+
         $Data=require($DataFilePath);
         $m=new \MS\Core\Helper\MSDB(__NAMESPACE__,'MS_Route_Type');
         $data=$Data;
-    //    dd($data);
+
         return $this->ftD($m,$data,['RouteTypeCode']);
     }
-
-
     public function createRouteTable(){
 
         return $this->cNmWM(\MS\Mod\B\Mod\F::getRouteModel());
     }
-
     public function fillDataInRoute(){
 
         $Mdata=[
@@ -180,41 +175,29 @@ class F
 
         ];
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Mod','D','MasterRoutes.php']));
-      //  dd($DataFilePath);
+
         $Data=require($DataFilePath);
         $m=\MS\Mod\B\Mod\F::getRouteModel();
         $Data=array_merge($Data,$Mdata['Modules'],$Mdata['Users']);
         $data=$Data;
-    //  dd($data);
+
         return $this->ftD($m,$data,['RouteUrl','UniqId','RouteName']);
     }
-
     public function createMasterEventTable(){
 
     $m=\MS\Mod\B\Mod\F::getEventModel();
     return $m->migrate();
-//        dd($m->migrate());
-//
-//        $d=[
-//            'ebfsCz','hRAbQx'
-//
-//        ];
-//        dd(\MS\Mod\B\Mod\F::createModuleEventSub('JwpWQp',$d));
-//
-//        return $this->cNmWM(\MS\Mod\B\Mod\F::getEventModel());
+
     }
-
-
     public function createUserTypeTable():bool
     {
-        //dd(\MS\Mod\B\Users\F::getUserTypeModel());
+
         $msm=\MS\Mod\B\Users\F::getUserTypeModel();
         return $this->cNmWM($msm);
 
 
 
     }
-
     public function fillDataInUserType(){
         $msm=\MS\Mod\B\Users\F::getUserTypeModel();
         $DataFilePath=base_path(implode(DS,['vendor','msllp','modules','src','Modules','B','Users','D','UserType.php']));
@@ -223,16 +206,14 @@ class F
         $data=$Data;
         $action=['\MS\Mod\B\Users\F::makeRole'];
         return $this->ftdfa($data,$action);
-        return $this->ftD($m,$data,['UserTypeName','UniqId']);
-    }
 
+    }
     public function createAppUser(){
         $msm=\MS\Mod\B\Users\F::getAppUserModel();
         return $this->cNmWM($msm);
 
     }
-
-public function createAccountConfig(){
+    public function createAccountConfig(){
         $f=[
             \MS\Mod\B\Accounts\F::getPaidStatusModel(),
             \MS\Mod\B\Accounts\F::getIncomeTypeModel(),
@@ -245,12 +226,11 @@ public function createAccountConfig(){
 
             if(!($this->cNmWM($m)))$e[]=$m;
         }
-      //  dd( $f);
+
     if(count($e)>0)return false;
     return true;
 }
-
-public function fillDataInAccountConfig(){
+    public function fillDataInAccountConfig(){
 
         $d=[
             [
@@ -281,10 +261,7 @@ public function fillDataInAccountConfig(){
     if(count($e)>0)return false;
     return true;
 }
-
-
-
-public function CreatCompanyMaster(){
+    public function CreatCompanyMaster(){
 
 
 
@@ -298,12 +275,12 @@ public function CreatCompanyMaster(){
 
         if(!($this->cNmWM($m)))$e[]=$m;
     }
-    //  dd( $f);
+
     if(count($e)>0)return false;
     return true;
 
 }
-public function createUserMaster(){
+    public function createUserMaster(){
     $this->cDB(['USERS']);
     $f=[
        'CreateTable'=>[ \MS\Mod\B\Users\F::getUserSourceModel(), ],
@@ -313,9 +290,7 @@ public function createUserMaster(){
     $e=[];
     return $this->setupMod($f);
 }
-
-
-private function fillDefaultDatainMasterUserMod(){
+    private function fillDefaultDatainMasterUserMod(){
 
 
         $d=[
@@ -362,7 +337,7 @@ private function fillDefaultDatainMasterUserMod(){
                     break;
                 case 'BatchProccess':
                     foreach ($fType as $m){
-                       // dd($m);
+
                         if(!($this->$m()))$e[]=$m;
                     }
                     break;

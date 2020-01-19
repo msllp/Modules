@@ -62,6 +62,9 @@ class F
 
     public function setupSalesModule():bool{
         $this->cDB(['Sales']);
+
+
+
         return \MS\Mod\B\Sales\F::setupSalesModule();
     }
     public function createRootUserTable():bool {

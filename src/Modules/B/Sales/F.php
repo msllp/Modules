@@ -12,6 +12,9 @@ class F
 
         $methodToCall=[
             'dashboardSectionTableMigrate'=>[],
+            'dashboardActionTableMigrate'=>[],
+            'dashboardSectionTableSeed'=>[],
+            'dashboardActionTableSeed'=>[],
 
         ];
         $c=new L\Dashboard();

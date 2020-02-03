@@ -22,6 +22,12 @@ class B extends Master
     public static $route=[
 
 
+        [
+            'name'=>'MOD.User.Profile',
+            'route'=>'/profile',
+            'method'=>'viewProfileOfCurrentUser',
+            'type'=>'get',
+        ],
 
 
         [

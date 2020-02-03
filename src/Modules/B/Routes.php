@@ -1,6 +1,13 @@
 <?php
 //dd(\MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'MAS.R'],'b'));
 
+Route::prefix('o3')->group(function () {
+
+    Route::prefix('User')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'User4O3.R'],'b',true);
+    });
+
+});
 
 
 Route::prefix('Core')->group(function () {
@@ -34,6 +41,7 @@ Route::prefix('Core')->group(function () {
 });
 Route::get('mpanel/{ln?}','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel')->middleware('web');
 Route::get('getMpanelData','\MS\Mod\B\Users\C@SideNavForMaintainaceDashboard')->name('mPanel.SideNav')->middleware('web');
+
 
 
 

@@ -24,6 +24,12 @@ class C extends BaseController
         ];
     protected $ln='en';
 
+    public function viewProfileOfCurrentUser($id=''){
+
+        return view("MOD::B.Users.V.profilePage");
+
+    }
+
     public function MaintainaceDashboard(Request $r,$ln=null){
 
         if($ln==null)$ln=$this->ln;

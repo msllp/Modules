@@ -1,10 +1,13 @@
 <?php
 //dd(\MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'MAS.R'],'b'));
 
-Route::prefix('o3')->group(function () {
+Route::prefix('o3')->group(function (){
 
     Route::prefix('User')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'User4O3.R'],'b',true);
+    });
+Route::prefix('Panel')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Panel4O3.R'],'b',true);
     });
 
 });
@@ -42,6 +45,18 @@ Route::prefix('Core')->group(function () {
 Route::get('mpanel/{ln?}','\MS\Mod\B\Users\C@MaintainaceDashboard')->name('mPanel')->middleware('web');
 Route::get('getMpanelData','\MS\Mod\B\Users\C@SideNavForMaintainaceDashboard')->name('mPanel.SideNav')->middleware('web');
 
+
+Route::prefix('env')->group(function (){
+    Route::prefix('Users')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Users4EN.R'],'b',true);
+    });
+    Route::prefix('Purchase')->group(function () {
+            \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Purchase4EN.R'],'b',true);
+        });
+    Route::prefix('panel')->group(function () {
+            \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Panel4EN.R'],'b',true);
+        });
+});
 
 
 

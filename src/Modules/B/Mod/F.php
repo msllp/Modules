@@ -17,6 +17,7 @@ class F
 
 
 
+
 public static function genUniqId(){
     return \MS\Core\Helper\Comman::random(10);
 }

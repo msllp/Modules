@@ -23,6 +23,34 @@ class B extends Master
                 'type'=>'get',
             ],
 
+        [
+                'name'=>'O3.Users.Android.Profile',
+                'route'=>'/android/profile/{apiToken}',
+                'method'=>'AndroidApi_getUser',
+                'type'=>'get',
+            ],
+
+
+
+
+        [
+            'name'=>'O3.Users.SignUp',
+            'route'=>'/signup',
+            'method'=>'signUpUser',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'O3.Users.Plans.For.Website',
+            'route'=>'/getAllPlansForWebsite',
+            'method'=>'getAllPlansForWebsite',
+            'type'=>'get',
+        ],
+
+
 
     ];
+
+    public static $tables=[];
 }

@@ -39,6 +39,12 @@ class B extends Master
             'method'=>'signUpUser',
             'type'=>'post',
         ],
+        [
+            'name'=>'O3.Users.SignUp.Verify',
+            'route'=>'/verify/{token}',
+            'method'=>'signUpUserVerify',
+            'type'=>'post',
+        ],
 
 
         [
@@ -47,6 +53,13 @@ class B extends Master
             'method'=>'getAllPlansForWebsite',
             'type'=>'get',
         ],
+        [
+            'name'=>'O3.Test',
+            'route'=>'/test',
+            'method'=>'test',
+            'type'=>'get',
+        ],
+
 
 
 

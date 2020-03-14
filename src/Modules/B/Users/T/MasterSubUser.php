@@ -75,7 +75,7 @@ return [
             ],
         'fieldGroup'=>[
             'User Role Details'=>['UserTypeName','UserTypeIcon','UserTypeDesc','UserTypeLoginLink','Status'],
-            'User Role Allowed Apllication Events'=>['UserTypeAllowedEvents'],
+            'User Role Allowed Application Events'=>['UserTypeAllowedEvents'],
           //  'User Role Details 2'=>['UserTypeName','UserTypeIcon','UserTypeDesc','UserTypeLoginLink','Status'],
 
         ],

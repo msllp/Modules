@@ -29,12 +29,25 @@ class B extends Master
             'type'=>'get' ,
         ],
 
+
+        [
+            'name'=>'O3.Panel.From.Login',
+            'route'=>'/home/{apiToken}',
+            'method'=>'MaintainaceDashboardWithApiToken',
+            'type'=>'get' ,
+        ],
+
+
+
         [
             'name'=>'O3.Panel.data',
-            'route'=>'/home/data',
+            'route'=>'/home/data/sidebar',
             'method'=>'SideNavForMaintainaceDashboard',
             'type'=>'get' ,
         ],
+
+
+
 
     ];
 

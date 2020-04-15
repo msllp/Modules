@@ -19,11 +19,43 @@ class C extends BaseController
 
     protected $ln='en';
 
-    public function MaintainaceDashboard(Request $r,$ln=null){
+    public function MaintainaceDashboardWithApiToken($apiToken,$ln=null,Request $r){
 
+        $checkSession=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'checkUserLoginSession','data'=> $apiToken ]]);
+
+
+        if($checkSession){
+            if($ln==null)$ln=$this->ln;
+            session('ln',$ln);
+            \App::setlocale(session('ln'));
+            $data=[
+                'path'=> [
+                    'sidebar'=> route('O3.Panel.data')
+                ],
+                'accessToken'=> \MS\Core\Helper\Comman::encode($apiToken),
+                'msUser'=>  \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]])
+
+            ];
+
+            return view("MS::core.layouts.MS.mpanel")->with('msData',$data);
+        }else{
+            return redirect()->route('O3.Users.Login.Form');
+        }
+
+
+
+    }
+
+
+
+    public function MaintainaceDashboard(Request $r,$ln=null){
+        //dd($r);
         if($ln==null)$ln=$this->ln;
         $r->session()->put('ln', $ln);
         session('ln',$ln);
+
+        $foundUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
+        //dd($foundUser);
         \App::setlocale(session('ln'));
         $data=[
 
@@ -31,7 +63,8 @@ class C extends BaseController
                 'sidebar'=> route('O3.Panel.data')
             ],
 
-            'accessToken'=> \MS\Core\Helper\Comman::encode('UserMitul')
+            'accessToken'=>(array_key_exists('apiToken',$foundUser))?\MS\Core\Helper\Comman::encode($foundUser['apiToken']) : \MS\Core\Helper\Comman::encode('UserMitul'),
+
 
         ];
         return view("MS::core.layouts.MS.mpanel")->with('msData',$data);
@@ -40,13 +73,14 @@ class C extends BaseController
 
     public function SideNavForMaintainaceDashboard(Request $r){
 
+      //  dd($r);
+        $getLoggedUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
         \App::setlocale(session('ln'));
         //dd($r->session()->all());
-        $rdata=['accessToken'=>'UserMitul'];
+        $rdata=['accessToken'=>$getLoggedUser['apiToken']];
+
         $data=\MS\Mod\B\Panel4EN\L\Nav::getNavForEnv();
 
-       // dd($data);
-        //dd(route('MOD.Mod.Master.Event.View.All'));
         return \MS\Core\Helper\Comman::proccessReqNGetSideNavDataForDashboard($r,$data, $rdata);
     }
 

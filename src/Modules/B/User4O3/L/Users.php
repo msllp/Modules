@@ -36,21 +36,438 @@ class Users
         $this->UserMSDB = implode('_', [self::$modCode, 'Users']);
         $this->UserPayment = implode('_', [self::$modCode, 'Payment_Ledger']);
         $this->ModNameSpace = 'MS\Mod\B\User4O3';
+        $this->UserNotification=implode('_', [self::$modCode, 'Users_Notification']);
+        $this->UserAction=implode('_', [self::$modCode, 'Users_Action']);
+
+
+        $this->ModCode=self::$modCode;
 
         if (count($data)) foreach ($data as $k => $v) if (array_key_exists($k, self::$userConstructData) && gettype($v) == self::$userConstructData[$k]) $this->$k = $v;
 
 
     }
 
-    private function getLogedInUser(){
-      //  dd(Session::get('o3User'));
-        return Session::get('o3User');
+    private function signByToken($data){
+        $apiToken=$data['apiToken'];
+        $founUser=$this->getUserByApiToken($apiToken);
+        $founUser['apiToken']=$data['apiToken'];
+        $this->signInUserToSession($founUser);
+        return ['loggedIn'=>true];
+    }
+    private function explodeNotifyId($str):array{
+        $rD=[];
+        $exStr=explode('_',$str);
+        if(count($exStr)!= 2)return $rd;
+        $rD=[
+            'userId'=>reset($exStr),
+            'notficationId'=>end($exStr)
+        ];
+        return $rD;
+
     }
 
-    private function checkUserLoginSession($apiToken){
+    private function getNotificationByNotifyId($data){
+       //s dd($id);
+        $er=[
+        '101'=>['Notification Not Found'],
+        '102'=>['Notification View Action Not Found']
+        ];
+        $notifyId=(array_key_exists('notifyId',$data))? \MS\Core\Helper\Comman::decodeLimit($data['notifyId']):'';
+        $data=$this->explodeNotifyId($notifyId);
+
+        $m=self::getUserNotificationModel($data['userId']);
+
+        $notification=$m->rowGet(['UniqId'=>$notifyId]);
+        $notification=(count($notification)>0)?reset($notification):[];
+        if(count($notification)<1)return $this->throwError($er['101']);
+
+        $redirectData=json_decode($notification['NotifyAction'],true);
+        if(!array_key_exists('view',$redirectData))return $this->throwError($er['102']);
+        return $this->redirectForNotification($redirectData['view']);
+        dd($redirectData);
+    }
+
+    private function redirectForNotification($viewData){
+        $er=[
+            '101'=>['Not valid url']
+        ];
+       //    dd($viewData);
+
+        if(array_key_exists('url',$viewData)  )
+        {
+            $url=$viewData['url'];
+            if(!strpos($url,'://')){
+
+                if(array_key_exists('para',$viewData)){
+                    $url=route($url,$viewData['para']);
+                }else{
+                    $url=route($url);
+                }
+
+            }
+
+            $url=str_replace('http://','https://',$url);
+
+            return redirect($url);
+
+
+        }
+        return $this->throwError($er['101']);
+
+    }
+
+    private function getNotificationByApiToken($data){
+
+        //dd(\MS\Core\Helper\Comman::decode($data['apiToken']));
+
+        $apiToken=\MS\Core\Helper\Comman::decodeLimit($data['apiToken']);
+     //   $apiToken='';
+      //  dd($apiToken);
+        if(strlen($apiToken)==0)goto MS_Error;
+        $foundUser=$this->getUserByApiToken($apiToken);
+
+        if(array_key_exists('UniqId', $foundUser)){
+
+            $userId=$foundUser['UniqId'];
+            $m=$this->getUserNotificationModel($userId);
+            $d=$m->rowAll();
+            $mapFunction=function ($ar){
+                global $data;
+              if(array_key_exists('NotifyAction',$ar))$ar['NotifyAction']=json_decode($ar['NotifyAction'],true);
+              if(array_key_exists('NotifyData',$ar))$ar['NotifyData']=json_decode($ar['NotifyData'],true);
+              if(array_key_exists('NotifyAction',$ar) && count($ar)>0){
+                  foreach ($ar['NotifyAction'] as $ac=>$acD){
+
+                      if(array_key_exists('url',$acD) && !strpos($acD['url'],'://') )
+                      {
+                          $ar['NotifyAction'][$ac]['url']=route($acD['url']);
+                      }
+
+                      if($ac=='view'){
+                          $ar['NotifyAction'][$ac]['url']=route('O3.Users.Notification.get',['notifyId'=>\MS\Core\Helper\Comman::encodeLimit($ar['UniqId'])]);
+                         // dd($ar);
+                      }
+
+                  }
+              }
+              return $ar;
+            };
+            $d=array_map($mapFunction,$d);
+           // dd(array_map($mapFunction,$d));
+            return $this->throwData($d);
+        }else{
+            MS_Error:
+            $er=[
+                'User Not Found'
+            ];
+            return $this->throwError($er);
+        }
+        dd($foundUser);
+
+    }
+
+    public function addNotificaiton($data,$userId=null){
+      //  dd($this->getLiveUser());
+
+        $foundUser=$this->getLiveUser();
+        $userId=($userId==null && array_key_exists('id',$foundUser))?$foundUser['id']:$userId;
+
+        if(!array_key_exists('UniqId',$data) )$data['UniqId']=\MS\Core\Helper\Comman::random(10,4,1,[$userId]);
+
+        $m=self::getUserNotificationModel($userId);
+
+        dd($m->rowAdd($data));
+        dd($m);
+
+
+    }
+
+    private function getCallDataForReceiver($data){
+
+        $data['callId']=\MS\Core\Helper\Comman::decode( $data['callId']);
+        $data2=['from'=>$data['fromUser'],'to'=>$data['toUser']];
+        $users=$this->getUserForCallFunction($data2,true);
+
+        $m1=self::getUserCallLogModel($users['from']['UniqId']);
+        $foundCall=$m1->rowGet(['UniqId'=>$data['callId']]);
+        if (count($foundCall)==0)return$this->throwError(['No Call Details Found']);
+        $foundCall=reset($foundCall);
+        $vCallData=$foundCall['CallOfferData'];
+
+
+        $fData=[
+            'from'=>[
+                'token'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken']),
+                'id'=>$users['from']['UniqId'],
+                'name'=>implode(' ',[$users['from']['FirstName'],$users['from']['LastName'],])
+                 ],
+            'vCallData'=>json_decode($vCallData,true),
+            'callId'=>$data['callId']
+            ];
+        return $this->throwData($fData);
+
+        //$m2=self::getUserCallLogModel($users['to']['UniqId']);
+
+    }
+    private function getCallDataForCaller($data){
+
+        $data['callId']=\MS\Core\Helper\Comman::decode( $data['callId']);
+        $data2=['from'=>$data['fromUser'],'to'=>$data['toUser']];
+        $users=$this->getUserForCallFunction($data2,true);
+
+        $m1=self::getUserCallLogModel($users['from']['UniqId']);
+        $foundCall=$m1->rowGet(['UniqId'=>$data['callId']]);
+        if (count($foundCall)==0)return$this->throwError(['No Call Details Found']);
+        $foundCall=reset($foundCall);
+        $vCallData=$foundCall['CallAnswerData'];
+
+
+        $fData=[
+            'from'=>[
+                'token'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken']),
+                'id'=>$users['from']['UniqId'],
+                'name'=>implode(' ',[$users['from']['FirstName'],$users['from']['LastName'],])
+                 ],
+            'vCallData'=>json_decode($vCallData,true),
+            'callId'=>$data['callId']
+            ];
+        return $this->throwData($fData);
+ }
+
+    private function getAllowedUserToCall($data){
+        $json=(array_key_exists('json',$data))?$data['json']:false;
+        if(array_key_exists('apiToken',$data)){
+
+           // dd($data);
+
+            $user=self::getUserModel();
+            $foundUser=$user->rowAll();
+
+            $mapFunction=function ($a){
+                return [
+                  'name'=>implode(' ',[$a['FirstName'],$a['LastName']]),
+                  'id'=>$a['UniqId'],
+                  'apiToken'=>\MS\Core\Helper\Comman::encode($a['apiToken']),
+                  'CompanyId'=>$a['CompanyId']
+              ];
+            };
+            if($json)return array_map($mapFunction,$foundUser);
+            return $this->throwData(array_map($mapFunction,$foundUser));
+
+        }elseif(array_key_exists('UniqId',$data)){
+            $user=self::getUserModel();
+            $foundUser=$user->rowAll();
+
+            $mapFunction=function ($a){
+                return [
+                    'name'=>implode(' ',[$a['FirstName'],$a['LastName']]),
+                    'id'=>$a['UniqId'],
+                    'apiToken'=>\MS\Core\Helper\Comman::encode($a['apiToken']),
+                    'CompanyId'=>$a['CompanyId']
+                ];
+            };
+            if($json)return array_map($mapFunction,$foundUser);
+
+        }
+
+        else{
+            $er=['api/id token not found in request'];
+            return $this->throwError($er);
+        }
+
+    }
+
+    private function triggerPusherNotify($data){
+        $user=$data['userId'];
+        $app_id = env('PUSHER_APP_ID');
+        $app_key = env('PUSHER_APP_KEY');
+        $app_secret = env('PUSHER_APP_SECRET');
+
+
+        $pusher = new \Pusher\Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            array(
+                'cluster' => 'ap2',
+                'useTLS' => true
+            )
+        );
+
+        $channelName=implode('_',['private',$user]);
+   //     dd($data);
+        try {
+
+         //  dd($pusher->get_channel_info('o3erp'));
+            $pusher->trigger( 'o3erp',$channelName, $data['data'] );
+        }catch (Exception $e){
+            dd($e);
+            return false;
+        }
+        return true;
+    }
+
+    private function getUserForCallFunction($data,$all=false){
+        $final=[];
+        $from=\MS\Core\Helper\Comman::decode($data['from']);
+        $to=\MS\Core\Helper\Comman::decode($data['to']);
+
+
+        $callUser=$this->getUserByApiToken($from);
+        $rcvUser=$this->getUserByApiToken($to);
+
+        if($all){
+            $final['from']=$callUser;
+            $final['from']['apiToken']=$from;
+            $final['to']=$rcvUser;
+            $final['to']['apiToken']=$to;
+            return  $final;
+        }
+        $final['from']=$callUser['UniqId'];
+        $final['from']['apiToken']=$from;
+        $final['to']=$rcvUser['UniqId'];
+        $final['to']['apiToken']=$to;
+
+        return $final;
+    }
+
+    private function sendCallRcvToUser($data){
+
+        //dd($data);
+
+        $callId=$data['vCallData']['callId'];
+        $vCallData=(array_key_exists('vCallData',$data))?$data['vCallData']:[];
+        $users=$this->getUserForCallFunction($data,true);
+
+        $id=['UniqId'=>$callId];
+
+        $dbInputFrom=[
+            'CallAnswerData'=>collect($vCallData['vCallData'])->toJson(),
+        ];
+        $m=self::getUserCallLogModel($users['from']['UniqId']);
+        $m2=self::getUserCallLogModel($users['to']['UniqId']);
+        $m->rowEdit($id,$dbInputFrom);
+        $m2->rowEdit($id,$dbInputFrom);
+
+
+        $data=[
+            'callId'=>$callId,
+            'type'=>'call',
+            'subtype'=>'video',
+            'state'=>'outgoing',
+            'dataLink'=>route('O3.Users.Video.call.receive.Data',['UniqId'=>\MS\Core\Helper\Comman::encode($callId),'From'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken']),'To'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken'])])
+        ];
+
+        $reData=[
+            'callId'=>$callId,
+            'type'=>'video',
+            'state'=>'outgoing',
+            'to'=>[
+                'name'=>implode(' ',[$users['to']['FirstName'],$users['to']['LastName'] ]),
+                'id'=>$users['to']['UniqId'],
+                'apiToken'=>$users['to']['apiToken'],
+            ]
+
+        ];
+        $this->triggerPusherNotify( ['userId'=>$users['to']['UniqId'] ,'data'=>$data]);
+
+        return $this->throwData($reData);
+
+
+
+
+    }
+    private function sendCallToUser($data){
+
+        $users=$this->getUserForCallFunction($data,true);
+        $data=[
+            'type'=>'call',
+            'subtype'=>'video',
+            'state'=>'incoming',
+            'from'=>
+                [
+                    'token'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken']),
+                    'id'=>$users['from']['UniqId'],
+                    'name'=>implode(' ',[$users['from']['FirstName'],$users['from']['LastName'],])
+                ],
+            'vCallData'=>(array_key_exists('vCallData',$data))?$data['vCallData']:[]
+
+        ];
+        $uniqId=\MS\Core\Helper\Comman::random(10,2);
+
+        $dbInputFrom=[
+            'UniqId'=>$uniqId,
+            'CallFor'=>$users['to']['UniqId'],
+            'CallFrom'=>$users['from']['UniqId'],
+            'CallOfferData'=>(array_key_exists('vCallData',$data))? collect($data['vCallData'])->toJson() :'{}',
+            'CallAnswerData'=>[],
+            'CallType'=>'video',
+            'CallConnected'=>0,
+            'CallDisconnected'=>1,
+            'UserOffline'=>0,
+            'CallStatus'=>0
+        ];
+        $m=self::getUserCallLogModel($users['from']['UniqId']);
+        $m->rowAdd($dbInputFrom);
+
+        $dbInputTo=[
+            'UniqId'=>$uniqId,
+            'CallFor'=>$users['to']['UniqId'],
+            'CallFrom'=>$users['from']['UniqId'],
+            'CallOfferData'=>(array_key_exists('vCallData',$data))? collect($data['vCallData'])->toJson() :'{}',
+            'CallAnswerData'=>'{}',
+            'CallType'=>'video',
+            'CallConnected'=>0,
+            'CallDisconnected'=>1,
+            'UserOffline'=>0,
+            'CallStatus'=>0
+        ];
+
+        $m=self::getUserCallLogModel($users['to']['UniqId']);
+        $m->rowAdd($dbInputTo);
+
+
+
+        $data=[
+            'type'=>'call',
+            'subtype'=>'video',
+            'state'=>'incoming',
+            'dataLink'=>route('O3.Users.Video.call.send.Data',['UniqId'=>\MS\Core\Helper\Comman::encode($uniqId),'From'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken']),'To'=>\MS\Core\Helper\Comman::encode($users['from']['apiToken'])])
+        ];
+
+
+
+
+        $this->triggerPusherNotify( ['userId'=>$users['to']['UniqId'] ,'data'=>$data]);
+
+        $reData=[
+            'callId'=>$uniqId,
+            'type'=>'video',
+            'state'=>'outgoing',
+            'to'=>[
+                'name'=>implode(' ',[$users['to']['FirstName'],$users['to']['LastName'] ]),
+                'id'=>$users['to']['UniqId'],
+                'apiToken'=>$users['to']['apiToken'],
+            ]
+
+        ];
+
+        return $this->throwData($reData);
+
+    }
+
+    private function getLogedInUser():array{
+      //  dd(Session::get('o3User'));
+
+        return (Session::get('o3User')!=null)? Session::get('o3User'):[];
+    }
+
+    private function checkUserLoginSession($apiToken=null){
         $logedInUser=$this->getLogedInUser();
-  //      dd([$apiToken,$logedInUser['apiToken']]);
-        return ($apiToken==$logedInUser['apiToken'])?true:false;
+        if($apiToken==null && array_key_exists('apiToken',$logedInUser))$apiToken=$logedInUser['apiToken'];
+        //dd($apiToken);
+        //dd([$apiToken,$logedInUser['apiToken']]);
+        return (array_key_exists('apiToken',$logedInUser) && $apiToken==$logedInUser['apiToken'])?true:false;
     }
 
     private function singOutUserToSession($data=[]):bool{
@@ -196,6 +613,7 @@ class Users
         if (array_key_exists('type', $responseJson) && array_key_exists('otp', $responseJson)) $responseJson['OTPUniqId'] = $this->regOtpForUser($responseJson['type'], $userData['UniqId'], $responseJson['otp'])['UniqId'];
         if (array_key_exists('otp', $responseJson)) unset($responseJson['otp']);
         $this->migrateById('Payment_Ledger', [$userData['UniqId']]);
+        $this->migrateById('Call_Log', [$userData['UniqId']]);
         if($responseInArray)return $responseJson;
         return $this->throwData($responseJson);
 
@@ -270,6 +688,7 @@ class Users
             if (array_key_exists('type', $responseJson) && array_key_exists('otp', $responseJson)) $responseJson['OTPUniqId'] = $this->regOtpForUser($responseJson['type'], $userData['UniqId'], $responseJson['otp'])['UniqId'];
             if (array_key_exists('otp', $responseJson)) unset($responseJson['otp']);
             $this->migrateById('Payment_Ledger', [$userData['UniqId']]);
+            $this->migrateById('Call_Log', [$userData['UniqId']]);
         }
 
 
@@ -543,7 +962,11 @@ class Users
     {
 
         $user=$this->getLogedInUser();
+       // dd($user);
+        $foundUser=$this->getUserByApiToken($user['apiToken']);
+
         return [
+            "id"=>$foundUser['UniqId'],
             "Username" => $user['username'],
             "email" => $user['email'],
             "fname" =>explode(' ',$user['name'])[0],
@@ -551,7 +974,8 @@ class Users
             "name"=>$user['name'],
             "phone" => $user['mobile'],
             "sex" => "male",
-            'currentCompany'=>$user['defualtCompany']
+            'currentCompany'=>$user['defualtCompany'],
+            'apiToken'=>$user['apiToken']
         ];
 
     }
@@ -626,6 +1050,24 @@ class Users
         // dd($c);
         //  dd($c->migrate());
         return $c->migrate();
+    }
+
+    public function migrateByIdForAllUser($id,$users=null,$column='UniqId',$returnData=false){
+        $m=self::getUserModel();
+        $foundUser=$m->rowAll();
+        $users=($users==null)?$foundUser:$users;
+        $idExplode = explode('_', $id);
+        $tableId = (count($idExplode) > 0 && reset($idExplode) == self::$modCode) ?
+            $id : implode('_', array_merge([self::$modCode, $id,]));
+        $out=[];
+        foreach ($users as $user){
+            if(array_key_exists($column,$user)){
+                $c = new MSDB('MS\Mod\B\User4O3', $tableId, [ $user[$column] ]);
+                $out[implode('_',[$tableId,$user[$column]])]=$c->migrate();
+            }else{return false;}
+            }
+        if($returnData)return $out;
+        return true;
     }
 
 
@@ -716,6 +1158,83 @@ class Users
 
         return array_merge($m1);
     }
+    private function setUpMasterSubUser()
+    {
+
+        $data = [
+            'tableId' => implode('_', [self::$modCode, 'Sub_Users']),
+            'tableName' => implode('_', [self::$modCode, 'Sub_Users_']),
+            'connection' => self::$c_m,
+        ];
+        $m = new  MSTableSchema($data);
+
+        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
+        $m->setFields(['name' => 'Username', 'type' => 'string']);
+        $m->setFields(['name' => 'Password', 'type' => 'string']);
+        $m->setFields(['name' => 'apiToken', 'type' => 'string']);
+        $m->setFields(['name' => 'HookType', 'type' => 'string']);
+        $m->setFields(['name' => 'HookId', 'type' => 'string',]);
+        $m->setFields(['name' => 'HookData', 'type' => 'string',]);
+        $m->setFields(['name' => 'FirstName', 'type' => 'string']);
+        $m->setFields(['name' => 'Sex', 'type' => 'string']);
+        $m->setFields(['name' => 'LastName', 'type' => 'string',]);
+        $m->setFields(['name' => 'Email', 'type' => 'string',]);
+        $m->setFields(['name' => 'ContactNo', 'type' => 'string',]);
+        $m->setFields(['name' => 'CompanyId', 'type' => 'string',]);
+        $m->setFields(['name' => 'CompanyPost', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserTotalPaid', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserTotalPending', 'type' => 'string',]);
+
+        $m->setFields(['name' => 'UserPlan', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserValidUpto', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserProductCount', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserInvoiceCount', 'type' => 'string',]);
+
+        $m->setFields(['name' => 'UserCompanyCount', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserCompanyUserCount', 'type' => 'string',]);
+        $m->setFields(['name' => 'PaymentSuspend', 'type' => 'boolean',]);
+        $m->setFields(['name' => 'UserStatus', 'type' => 'boolean',]);
+
+        $m->setFields(['name'=>'usernameForLogin','vName'=>Lang::get('UI.panelLoginId'),'dbOff'=>true,'input'=>'text']);
+        $m->setFields(['name'=>'passwordForLogin','vName'=>Lang::get('UI.panelLoginPassword'),'dbOff'=>true,'input'=>'password']);
+
+        $signInGroup='signInOwner';
+        $m->addGroup($signInGroup)->addField($signInGroup,['usernameForLogin','passwordForLogin']);
+
+
+        $loginId='ForOwner';
+
+        $m->addAction('signin',[
+            "btnColor"=>"bg-green",
+            "route"=>"O3.Users.Login.Form.Post",
+            "btnIcon"=>"fi2 flaticon-unlocked",
+            'btnText'=>"Sign in"
+        ]);
+
+        $m
+
+            ->addForm($signInGroup)
+            ->addGroup4Form($signInGroup,[$signInGroup])
+            ->addTitle4Form($signInGroup,Lang::get('UI.loginForOwner'))
+            ->addAction4Form($signInGroup,['signin'])
+        ;
+
+
+
+        $m
+            ->addLogin($loginId)
+            ->addGroup4Login($loginId,[$signInGroup])
+            ->addTitle4Login($loginId,Lang::get('UI.loginForOwner'))
+            ->setPost4Login($loginId,'O3.Users.Login.Form.Post');
+
+
+
+      //     dd($m);
+        $m1 = $m->finalReturnForTableFile();
+
+        return array_merge($m1);
+    }
+
     private function setUpUserSettings()
     {
         $data = [
@@ -756,6 +1275,47 @@ class Users
 
         return array_merge($m1);
     }
+    private function setUpUserNotification()
+    {
+        $data = [
+            'tableId' => $this->UserNotification,
+            'tableName' => implode('_', [self::$modCode, 'Users_Notification_']),
+            'connection' => self::$c_d,
+        ];
+        $m = new  MSTableSchema($data);
+
+        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyType', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyFrom', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyTitle', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyAction', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyData', 'type' => 'string']);
+        $m->setFields(['name' => 'NotifyRead', 'type' => 'string',]);
+
+        $m1 = $m->finalReturnForTableFile();
+
+        return array_merge($m1);
+    }
+    private function setUpUserAction()
+    {
+        $data = [
+            'tableId' => $this->UserAction,
+            'tableName' => implode('_', [self::$modCode, 'Users_Action_']),
+            'connection' => self::$c_c,
+        ];
+        $m = new  MSTableSchema($data);
+
+        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
+        $m->setFields(['name' => 'ActionType', 'type' => 'string']);
+        $m->setFields(['name' => 'ActionMod', 'type' => 'string']);
+        $m->setFields(['name' => 'ActionTitle', 'type' => 'string']);
+        $m->setFields(['name' => 'ActionData', 'type' => 'string']);
+        $m1 = $m->finalReturnForTableFile();
+
+        return array_merge($m1);
+    }
+
+
     private function setUpUserPayment($userId = [])
     {
 
@@ -785,6 +1345,38 @@ class Users
 
         return array_merge($m1);
     }
+    private function setUpUserCall($userId = [])
+    {
+
+        //  dd($userId);
+        $userId2 = implode('', $userId);
+        //
+
+        $data = [
+            'tableId' => implode('_', [self::$modCode, 'Call_Log']),
+            'tableName' => (count($userId) > 0) ? implode('_', [self::$modCode, 'Call_Log', $userId2]) : implode('_', [self::$modCode, 'Call_Log']),
+            'connection' => self::$c_d,
+        ];
+
+
+        $m = new  MSTableSchema($data);
+
+        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
+        $m->setFields(['name' => 'CallFor', 'type' => 'string']);
+        $m->setFields(['name' => 'CallFrom', 'type' => 'string']);
+        $m->setFields(['name' => 'CallOfferData', 'type' => 'string']);
+        $m->setFields(['name' => 'CallAnswerData', 'type' => 'string']);
+        $m->setFields(['name' => 'CallType', 'type' => 'string']);
+        $m->setFields(['name' => 'CallConnected', 'type' => 'string',]);
+        $m->setFields(['name' => 'CallDisconnected', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserOffline', 'type' => 'string']);
+        $m->setFields(['name' => 'CallStatus', 'type' => 'string',]);
+
+        $m1 = $m->finalReturnForTableFile();
+
+        return array_merge($m1);
+    }
+
     private function setUpUserVerificationOTPs()
     {
 
@@ -938,6 +1530,8 @@ class Users
 
         return $return;
     }
+
+
     private function unSet($column, $d)
     {
 
@@ -948,13 +1542,15 @@ class Users
     }
 
 
-    public static function getTableRaw()
+    public static function getTableRaw($data=[])
     {
 
         $methodToCall = [
             'setUpMasterUser' => [],
             'setUpUserVerificationOTPs' => [],
-            'setUpUserPayment' => []
+            'setUpUserPayment' => [],
+            'setUpUserCall'=>[],
+            'setUpUserNotification'=>[]
         ];
         $c = new self();
         $d = [];
@@ -970,6 +1566,11 @@ class Users
         $c = new self();
         return $c = new MSDB($c->ModNameSpace, $c->UserPayment, [$userId]);
     }
+    public static function getUserNotificationModel($userId)
+    {
+        $c = new self();
+        return $c = new MSDB($c->ModNameSpace, $c->UserNotification, [$userId]);
+    }
 
     public static function getOtpModel()
     {
@@ -983,6 +1584,10 @@ class Users
     {
         $c = new self();
         return $c = new MSDB($c->ModNameSpace, $c->UserMSDB);
+    }
+    public static function getUserCallLogModel($userId){
+        $c = new self();
+        return $c = new MSDB($c->ModNameSpace,implode('_',[self::$modCode,'Call_Log']),[$userId]);
     }
 
     public static function fromController(array $methods)

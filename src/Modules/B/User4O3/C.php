@@ -16,14 +16,65 @@ use function GuzzleHttp\Promise\all;
 use Socialite;
 class C extends BaseController
 {
+    public function getCsrf(){
+        return csrf_token();
+    }
+
+    public function signInByToken($apiToken){
+
+        $inputData=[
+            'apiToken'=>$apiToken
+        ];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'signByToken','data'=>$inputData]]);
 
 
+    }
+    public function showVmeetForm(){
+        $u=new Users();
+        $cUApiToken=$u->getLiveUser()['apiToken'];
+
+        $inputData=['apiToken'=>$cUApiToken,'json'=>true];
+        //dd(\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getAllowedUserToCall','data'=>$inputData]]));
+        $allowedUser= \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getAllowedUserToCall','data'=>$inputData]]);
+
+        $inputData=[
+
+            'allowedUser'=>$allowedUser
+
+        ];
+        return \MS\Mod\B\User4O3\L\Meetings::fromController([['method'=>'addNewMeetForm','data'=>$inputData]]);
+
+
+    }
+
+
+    public function getCallDataForReceiver($UniqId,$From,$To){
+        $inputData=[
+            'callId'=>$UniqId,
+            'fromUser'=>$From,
+            'toUser'=>$To
+            ];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getCallDataForReceiver','data'=>$inputData]]);
+
+
+
+    }
+    public function getCallDataForCaller($UniqId,$From,$To){
+        $inputData=[
+            'callId'=>$UniqId,
+            'fromUser'=>$From,
+            'toUser'=>$To
+            ];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getCallDataForCaller','data'=>$inputData]]);
+
+
+
+    }
 
     public function loginPage(){
+     if (   F::checkUserLogin())return \MS\Mod\B\Panel4O3\F::redirectToPanel();
         $m=L\Users::getUserModel();
         return $m->loginPage();
-
-
     }
 
     public function logoutUser(){
@@ -37,8 +88,134 @@ class C extends BaseController
 
     }
 
-    public function test(Request $r){
+    public function sendNotificatonToReceiver($from,$to,Request $r){
+        $inputData=['from'=>$from,'to'=>$to,'vCallData'=>$r->all()];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'sendCallToUser','data'=>$inputData]]);
 
+    }
+
+    public function sendNotificatonToCaller($from,$to,Request $r){
+        $inputData=['from'=>$from,'to'=>$to,'vCallData'=>$r->all()];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'sendCallRcvToUser','data'=>$inputData]]);
+
+    }
+
+    public function getAllAllowedUserList($apiToken){
+        $inputData=['apiToken'=>$apiToken];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getAllowedUserToCall','data'=>$inputData]]);
+
+    }
+
+    public function getNotificationByApiToken($apiToken){
+        $inputData=['apiToken'=>$apiToken];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getNotificationByApiToken','data'=>$inputData]]);
+
+    }
+
+    public function getNotificationByApiTokenForNotifyId($notifyId){
+        $inputData=['notifyId'=>$notifyId];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getNotificationByNotifyId','data'=>$inputData]]);
+
+
+
+        dd($notifyId);
+    }
+
+    public function testPost(Request $r)
+    {
+
+
+        $app_id = env('PUSHER_APP_ID');
+        $app_key = env('PUSHER_APP_KEY');
+        $app_secret = env('PUSHER_APP_SECRET');
+
+
+        $pusher = new \Pusher\Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            array(
+                'cluster' => 'ap2',
+                'useTLS' => true
+            )
+        );
+        $pusher->trigger( 'o3erp', 'my-live-feed', $r->all() );
+        dd($pusher);
+    }
+    public function test(Request $r){
+       // dd(L\Users::getOtpModel());
+       // dd('Ok');
+        $m=new L\Users();
+
+        //    dd($m->migrate());
+        $getCurrentUser=$m->getLiveUser();
+
+        $start = microtime(true);
+        $encode=\MS\Core\Helper\Comman::encodeLimit($getCurrentUser['apiToken']);
+
+        $decode=\MS\Core\Helper\Comman::decodeLimit($encode);
+        $end=$time_elapsed_secs = microtime(true) - $start;
+
+        //dd($end);
+       // dd(number_format ($end*6000,50,'.',' '));
+        var_dump(strlen(\MS\Core\Helper\Comman::encode($getCurrentUser['apiToken'])));
+        dd($decode==$getCurrentUser['apiToken']);
+
+        $id=implode('_', [L\Users::$modCode, 'Users_Notification']);
+        $c=new L\Users();
+
+        $data=[
+            //'UniqId'=>\MS\Core\Helper\Comman::random(10,3,2,['test']),
+            'NotifyType'=>'System',
+            'NotifyFrom'=>'System',
+            'NotifyTitle'=>'Setup Company',
+            'NotifyAction'=>[
+                'view'=>[
+                    'url'=>route('O3.Users.Login.Form'),
+                    'text'=>'Login Nod'
+                ]
+            ],
+            'NotifyData'=>[
+                'body'=>' Please Setup Company'
+            ],
+            'NotifyRead'=>0
+        ];
+
+        dd($c->addNotificaiton($data));
+      //  dd($c->migrateByIdForAllUser($data));
+
+
+        dd(\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'migrateByIdForAllUser','data'=>$inputData]]));
+
+
+
+
+        //dd(\MS\Core\Helper\MSPlease::ModuleInMod('B\Company4O3'));
+        $c=new L\Meetings();
+        dd($c->getMeetingModel());
+
+        return view('MOD::B.User4O3.V.videoConf');
+
+        $m=new L\Users();
+        dd($m->migrateByIdForAllUser(implode('_',['Call_Log'])));
+
+
+        dd(\MS\Core\Helper\Comman::encode('peYxyNBOnakULQTwbmzScQpFDfioQCaLJAGRqhkznsFWfAMvwLEGGQNDfnuRdVqjwcpHnngwkJCDPyLouvstIWZDimmfwscqRATJdvdarNbLCaLEdKHKUSdYQSNmqmtHsHiBzXSTRHvmjapbxmHitdrRnQAFLhrSIqsotUJZwoQzEgKEuLAAJwDQaeHk'));
+        $app_id = env('PUSHER_APP_ID');
+        $app_key = env('PUSHER_APP_KEY');
+        $app_secret = env('PUSHER_APP_SECRET');
+
+        $pusher = new \Pusher\Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            array(
+                'cluster' => 'ap2',
+                'useTLS' => true
+            )
+        );
+        $pusher->trigger( 'o3erp', 'my-event', ['name'=>'Mitul'] );
+        dd($pusher);
 
       //  dd(\MS\Core\Helper\MSPay::checkPaymentStatus('inv_EUFiXcT9rbjWDs'));
         //dd($this->redirectToPaymentGateway($r,'7591253951733152'));

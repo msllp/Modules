@@ -10,7 +10,14 @@ Route::prefix('Panel')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Panel4O3.R'],'b',true);
     });
 
+    Route::prefix('Company')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Company4O3.R'],'b',true);
+    });
+
 });
+
+
+
 
 
 Route::prefix('Core')->group(function () {

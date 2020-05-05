@@ -1,4 +1,4 @@
-@extends('MS::core.layouts.root')
+@extends('MS::core.layouts.rootRaw')
 
 @section('body')
 <salesdashboard></salesdashboard>

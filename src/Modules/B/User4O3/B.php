@@ -137,12 +137,101 @@ class B extends Master
             'method'=>'getAllPlansForWebsite',
             'type'=>'get',
         ],
+
+        [
+            'name'=>'O3.Users.Video.call.send',
+            'route'=>'/video/call/send/{from}/{to}',
+            'method'=>'sendNotificatonToReceiver',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'O3.Users.Video.call.send.Data',
+            'route'=>'/video/call/send/data/{UniqId}/{From}/{To}',
+            'method'=>'getCallDataForReceiver',
+            'type'=>'post',
+        ],
+
+        [
+            'name'=>'O3.Users.Video.call.receive.Data',
+            'route'=>'/video/call/receive/data/{UniqId}/{From}/{To}',
+            'method'=>'getCallDataForCaller',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'O3.Users.Video.call.receive',
+            'route'=>'/video/call/receive/{from}/{to}',
+            'method'=>'sendNotificatonToCaller',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'O3.Users.Allowed.for.Call',
+            'route'=>'/video/call/allowed/list/{apiToken}',
+            'method'=>'getAllAllowedUserList',
+            'type'=>'post',
+        ],
+
+
+        [
+            'name'=>'O3.Users.vMeet.Add.New.Form',
+            'route'=>'/vMeet/add/newMeet',
+            'method'=>'showVmeetForm',
+            'type'=>'get',
+        ],  [
+            'name'=>'O3.Users.vMeet.Add.New.Form',
+            'route'=>'/vMeet/add/newMeet',
+            'method'=>'showVmeetForm',
+            'type'=>'get',
+        ],
+
+
+        [
+            'name'=>'O3.Users.Notification',
+            'route'=>'/notification/get/{apiToken}',
+            'method'=>'getNotificationByApiToken',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'O3.Users.Notification.get',
+            'route'=>'/notification/get/show/{notifyId}',
+            'method'=>'getNotificationByApiTokenForNotifyId',
+            'type'=>'get',
+        ],
+
+
+
         [
             'name'=>'O3.Test',
             'route'=>'/test',
             'method'=>'test',
             'type'=>'get',
         ],
+
+        [
+            'name'=>'O3.Test',
+            'route'=>'/test',
+            'method'=>'testPost',
+            'type'=>'post',
+        ],
+
+        [
+            'name'=>'O3.Sign.By.Token',
+            'route'=>'/signin/by/{apiToken}',
+            'method'=>'signInByToken',
+            'type'=>'get',
+        ],
+        [
+            'name'=>'O3.get.CSRF',
+            'route'=>'/signin/get/csrf',
+            'method'=>'getCsrf',
+            'type'=>'get',
+        ],
+
 
 
 

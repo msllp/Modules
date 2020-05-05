@@ -58,8 +58,6 @@ class F
        // dd($setupStatus);
         return $setupStatus;
     }
-
-
     public function setupSalesModule():bool{
         $this->cDB(['Sales']);
 

@@ -1,8 +1,4 @@
-@extends('MS::core.layouts.root')
+@extends('MS::core.layouts.rootRaw')
 @section('body')
-
-
 <profile></profile>
-
-
 @endsection

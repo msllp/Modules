@@ -21,7 +21,9 @@ class C extends BaseController
 
     public function MaintainaceDashboardWithApiToken($apiToken,$ln=null,Request $r){
 
-        $checkSession=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'checkUserLoginSession','data'=> $apiToken ]]);
+     //   dd(\MS\Mod\B\User4O3\L\Users::checkUserLoggedIn());
+        $checkSession=\MS\Mod\B\User4O3\F::checkUserLogin($apiToken);
+       //     \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'checkUserLoginSession','data'=> $apiToken ]]);
 
 
         if($checkSession){
@@ -32,14 +34,28 @@ class C extends BaseController
                 'path'=> [
                     'sidebar'=> route('O3.Panel.data')
                 ],
-                'accessToken'=> \MS\Core\Helper\Comman::encode($apiToken),
-                'msUser'=>  \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]])
+                'accessToken'=> \MS\Core\Helper\Comman::encodeLimit($apiToken,120),
+                'msUser'=>  \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]]),
+                  'msViewPanel'=>[
+                'tab'=>[
+                    [
+                        'tabCode'=>'01',
+                        'modCode'=>'MAS',
+                        'modDView'=>"Setup Company",
+                        'modUrl'=>"/o3/Company/setup/company",
+                        'data'=>'',
+
+                    ]
+                ]
+            ]
 
             ];
 
             return view("MS::core.layouts.MS.mpanel")->with('msData',$data);
         }else{
-            return redirect()->route('O3.Users.Login.Form');
+
+         return   \MS\Mod\B\User4O3\F::redirectToLoginPage();
+            //return redirect()->route('O3.Users.Login.Form');
         }
 
 
@@ -49,34 +65,55 @@ class C extends BaseController
 
 
     public function MaintainaceDashboard(Request $r,$ln=null){
-        //dd($r);
+
+
+       // dd();
+
+        $checkSession=\MS\Mod\B\User4O3\F::checkUserLogin();
+
         if($ln==null)$ln=$this->ln;
         $r->session()->put('ln', $ln);
         session('ln',$ln);
-
-        $foundUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
-        //dd($foundUser);
         \App::setlocale(session('ln'));
-        $data=[
+        if(!$checkSession) return   \MS\Mod\B\User4O3\F::redirectToLoginPage();
+        $foundUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]]);
+        if(count($foundUser)>0){
+            $data=[
+                'path'=> [
+                    'sidebar'=> route('O3.Panel.data')
+                    ],
+                'accessToken'=>( array_key_exists('apiToken',$foundUser))?\MS\Core\Helper\Comman::encodeLimit($foundUser['apiToken']) : \MS\Core\Helper\Comman::encodeLimit('UserMitul'),
+                'msUser'=>$foundUser,
+                'msViewPanel'=>[
+                    'tab'=>[
+                        [
+                            'tabCode'=>'01',
+                            'modCode'=>'MAS',
+                            'modDView'=>"Setup Company",
+                            'modUrl'=>"/o3/Company/setup/company",
+                            'data'=>'',
 
-            'path'=> [
-                'sidebar'=> route('O3.Panel.data')
-            ],
+                        ]
+                    ]
+                ]
+            ];
 
-            'accessToken'=>(array_key_exists('apiToken',$foundUser))?\MS\Core\Helper\Comman::encode($foundUser['apiToken']) : \MS\Core\Helper\Comman::encode('UserMitul'),
+            return view("MS::core.layouts.MS.mpanel")->with('msData',$data);
+        }else{
+            return redirect()->route('O3.Users.Login.Form');
+        }
 
-
-        ];
-        return view("MS::core.layouts.MS.mpanel")->with('msData',$data);
     }
 
 
     public function SideNavForMaintainaceDashboard(Request $r){
 
-      //  dd($r);
-        $getLoggedUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
+     //  dd($r->all());
+
+       $getLoggedUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
         \App::setlocale(session('ln'));
         //dd($r->session()->all());
+        //dd($getLoggedUser['apiToken']);
         $rdata=['accessToken'=>$getLoggedUser['apiToken']];
 
         $data=\MS\Mod\B\Panel4EN\L\Nav::getNavForEnv();

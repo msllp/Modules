@@ -28,7 +28,8 @@ class C extends BaseController
        // dd(MSDB::makeDB('O3_Company_Master'));
       //  MSDB::backUpDB('O3_Company_Data');
        // MSDB::makeDB('O3_Company_Config');
-        $c=new L\Company();
+        $c=new \MS\Mod\B\Sales4O3\L\Sales();
+        dd($c);
         dd($c->getCompanyUserMasterModel('9668431692111893')->rowAll());
         $userId=\MS\Mod\B\User4O3\F::getUser()['id'];
         dd($c->migrateById($c->CompanyMaster,[$userId]));
@@ -48,7 +49,7 @@ class C extends BaseController
     }
 
     public function setupCompany(){
-        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'setupFirstCompany','data'=>[]]]);
+        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'ForUsersetupFirstCompany','data'=>[]]]);
 
     }
 

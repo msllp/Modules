@@ -197,7 +197,7 @@ class Company extends Logic
 
 
     }
-    public function setupFirstCompany(){
+    public function ForUsersetupFirstCompany(){
         $data=[];
 
       //  dd(Session::all());
@@ -279,7 +279,7 @@ class Company extends Logic
         $data=[];
         $data['companMaster']= $m2->rowAdd($companyData2,$this->getMasterCompanyModelUniq());
         $data['companUserMaster']= $m->rowAdd($companyData,$this->getUserCompanyModelUniq());
-        $data['migrateDependents']=$this->setupForCompany($companyid);
+        $data['migrateDependents']=$this->ForUsersetupForCompany($companyid);
 
         foreach ($data as $v)if(!$v)return['status'=>$v,'debug'=>$data];
 
@@ -288,7 +288,7 @@ class Company extends Logic
     }
 
 
-    private function setupForCompany($companyId){
+    private function ForUsersetupForCompany($companyId){
         $models=[
             'account'=>$this->getUserCompanyAccountModel($companyId),
             'cash'=>$this->getUserCompanyCashModel($companyId)
@@ -486,24 +486,17 @@ class Company extends Logic
         return array_merge($m1);
 
     }
-    public static function getTableRaw($data=[])
-    {
-
-        $methodToCall = [
-            'setupMasterUserCompany' => [],
-            'setupMasterCompany'=>[],
-            'setupMasterAccounts'=>[],
-            'setupMasterCashLedger'=>[]
-
-        ];
+    public static function getTableRaw($data=[]){
+        $allMethods=get_class_methods (__CLASS__);
+        $autoMethodsGrabed=[];
+        foreach ($allMethods as $k=>$m)if(strpos($m,'setup')===0)$autoMethodsGrabed[$m]=[];
+        $methodToCall = [];
+        $methodToCall=array_merge($autoMethodsGrabed,$methodToCall);
         $c = new self();
         $d = [];
-        foreach ($methodToCall as $method => $data) if (method_exists($c, $method)) $d = array_merge($d, $c->$method($data));
-       // dd($d);
+        foreach ($methodToCall as $method => $data) if (method_exists($c, $method))  $d = array_merge($d, $c->$method($data));
+
         return $d;
-        dd($d);
-
-
     }
 
 

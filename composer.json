@@ -1,32 +1,22 @@
 {
-  "name": "msllp/core",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Million Solutions LLP",
-      "email": "dev@millionsllp.com"
-    }
-  ],
-  "require": {
-    "php": "^7.2.5",
-    "fideloper/proxy": "^4.2",
-    "laravel/framework": "^6.0",
-    "laravel/tinker": "^2.0",
-    "doctrine/dbal": "^2.10",
-    "symfony/yaml": "^4.3",
-    "barryvdh/laravel-dompdf": "^0.8.4",
-    "guzzlehttp/guzzle": "^6.3",
-    "razorpay/razorpay": "2.*"
-  },
-  "autoload": {
-    "psr-4": {
-      "MS\\":"src/",
-      "MS\\Core\\": "src/Core"},
-    "files": [
-      "src/Functions/7_3.php"
-    ]
-  },
-  "description": "For Million Solutions LLP Private Code"
+    "name": "msllp/modules",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Million Solutions LLP",
+            "email": "dev@millionsllp.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5",
+        "msllp/core": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "MS\\Mod\\B\\": "src/Modules/B"
+        }
+    },
 
+    "description": "For Million Solutions LLP Private Code"
 }

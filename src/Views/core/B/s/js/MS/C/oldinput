@@ -1,0 +1,199 @@
+        <div v-if="false">
+            <section v-if="(inputType != 'locked')&&(inputType != 'radio')&&(inputType != 'checkbox')&&(inputType != 'option')&&(inputType != 'multioption')&&(inputType != 'file')&&(inputType != 'multifile')"  v-for="(input,key) in finalInput" :title="inputInfo">
+                <div  class="row align-items-center form-group" >
+
+
+                    <label class="col" :class="{
+                    'ms-error':(msValid == 'is-invalid')
+                    }">
+                        <span class="row" >
+                        <span class="col col-8">{{ forNice(inputVname) }}</span>
+                        <span class="col col" ><span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span> </span>
+                </span>
+                    </label>
+
+                    <div class="col col-8" style="margin-top: -7px;">
+
+                        <div class="input-group" data-toggle="tooltip" data-placement="left">
+
+                            <div v-if="input.inputPrefix" class="input-group-prepend">
+                                <i :class="'fa fa-'+input.inputPrefix+ ' input-group-text' " ></i>
+                            </div>
+
+                            <input  :type="inputType" :list="inputName" :name="inputName"  :class="'form-control '+msValid" v-model="msValue" :aria-describedby="inputName" :placeholder="'Enter '+forNice(inputVname)+' here'">
+
+
+                            <datalist :id="inputName" class="col-lg-12" v-if="(inputType != 'radio') && (inputType != 'checkbox') && (inputType != 'textarea')">
+                                <option v-for ="autofiled in inputAuto" :value="autofiled[dValue]" > {{forNice(autofiled[dText])}} </option>
+
+                            </datalist>
+
+                            <div v-if="inputPerfix" class="input-group-append ">
+
+                                <i :class="'fa fa-'+inputPerfix+ ' input-group-text' " >
+                                    <span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span>
+                                </i>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+
+
+
+
+            <div  class="row form-group"  v-if="(inputType == 'radio')" :title="inputInfo">
+
+
+                <label class="col col " :class="{
+                    'ms-error':(msValid == 'is-invalid')
+                    }">
+<span class="row" >
+                        <span class="col col-8">{{ forNice(inputVname) }}</span>
+                        <span class="col col" ><span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span> </span>
+</span>
+                </label><br>
+
+                <div class="col col-8">
+                    <div class="form-check-inline "  v-for ="(autofiled,index) in inputAuto" >
+                        <input class="form-check-input" :name="inputName"  v-model="msValue"  :type="inputType" :value="autofiled[dValue]" :id="inputName+index"  >
+                        <label class="form-check-label" :for="inputName+index" >
+                            {{forNice(autofiled[dText])}}
+                        </label>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div  class="row form-group"  v-if="(inputType == 'checkbox')" :title="inputInfo">
+
+                <label class="col" :class="{
+                    'ms-error':(msValid == 'is-invalid')
+                    }"> <span class="row" >
+                        <span class="col col-8">{{ forNice(inputVname) }}</span>
+                        <span class="col col" ><span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span> </span>
+</span></label>
+                <div class="col col-8 ">
+                    <div class="form-check-inline"  v-for ="(autofiled,index) in inputAuto"  >
+                        <input class="form-check-input"  v-model="msValue[index]" :name="inputName+'['+index+']'"  :type="inputType" :value="autofiled[dValue]" :id="inputName+index">
+                        <label class="form-check-label" :for="inputName+index">
+                            {{forNice(autofiled[dText])}}
+                        </label>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div  class="form-group"  v-if="(inputType == 'locked') || (inputType == 'auto')" style="margin-left: 0px;cursor: help" :title="inputInfo" >
+                <div class="row">
+
+                    <label class="col" >{{ forNice(inputVname) }} </label>
+                    <div class="col col-8">
+                        <div class="form-control text-info text-muted disabled" >
+                            {{forNice(dValue)}}
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <input  type="hidden" v-model="dValue" :name="inputName">
+            </div>
+
+
+            <div  class="form-group"  v-if="(inputType == 'option') || (inputType == 'multioption')">
+
+
+                <div class="input-group mb-3" >
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" :for="inputName" :class="{
+                    'ms-error':(msValid == 'is-invalid')
+                    }">
+
+                            <span class="row" >
+                        <span class="col col-8">{{ forNice(inputVname) }}</span>
+                        <span class="col col" ><span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span> </span>
+</span>
+                        </label>
+                    </div>
+
+
+                    <select class="custom-select margin-fix"  v-model="msValue"  :name="inputName" :id="inputName" v-if="inputType=='option'">
+                        <option selected disabled>Choose one...</option>
+                        <option v-for ="(autofiled,index) in inputAuto" :value="autofiled[dValue]" > {{ forNice (autofiled[dText])}}</option>
+                    </select>
+
+                    <select class="custom-select"   v-model="msValue" :name="inputName+'[]'" :id="inputName" v-if=" inputType=='multioption'" multiple >
+                        <option  disabled>You can multiple option by pressing 'ctrl'...</option>
+                        <option v-for ="(autofiled,index) in inputAuto" :value="autofiled[dValue]" > {{forNice(autofiled[dText])}}</option>
+                    </select>
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <div  class="form-group"  v-if="(inputType == 'file') ||  (inputType == 'multifile')">
+                <section class="row" v-for="(input,key) in finalInput" >
+
+                    <label class="col " v-if="!input.baseValue.inputOnly" :for="inputName" :class="{
+                    'ms-error':(msValid == 'is-invalid')
+                    }">
+                    <span class="row" >
+                        <span class="col col-8">{{ forNice(input.baseValue.inputVname) }}</span>
+                        <span class="col col" ><span v-if="inputRequired" class=" text-danger fa fa-asterisk ms-spin"></span> </span>
+</span>
+
+                    </label>
+
+                    <div class="col col-8">
+                        <div class="input-group" data-toggle="tooltip" data-placement="left">
+
+                            <div v-if="input.inputPrefix" class="input-group-prepend">
+                                <i :class="'fa fa-'+input.inputPrefix+ ' input-group-text' " ></i>
+                            </div>
+
+                            <input v-if="inputType == 'file'" :type="inputType"  :name="inputName"  :class="'form-control '+msValid"  v-on:change="loadFilestoLocal($event)" :aria-describedby="inputName" >
+                            <input multiple v-if="inputType == 'multifile'"  type="file"  :name="inputName"  :class="'form-control '+msValid"  v-on:change="loadFilestoLocal" :aria-describedby="inputName" >
+
+
+                            <div v-if="inputPerfix" class="input-group-append ">
+                                <i :class="'fa fa-'+inputPerfix+ ' input-group-text' " ></i>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+
+                </section>
+            </div>
+
+
+
+            <small v-if="msValid == 'is-invalid'" class="form-text text-muted text-center" :id="inputName +'_error'" >
+
+                <div v-for="item in inputError" class="alert alert-danger" role="alert" style="font-size: smaller;
+    padding: 5px;">
+                    {{ item }}
+                </div>
+
+            </small>
+
+        </div>

@@ -1,0 +1,100 @@
+.ms-dashboard-modal-active{
+    @apply pointer-events-none;
+}
+.ms-dashboard-modal {
+    @apply ms-animation;
+
+   // @apply pointer-events-none;
+    @apply fixed;
+    @apply w-full;
+    @apply h-full;
+    @apply top-0;
+    @apply left-0;
+    @apply flex;
+    @apply items-center;
+    @apply justify-center;
+    z-index: 2705;
+
+
+    .ms-dashboard-modal-overlay{
+        z-index: 2703;
+      //  @apply modal-overlay;
+        @apply  absolute;
+        @apply  w-full;
+        @apply  h-full;
+        @apply  bg-gray-900;
+        @apply  opacity-50;
+    }
+
+
+    .ms-dashboard-modal-container{
+        z-index: 2706;
+        @apply bg-white;
+        @apply w-11/12;
+        @apply mx-auto rounded;
+        @apply shadow-lg;
+       // @apply  z-50;
+        @apply overflow-y-auto;
+
+            .ms-dashboard-modal-content{
+                @apply py-4;
+                @apply text-left;
+                @apply px-6;
+
+                    .ms-dashboard-modal-title{
+                        z-index: 2707;
+                        @apply flex;
+                        @apply justify-between;
+                        @apply items-center;
+                        @apply pb-3;
+                        @apply text-center;
+
+
+                        .ms-dashboard-modal-title-head{
+                            @apply mx-auto;
+                            .ms-dashboard-modal-title-icon{
+                                max-width: 40px;
+                                max-height: 40px;
+                                @apply flex;
+                                @apply mr-2;
+                                @apply mx-auto;
+                            }
+                            .ms-dashboard-modal-title-text{
+                                @apply flex;
+                                @apply text-2xl;
+                                @apply font-bold;
+                            }
+                            .ms-dashboard-modal-title-modal-close{
+                                @apply border;
+                                @apply bg-red-300;
+                            }
+                        }
+
+
+                    }
+                    .ms-dashboard-modal-body{
+                        overflow-y: auto;
+                        max-height: 80vh;
+                    }
+                    .ms-dashboard-modal-footer{
+                        z-index: 2707;
+                        @apply flex;
+                        @apply justify-end;
+                        @apply pt-2;
+                    }
+            }
+        }
+
+    //@screen sm {  .ms-dashboard-modal-container{    @apply  max-w-md; } }
+    //@screen md { .ms-dashboard-modal-container{    @apply  max-w-md; } }
+
+
+}
+
+.ms-dashboard-modal-hidden{
+    display: none;
+}
+//.ms-dashboard-modal-active {
+//    overflow-x: hidden;
+//    overflow-y: visible !important;
+//}

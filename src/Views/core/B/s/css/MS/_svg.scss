@@ -1,0 +1,88 @@
+
+svg{
+    pointer-events: none;
+}
+
+
+.msicon-svg-lg{
+    max-height: 39px;
+    max-width: 39px;
+    display: inline-block;
+}
+
+
+.msicon{
+
+    min-width: 23px!important;
+    min-height: 16px!important;
+    display: inline-block;
+
+}
+
+.msicon-app{
+    @apply msicon;
+    background-image: url('svg/apps.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+
+
+}
+
+.msicon-admin-user{
+    @apply msicon;
+    background-image: url('svg/admin.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+}
+
+.msicon-modules{
+    @apply msicon;
+    background-image: url('svg/module.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+}
+
+
+.msicon-route{
+    @apply msicon;
+    background-image: url('svg/route.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+}
+
+.msicon-add{
+    @apply msicon;
+    background-image: url('svg/add.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: 15px 15px;
+
+}
+.msicon-list{
+    @apply msicon;
+    background-image: url('svg/list.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+}
+
+.msicon-manage-module{
+    @apply msicon;
+    background-image: url('svg/planning.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    //background-attachment: fixed;
+    background-size: 15px 15px;
+}
+
+

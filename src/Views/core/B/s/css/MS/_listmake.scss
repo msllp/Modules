@@ -1,0 +1,75 @@
+.ms-table-auto{
+    @apply table-auto;
+   // @apply w-full;
+   @apply block;
+    max-width: 90vw;
+   // max-height: 90vh;
+ overflow-x: auto;
+ //overflow-y: auto;
+    tr{
+
+      th{
+          @apply border;
+          @apply py-1;
+          @apply pl-1;
+
+      }
+
+        td{
+            @apply border;
+            @apply py-1;
+            @apply pl-1;
+        }
+
+
+
+
+    }
+
+    }
+
+
+.ms-list-row-highlight-on{
+    @apply ms-animation;
+    @apply shadow;
+    @apply bg-blue-300;
+}
+
+.ms-list-row-highlight-off{
+    @apply ms-animation;
+    @apply bg-blue-100;
+}
+
+.ms-item-found-box{
+    @apply block;
+   // max-height: 20%;
+}
+
+
+.ms-userForm-box{
+    @apply ms-animation;
+    @apply block;
+    opacity: 1;
+}
+
+.ms-userForm-box-hidden{
+    @apply ms-animation;
+    opacity: 0;
+   // width: 0;
+   //height: 0;
+    height: 0;
+    margin-left:-100vw;
+}
+.ms-userForm-box-default{
+    @apply ms-animation;
+    opacity: 1;
+
+
+}
+
+.ms-userForm-box-default-hidden{
+    @apply ms-animation;
+    opacity: 0;
+    height: 0;
+    margin-left:-70vw;
+}

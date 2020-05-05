@@ -1,0 +1,493 @@
+
+
+    @apply ms-animation;
+
+    .ms-nav-container{
+        z-index: 2501;
+        position: fixed;
+        background: linear-gradient(47deg, $ms-dark-theme-color-main, $ms-dark-theme-color-main-2);
+        //color:white;
+    }
+
+    .ms-livebox{
+        position: block;
+        //  min-height: 1000px;
+        margin-left:252px;
+        padding-top: 64px;
+       // background: $ms-dark-theme-color-main;
+        z-index: 2600;
+        @apply ms-animation;
+        @apply border-l;
+        @apply shadow;
+
+    }
+    .ms-livebox-full{
+        margin-left: 50px;
+        @apply ms-animation;
+        z-index: 2600;
+    }
+
+    .ms-animation{
+        transition: all 500ms ease-in-out;
+    }
+
+
+    .ms-company-logo {
+        filter: grayscale(100%);
+        cursor: pointer;
+        max-height:70px;
+        @apply ms-animation;
+    }
+    .ms-company-logo:hover {
+        @apply ms-animation;
+        filter: grayscale(30%);
+        cursor: pointer;
+        max-height:70px;
+    }
+
+    .ms-hidden-fix{
+        padding-left: 0px;
+    }
+
+    .ms-hidden-fix-2{
+        padding-top: 10px;
+        padding-left: 0px;
+    }
+
+
+    .ms-live-tab{
+        background: linear-gradient(47deg, $ms-dark-theme-color-main, $ms-dark-theme-color-main-2);
+        margin-top: 8px;
+    }
+
+    .theme-bg{
+        background: linear-gradient(47deg, $ms-dark-theme-color-main, $ms-dark-theme-color-main-2);
+        //background-image: linear-gradient(to left,$base-theme-color ,lighten(#e52e71,15%))
+        //  background-color:$base-theme-color ;
+        //    color:lighten($base-theme-color-9,2%);
+    }
+
+    .ms-hidden{
+
+        @apply hidden;
+        @apply ms-animation;
+    }
+
+
+
+
+    .ms-livebox-without-nav{
+        margin-left: 0px;
+        @apply ms-animation;
+        z-index: 2600;
+    }
+    .ms-nav-btn-active{
+        @apply shadow-lg;
+
+        @apply ml-4;
+        // @apply mr-3;color:rgba(255,255,255,0.8);
+        @apply ms-animation;
+    }
+
+    .ms-nav-btn{
+        // @apply ms-main-title ;
+        @apply cursor-pointer;
+        @apply p-3;
+        @apply ms-animation;
+        background: linear-gradient(47deg, $ms-dark-theme-color-main, $ms-dark-theme-color-main-cross-2);
+
+    }
+    //.ms-nav-btn:hover{
+    //    @apply shadow;
+    //    background-color: #6158ce;
+    //    @apply ml-4;
+    //    // @apply mr-3;
+    //    color:rgba(255,255,255,0.8);
+    //}
+    .ms-unhidden{
+
+        @apply ms-animation;
+    }
+    .ms-nav-div-hidden{
+
+         @apply ms-animation;
+
+     }
+
+
+    .ms-text-auto{
+        overflow-y: auto;
+        max-height:5rem;
+    }
+
+    .slide-enter-active {
+        -moz-transition-duration: 0.3s;
+        -webkit-transition-duration: 0.3s;
+        -o-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -moz-transition-timing-function: ease-in;
+        -webkit-transition-timing-function: ease-in;
+        -o-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+    }
+
+    .slide-leave-active {
+        -moz-transition-duration: 0.3s;
+        -webkit-transition-duration: 0.3s;
+        -o-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    }
+
+    .slide-enter-to, .slide-leave {
+        max-width: 100px;
+        overflow: hidden;
+        //transtion:all 5000ms ease-in-out;
+    }
+
+    .slide-enter, .slide-leave-to {
+        overflow: hidden;
+        max-width: 0;
+        //transtion:all 1000ms ease-in-out;
+    }
+
+
+    .ms-clac{
+        margin-top:-118px;
+        //  width: 100%;
+        // height: 100%;
+        padding: 0;
+        margin: 0;
+        display: block;
+        z-index:2510;
+        position:fixed;
+        top:0px;
+        right:0;
+        @apply select-none;
+    }
+
+
+    .ms-card-box{
+        @apply w-full;
+        @apply p-3;
+
+        .ms-card{
+            //  @apply bg-blue-200;
+            @apply border;
+            @apply rounded;
+            @apply shadow;
+            @apply p-2;
+            .ms-card-body{
+                @apply flex;
+                @apply flex-row;
+                @apply items-center;
+
+                .ms-card-icon-box{
+                    @apply flex-shrink;
+                    @apply pr-4;
+                    .ms-card-icon-div{
+                        @apply rounded p-3;
+                        //@apply bg-green-dark;
+                        .ms-card-icon{
+                            @apply text-3xl;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
+    #zingchart-vue-0-menu-sep-reload,#zingchart-vue-0-menu-item-viewaspng, #zingchart-vue-0-license-text,#zingchart-vue-0-menu-item-xmiabt,#zingchart-vue-0-menu-item-downloadsvg,#zingchart-vue-0-menu-item-downloadcsv,#zingchart-vue-0-menu-item-downloadxls,#zingchart-vue-0-menu-sep-print,#zingchart-vue-0-menu-item-xmiabt,#zingchart-vue-0-menu-item-viewsource,#zingchart-vue-0-menu-item-viewdatatable{
+        display: none !important;
+    }
+    #zingchart-vue-1-menu-sep-reload,#zingchart-vue-1-menu-item-viewaspng, #zingchart-vue-1-license-text,#zingchart-vue-1-menu-item-xmiabt,#zingchart-vue-1-menu-item-downloadsvg,#zingchart-vue-1-menu-item-downloadcsv,#zingchart-vue-1-menu-item-downloadxls,#zingchart-vue-1-menu-sep-print,#zingchart-vue-1-menu-item-xmiabt,#zingchart-vue-1-menu-item-viewsource,#zingchart-vue-1-menu-item-viewdatatable{
+        display: none !important;
+    }
+    #zingchart-vue-2-menu-sep-reload,#zingchart-vue-2-menu-item-viewaspng, #zingchart-vue-2-license-text,#zingchart-vue-2-menu-item-xmiabt,#zingchart-vue-2-menu-item-downloadsvg,#zingchart-vue-2-menu-item-downloadcsv,#zingchart-vue-2-menu-item-downloadxls,#zingchart-vue-2-menu-sep-print,#zingchart-vue-2-menu-item-xmiabt,#zingchart-vue-2-menu-item-viewsource,#zingchart-vue-2-menu-item-viewdatatable{
+        display: none !important;
+    }
+
+    #zingchart-vue-3-menu-sep-reload,#zingchart-vue-3-menu-item-viewaspng, #zingchart-vue-3-license-text,#zingchart-vue-3-menu-item-xmiabt,#zingchart-vue-3-menu-item-downloadsvg,#zingchart-vue-3-menu-item-downloadcsv,#zingchart-vue-3-menu-item-downloadxls,#zingchart-vue-3-menu-sep-print,#zingchart-vue-3-menu-item-xmiabt,#zingchart-vue-3-menu-item-viewsource,#zingchart-vue-3-menu-item-viewdatatable{
+        display: none !important;
+    }
+
+
+    .ms-dashboard-action-box{
+
+        @apply flex;
+        @apply items-center;
+        @apply  p-2;
+        @apply  border;
+        @apply  rounded-lg;
+        @apply  mr-4;
+        @apply cursor-pointer;
+    }
+    .ms-dashboard-action-box:hover{
+        background-color:$ms-theme-color-light;
+        @apply ms-animation;
+    }
+
+
+    .ms-dashboard-right-nav-box{
+
+        @apply flex;
+        @apply  items-center;
+        @apply  flex-shrink-0;
+        @apply select-none;
+        .ms-dashboard-right-nav-btn{
+            @apply ml-2;
+            @apply cursor-pointer;
+
+            .ms-dashboard-right-nav-btn-profile{
+                min-height: 48px;
+                min-width: 48px;
+                border-radius: 50%;
+                font-size: 18px;
+                @apply text-center;
+                @apply uppercase;
+                @apply p-3;
+                background-color: $ms-dark-theme-color-main-cross-3;
+                @apply shadow;
+                border-color: $ms-dark-theme-color-main-cross-4;
+                @apply border;
+                @apply ms-animation;
+                color:$ms-dark-theme-color-text;
+            }
+            .ms-dashboard-right-nav-btn-profile:hover{
+                background-color: $ms-dark-theme-color-main-cross-3;
+                border-color: $ms-dark-theme-color-main;
+                color: $ms-dark-theme-color-main;
+                @apply ms-animation;
+                @apply shadow-xl;
+            }
+
+            .ms-dashboard-right-nav-btn-notification{
+                @apply ms-animation;
+                @apply p-3;
+                max-height:48px;
+                max-width: 48px;
+                background-color: $ms-dark-theme-color-main-cross-3;
+                border-radius: 50%;
+                @apply shadow;
+                border-color: $ms-dark-theme-color-main-cross-4;
+                @apply border;
+                svg{
+                    @apply ms-animation;
+                    filter: grayscale(100%);
+                    max-height:24px;
+                    max-width: 24px;
+
+
+                }
+            }
+
+
+            .ms-dashboard-right-nav-btn-notification:hover{
+                background-color: $ms-dark-theme-color-main-cross-3;
+                border-color: $ms-dark-theme-color-main;
+                color: $ms-dark-theme-color-main;
+                @apply ms-animation;
+                @apply shadow-xl;
+                svg{
+                    @apply ms-animation;
+                    filter: grayscale(10%);
+                    max-height:24px;
+                    max-width: 24px;
+
+
+                }
+            }
+
+        }
+        .ms-dashboard-right-nav-btn:last-of-type{
+            @apply mr-2;
+        }
+
+
+
+    }
+
+    .ms-dashboard-profile-box{
+
+        @apply border;
+        @apply border-gray-400;
+        // border-color: $ms-theme-color-light;
+        background-color: $ms-dark-theme-color-main;
+        position :fixed;
+        top:70px;
+        right: 0px;
+        color:$ms-dark-theme-color-text;
+        @apply ms-animation;
+        .ms-dashboard-profile-body{
+            @apply ms-animation;
+            min-width: 250px;
+            max-height: 250px;
+            background: linear-gradient(-47deg, $ms-dark-theme-color-main-2,$ms-dark-theme-color-main-4);
+            @apply p-3;
+            .ms-dashboard-profile-user-box {
+                @apply flex;
+                @apply justify-center;
+                color:$ms-dark-theme-color-text;
+
+                .ms-dashboard-profile-user-icon {
+                    @apply ms-animation;
+                    @apply border;
+                    border-color:$ms-dark-theme-color-main-cross-2 ;
+                    background: linear-gradient(-47deg, $ms-dark-theme-color-main-cross-3,$ms-dark-theme-color-main-cross-4);
+                    @apply rounded-full;
+                    @apply p-1;
+                    @apply flex;
+                    @apply shadow;
+                    max-width: 50px;
+                    max-height: 50px;
+
+
+                }
+            }
+
+        }
+
+    }
+    .ms-dashboard-profile-hr{
+        border-color:$ms-dark-theme-color-main-cross-3 ;
+        @apply my-2;
+        @apply -ml-3;
+        @apply -mr-3;
+        @apply shadow;
+    }
+
+    .ms-dashboard-profile-box-hidden{
+        @apply ms-animation;
+        position: absolute;
+        min-width: 0px;
+        min-height: 0px;
+        // top:-500px;
+        right: -500px;
+        background-color: $ms-dark-theme-color-main;
+
+        .ms-dashboard-profile-body{
+
+            min-width: 250px;
+            max-height: 250px;
+            background: linear-gradient(-47deg, $ms-dark-theme-color-main-2,$ms-dark-theme-color-main-4);
+            @apply p-3;
+            .ms-dashboard-profile-user-box {
+                @apply flex;
+                @apply justify-center;
+                color:$ms-dark-theme-color-text;
+
+                .ms-dashboard-profile-user-icon {
+                    @apply ms-animation;
+                    @apply border;
+                    border-color:$ms-dark-theme-color-main-cross-2 ;
+                    background: linear-gradient(-47deg, $ms-dark-theme-color-main-cross-3,$ms-dark-theme-color-main-cross-4);
+                    @apply rounded-full;
+                    @apply p-1;
+                    @apply flex;
+                    @apply shadow;
+                    max-width: 50px;
+                    max-height: 50px;
+
+
+                }
+            }
+
+        }
+
+    }
+
+    .ms-dashboard-profile-footer{
+        @apply inline-flex;
+        @apply justify-between;
+        @apply items-center;
+        @apply p-1;
+        @apply select-none;
+        div{
+            @apply mx-2;
+            @apply flex;
+            @apply items-center;
+        }
+    }
+
+    .ms-dashboard-profile-signout-btn{
+        @apply border;
+        @apply cursor-pointer;
+        border-color:$ms-dark-theme-color-main-cross-2;
+        @apply w-auto;
+        @apply rounded;
+
+        span{
+            @apply mx-2;
+        }
+        .ms-dashboard-profile-signout-icon{
+            @apply px-2;
+            @apply px-1;
+            max-height: 32px;
+            max-width: 32px;
+        }
+    }
+
+    .ms-dashboard-profile-signout-btn:hover{
+        @apply ms-animation;
+        @apply shadow;
+        background: linear-gradient(-145deg,$ms-dark-theme-color-main-cross-3,$ms-dark-theme-color-main-cross-2);
+        border-color:$ms-dark-theme-color-main-4;
+        color: $ms-dark-theme-color-text-cross;
+    }
+
+
+
+    .ms-dashboard-profile-edit-btn{
+        @apply border;
+        @apply cursor-pointer;
+        border-color:$ms-dark-theme-color-main-cross-2;
+        @apply w-auto;
+        @apply rounded;
+        span{
+            @apply mx-2;
+        }
+        .ms-dashboard-profile-edit-icon{
+            max-height: 32px;
+            max-width: 32px;
+            @apply px-2;
+            @apply px-1;
+        }
+
+
+    }
+    .ms-dashboard-profile-edit-btn:hover{
+
+        @apply ms-animation;
+        @apply shadow;
+        background: linear-gradient(35deg,$ms-dark-theme-color-main-cross-3,$ms-dark-theme-color-main-cross-2);
+        border-color:$ms-dark-theme-color-main-4;
+        color: $ms-dark-theme-color-text-cross;
+    }
+    .ms-dashboard-profile-darkmode-btn{
+        @apply ms-animation;
+        @apply border;
+        @apply cursor-pointer;
+        border-color:$ms-dark-theme-color-main-cross-2;
+        @apply w-auto;
+        @apply rounded;
+        min-height: 32px;
+        @apply px-2;
+        color:$ms-dark-theme-color-text;
+        background: linear-gradient(35deg,lighten($ms-dark-theme-color-main-4,10%),lighten($ms-dark-theme-color-main-3,10%));
+
+    }
+    .ms-dashboard-profile-darkmode-btn:hover{
+        @apply ms-animation;
+        @apply shadow;
+        background: linear-gradient(35deg,$ms-dark-theme-color-main-cross-3,$ms-dark-theme-color-main-cross-2);
+        border-color:$ms-dark-theme-color-main-4;
+        color: $ms-dark-theme-color-text-cross;
+    }
+
+

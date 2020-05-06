@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MS\Mod\B\Sales4O3;
+namespace MS\Mod\B\Sales4O3\L;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;

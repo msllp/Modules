@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MS\Mod\B\Panel4EN;
+namespace MS\Mod\B\Panel4EN\L;
 
 
 class basicPanel

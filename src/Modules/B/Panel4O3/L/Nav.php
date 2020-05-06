@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MS\Mod\B\Panel4O3;
+namespace MS\Mod\B\Panel4O3\L;
 
 use MS\Mod\B\Mod\L\Nav as baseNav;
 

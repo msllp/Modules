@@ -22,17 +22,33 @@ class C extends BaseController
 
     protected $ln='en';
 
+    public function __construct()
+    {
+        $this->middleware('onlyAjax')->only(['getStatesForCompany','getAllCompany']);
+        $this->middleware('onlyUsers')->only(['getStatesForCompany','getAllCompany']);
 
+    }
     public function test(){
     //    $m=new MSDB(__NAMESPACE__,'test');
        // dd(MSDB::makeDB('O3_Company_Master'));
       //  MSDB::backUpDB('O3_Company_Data');
        // MSDB::makeDB('O3_Company_Config');
+        $data=['which'=>'Company'];
+        return  view('MS::core.layouts.Error.LimitOver')->with('data',$data);
+
         $c=new \MS\Mod\B\Sales4O3\L\Sales();
         dd($c);
         dd($c->getCompanyUserMasterModel('9668431692111893')->rowAll());
         $userId=\MS\Mod\B\User4O3\F::getUser()['id'];
         dd($c->migrateById($c->CompanyMaster,[$userId]));
+    }
+
+
+    public function getAllCompany($userId){
+
+        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'getAllCompanyForUser','data'=>['userId'=>$userId]]]);
+
+
     }
 
     public function getCompanyForWebsite($companyId){

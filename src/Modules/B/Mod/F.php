@@ -99,7 +99,7 @@ public static function getRouteModel(){
 
     }
 
-public static function checkRouteExist($r):array{
+    public static function checkRouteExist($r):array{
     $returnArray=['pathFound'=>false];
     $m=self::getRouteModel();
 

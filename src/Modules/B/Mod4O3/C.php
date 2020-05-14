@@ -1,6 +1,6 @@
 <?php
 
-namespace MS\Mod\B\Sales4O3;
+namespace MS\Mod\B\Mod4O3;
 
 //use B\MAS\R\AddMSCoreModule;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -20,12 +20,15 @@ class C extends BaseController
 
     protected $ln='en';
 
-    public function test(){
 
-
-        dd(F::setupSalesForCompany('test'));
+    public function genrateApiToken(Request $r){
+        $data=['r'=>$r];
+        return L\App::fromController([['method'=>'genrateApiTokenForFrontEnd','data'=>$data]]) ;
 
     }
+
+
+
 
 
 }

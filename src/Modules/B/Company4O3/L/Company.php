@@ -200,7 +200,15 @@ class Company extends Logic
     public function ForUsersetupFirstCompany(){
         $data=[];
 
-      //  dd(Session::all());
+      //  dd(\MS\Mod\B\User4O3\F::checkUserLimits('company'));
+
+        if(!\MS\Mod\B\User4O3\F::checkUserLimits('company')){
+            $data=['which'=>'Company'];
+            return  view('MS::core.layouts.Error.LimitOver')->with('data',$data);
+
+        }
+
+
         return  view('MOD::B.Company4O3.V.Static.SetupCompany')->with('data',$data);
     }
 
@@ -236,7 +244,7 @@ class Company extends Logic
         $companyData=[
 
             'UniqId'=>$companyid,
-            'CompanyLogo'=>(array_key_exists('gst',$com))?$com['logo']:'',
+            'CompanyLogo'=>(array_key_exists('logo',$com))?$com['logo']:'',
             'CompanyName'=>$com['businessName'],
             'CompanyShortName'=>$com['shortBusinessName'],
             'CompanyType'=>$com['typeOfBusiness'],
@@ -270,6 +278,7 @@ class Company extends Logic
 
         ];
 
+
         $m=$this->getUserCompanyModel($user['id']);
         $m2=$this->getMasterCompanyModel();
 
@@ -281,17 +290,39 @@ class Company extends Logic
         $data['companUserMaster']= $m->rowAdd($companyData,$this->getUserCompanyModelUniq());
         $data['migrateDependents']=$this->ForUsersetupForCompany($companyid);
 
-        foreach ($data as $v)if(!$v)return['status'=>$v,'debug'=>$data];
+        foreach ($data as $v)if(!$v)return['status'=>419,'debug'=>$data];
 
         return ['staus'=>true];
 
     }
 
+    public function getAllCompanyForUser($data){
+        $er=[
+            '601'=>['Request Id is expired'],
 
+        ];
+       $userId=\MS\Core\Helper\Comman::decodeLimit($data['userId'])  ;
+       if($userId=='')return $this->throwError($er['601']);
+       $th=$this;
+       $unsafeColumn=['created_at','id','CompanyHasBranch','CompanyStatus'];
+       $m=$this->getUserCompanyModel($userId);
+
+       if(!$m->checkTableExist())$m->migrate();
+       $allCom=$m->rowGet(['CompanyStatus'=>1]);
+       $mapFunction=function ($ar) use ($th,$unsafeColumn){
+            return $th->unSet($unsafeColumn,$ar);
+
+       };
+       $outData=array_map($mapFunction,$allCom);
+       if(count($outData)<1)return $this->throwError(['No Company Found Please Setup Company First']);
+       return $this->throwData($outData);
+    }
     private function ForUsersetupForCompany($companyId){
+        \MS\Mod\B\User4O3\F::setDefaultCompanyForUser($companyId,true);
         $models=[
             'account'=>$this->getUserCompanyAccountModel($companyId),
-            'cash'=>$this->getUserCompanyCashModel($companyId)
+            'cash'=>$this->getUserCompanyCashModel($companyId),
+         //   'accountPaymentLedger'=>$this->getUserCompanyAccountLedgerModel($companyId)
         ];
         $process=[];
         foreach ($models as $t=>$m){
@@ -310,6 +341,9 @@ class Company extends Logic
     }
     private function getUserCompanyAccountModel($id){
         return self::getModel(implode('\\',['MS','Mod','B','Company4O3']),$this->CompanyAccounts,[$id]);
+    }
+    private function getUserCompanyAccountLedgerModel($id){
+        return self::getModel(implode('\\',['MS','Mod','B','Company4O3']),$this->CompanyAccountLedger,[$id]);
     }
     private function getUserCompanyCashModel($id){
         return self::getModel(implode('\\',['MS','Mod','B','Company4O3']),$this->CompanyCashLedger,[$id]);

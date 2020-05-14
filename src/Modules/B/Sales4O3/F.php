@@ -19,4 +19,10 @@ class F
     {
 
     }
+    public static function setupSalesForCompany($companyId){
+
+        return L\Sales::fromController([['method'=>'migrateSalesAllTablesForCompany','data'=>['companyId'=>$companyId]]]);
+
+
+    }
 }

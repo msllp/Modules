@@ -17,9 +17,22 @@ class B extends Master
 
 
             [
+                'name'=>'O3.Users.upgrade',
+                'route'=>'/upgrade',
+                'method'=>'upgradeUser',
+                'type'=>'get',
+            ],
+        [
                 'name'=>'O3.Users',
                 'route'=>'/profile',
                 'method'=>'viewProfileOfCurrentUser',
+                'type'=>'get',
+            ],
+
+            [
+                'name'=>'O3.Users.Current.Company',
+                'route'=>'/change/CurrentCompany/{userId}/{companyId?}',
+                'method'=>'changeCurrentCompany',
                 'type'=>'get',
             ],
 

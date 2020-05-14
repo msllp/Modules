@@ -36,4 +36,22 @@ class F
         return $user->getLiveUser();
     }
 
+    public static function checkUserLimits($type){
+        $c=new L\Users();
+
+        return $c->checkUserLimits($type);
+    }
+
+    public static function setDefaultCompanyForUser($companyId,$add=false){
+        $c=new L\Users();
+
+        if($add)return $c->setCompanyNAddCount($companyId);
+
+        return $c->setCompany($companyId);
+        //$c=new
+    }
+
+
+
+
 }

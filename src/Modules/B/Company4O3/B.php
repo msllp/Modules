@@ -63,6 +63,14 @@ class B extends Master
             'type'=>'get' ,
         ],
 
+
+        [
+            'name'=>'O3.Company.All.For.User',
+            'route'=>'/get/all/company/{userId}',
+            'method'=>'getAllCompany',
+            'type'=>'get' ,
+        ],
+
         ];
 
 

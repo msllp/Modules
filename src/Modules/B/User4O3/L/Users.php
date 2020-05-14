@@ -47,6 +47,22 @@ class Users
 
     }
 
+    private function upgradeUserPage(){
+        //dd($this->getLiveUser());
+        $foundUser=$this->getLiveUser();
+        $allPlans=Plans::getAllPlans();
+        $userPlan=$this->getUserPlan($foundUser['id']);
+
+     //   dd();
+        $data=[
+            'UserPlans'=>$userPlan,
+            'AllPlans'=>$allPlans
+        ];
+
+   //     dd($data);
+
+        return view('MOD::B.User4O3.V.upgradeUser')->with('data',$data);
+    }
     private function signByToken($data){
         $apiToken=$data['apiToken'];
         $founUser=$this->getUserByApiToken($apiToken);
@@ -456,6 +472,67 @@ class Users
 
     }
 
+    public function setCompanyNAddCount($companyId){
+        $er=[
+            '601'=>'company not updated',
+            '601'=>'User Not Found'
+        ];
+        $c=self::getUserModel();
+        $outPut=false;
+        $foundUser=$this->getLiveUser();
+        $fromDB=$c->rowGet(['UniqId'=>$foundUser['id']]);
+        if(count($fromDB)>0){$fromDB=reset($fromDB);}else{
+            if (!$outPut)return false;
+        }
+        $lastCompanyCount=$fromDB['UserCompanyCount']+1;
+
+        $changeData=['CompanyId'=>$companyId,'UserCompanyCount'=>$lastCompanyCount];
+        //dd($changeData);
+        $this->updateSessionUser('defualtCompany',$companyId);
+        $outData=$c->rowEdit(['UniqId'=>$foundUser['id']],$changeData);
+        return $outData ;
+
+    }
+
+    public function checkUserLimits($type){
+        $foundUser=$this->getLiveUser();
+        $plan=$this->getUserPlan($foundUser['id']);
+        switch ($type){
+            case 'company':
+                if(array_key_exists($type,$plan['limits'])){
+                    $limit=$plan['limits'][$type];
+                    return ($limit['limit']>$limit['usage']);
+                }
+                break;
+        }
+
+        return false;
+        dd($type);
+
+    }
+
+    public function setCompany($companyId){
+        $er=[
+            '601'=>'company not updated'
+        ];
+        $c=self::getUserModel();
+        $outPut=false;
+        $foundUser=$this->getLiveUser();
+
+        if(gettype($companyId)=='array') {
+            $companyId=$companyId['companyId'];
+            $outPut=true;
+
+        }
+        $changeData=['CompanyId'=>$companyId];
+
+        $this->updateSessionUser('defualtCompany',$companyId);
+        $outData=$c->rowEdit(['UniqId'=>$foundUser['id']],$changeData);
+        if($outPut)return ($outData)? $this->throwData(['status'=>true]):$this->throwError($er['601']);
+        return $outData ;
+
+    }
+
     private function getLogedInUser():array{
       //  dd(Session::get('o3User'));
 
@@ -475,6 +552,10 @@ class Users
         return  true;
     }
 
+    private function updateSessionUser($key,$val){
+        $foundUser=$this->getLogedInUser();
+        return (array_key_exists($key,$foundUser))? $foundUser[$key]=$val: false;
+    }
     private function signInUserToSession($user):bool {
         $sessionData=[
             'username'=>(strpos($user['Username'],'@' ))?explode('@',$user['Username'])[0]:$user['Username'],
@@ -545,6 +626,7 @@ class Users
 
             if($decodePassword==$data['input']['passwordForLogin']){
 
+                $this->signInUserToSession($foundUser);
                 $outData=[
                     'redirectUrl'=>route('O3.Panel.From.Login',['apiToken'=>$foundUser['apiToken']]),
                 ];
@@ -606,14 +688,14 @@ class Users
         $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
         $c->rowAdd($userData);
         $verifyData = $this->email_VerifyUserEmail($userData['Email'], implode(' ', [$userData['FirstName'], $userData['LastName']]));
+
         $responseJson['type'] = 'email';
         $responseJson['otp'] = $verifyData['otp'];
         $responseJson['userDetails'] = $userData;
         $responseJson['status'] = 200;
         if (array_key_exists('type', $responseJson) && array_key_exists('otp', $responseJson)) $responseJson['OTPUniqId'] = $this->regOtpForUser($responseJson['type'], $userData['UniqId'], $responseJson['otp'])['UniqId'];
         if (array_key_exists('otp', $responseJson)) unset($responseJson['otp']);
-        $this->migrateById('Payment_Ledger', [$userData['UniqId']]);
-        $this->migrateById('Call_Log', [$userData['UniqId']]);
+        $this->migrateForUserWhenSignup($userData['UniqId']);
         if($responseInArray)return $responseJson;
         return $this->throwData($responseJson);
 
@@ -622,20 +704,21 @@ class Users
     private function signUpUser($data = [], $type = '')
     {
 
+       // dd($data);
 
         $responseJson = [];
 
         if (array_key_exists('useMobile', $data) && $data['useMobile']) $data['Username'] = $data['ContactNo'];
 
         $checkUser = $this->checkUserExistOrNot($data);
-        // dd($checkUser);
+        $checkUser=[];
         if (array_key_exists(1, $checkUser) && count($checkUser[1]) > 0) {
             $responseJson['status'] = 409;
             $responseJson['errorMsg'] = [
                 'We think you are already in our system.',
                 'If you forgot your account details please mail us on help@o3erp.com'
             ];
-
+            return response()->json($responseJson,$responseJson['status']);
         }
         else {
             $userData = [
@@ -646,7 +729,7 @@ class Users
                 'HookData' => $this->getDefault('HookData'),
                 'Email' => (array_key_exists('Email', $data)) ? $data['Email'] : ' ',
                 'ContactNo' => (array_key_exists('ContactNo', $data)) ? $data['ContactNo'] : ' ',
-                'Username' => (array_key_exists('Username', $data)) ? strtolower($data['Username']) : (array_key_exists('useMobile', $data) && $data['useMobile'] == true) ? $data['ContactNo'] : $data['ContactNo'],
+                'Username' =>(array_key_exists('Username', $data))? strtolower($data['Username']) :'',
                 'Password' => (array_key_exists('Password', $data)) ? Comman::encode($data['Password']) : ' ',
                 'FirstName' => (array_key_exists('FirstName', $data)) ? $data['FirstName'] : ' ',
                 'LastName' => (array_key_exists('LastName', $data)) ? $data['LastName'] : ' ',
@@ -664,6 +747,7 @@ class Users
                 'UserStatus' => 0,
 
             ];
+           // dd($userData);
             $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
 
             //dd($this->sms_VerifyUserNumber($userData['ContactNo']));
@@ -671,14 +755,17 @@ class Users
 
                 $c->rowAdd($userData);
                 $verifyData = $this->sms_VerifyUserNumber($userData['ContactNo']);
+              //  dd($verifyData);
                 $responseJson['type'] = 'sms';
                 $responseJson['otp'] = $verifyData['otp'];
                 $responseJson['userDetails'] = $userData;
                 $responseJson['status'] = 200;
             }
             else {
+
                 $c->rowAdd($userData);
                 $verifyData = $this->email_VerifyUserEmail($userData['Email'], implode(' ', [$userData['FirstName'], $userData['LastName']]));
+              //  dd($verifyData);
                 $responseJson['type'] = 'email';
                 $responseJson['otp'] = $verifyData['otp'];
                 $responseJson['userDetails'] = $userData;
@@ -687,8 +774,8 @@ class Users
 
             if (array_key_exists('type', $responseJson) && array_key_exists('otp', $responseJson)) $responseJson['OTPUniqId'] = $this->regOtpForUser($responseJson['type'], $userData['UniqId'], $responseJson['otp'])['UniqId'];
             if (array_key_exists('otp', $responseJson)) unset($responseJson['otp']);
-            $this->migrateById('Payment_Ledger', [$userData['UniqId']]);
-            $this->migrateById('Call_Log', [$userData['UniqId']]);
+            $this->migrateForUserWhenSignup($userData['UniqId']);
+
         }
 
 
@@ -696,6 +783,13 @@ class Users
 
 
     }
+
+    private function migrateForUserWhenSignup($userId){
+        $this->migrateById('Payment_Ledger', [$userId]);
+        $this->migrateById('Call_Log', [$userId]);
+        $this->migrateById($this->UserNotification, [$userId]);
+    }
+
     private function verifyUser($data = [])
     {
         // dd($data);
@@ -782,7 +876,7 @@ class Users
         $userData = $u->rowGet(['UniqId' => $UserId]);
 
         // dd($u);
-        $p = collect(Plans::getAllPlanS());
+        $p = collect(Plans::getAllPlans());
 
         $p1 = $p->where('UniqId', '=', $planId);
         $invoice = [];
@@ -914,6 +1008,8 @@ class Users
         return response()->json($d);
     }
 
+
+
     private function editUserProfile($data = [], $type = '')
     {
     }
@@ -943,9 +1039,10 @@ class Users
 
 
 
-    private function upgradeUser($data = [], $type = '')
-    {
-    }
+//
+//    private function upgradeUser($data = [], $type = '')
+//    {
+//    }
 
 
 
@@ -962,19 +1059,19 @@ class Users
     {
 
         $user=$this->getLogedInUser();
-       // dd($user);
+        if(!array_key_exists('apiToken',$user))return[];
         $foundUser=$this->getUserByApiToken($user['apiToken']);
 
         return [
             "id"=>$foundUser['UniqId'],
-            "Username" => $user['username'],
-            "email" => $user['email'],
-            "fname" =>explode(' ',$user['name'])[0],
-            "lname" => explode(' ',$user['name'])[1],
-            "name"=>$user['name'],
-            "phone" => $user['mobile'],
-            "sex" => "male",
-            'currentCompany'=>$user['defualtCompany'],
+            "Username" =>(array_key_exists('username',$user))?$user['username']:$foundUser['Username'],
+            "email" =>(array_key_exists('email',$user))?$user['email']:$foundUser['Email'],
+            "fname" =>(array_key_exists('name',$user))?explode(' ',$user['name'])[0]:$foundUser['FirstName'] ,
+            "lname" =>(array_key_exists('name',$user))?explode(' ',$user['name'])[1]:$foundUser['LastName'],
+            "name"=>(array_key_exists('name',$user))?$user['name']: implode(' ',[$foundUser['FirstName'],$foundUser['LastName']]),
+            "phone" =>(array_key_exists('mobile',$user))? $user['mobile']:$foundUser['ContactNo'],
+            "sex" => (array_key_exists('sex',$user))? $user['sex']:$foundUser['Sex'],
+            'currentCompany'=>(array_key_exists('currentCompany',$user))? $user['currentCompany']:$foundUser['CompanyId'],
             'apiToken'=>$user['apiToken']
         ];
 
@@ -982,11 +1079,16 @@ class Users
     public function getUserPlan($userId)
     {
 
-        $plans = Plans::getAllPlanS();
+        $plans = Plans::getAllPlans();
 
         //   dd(collect($plans)->where('UniqId',"=",'111')->first());
 
         $plan = collect($plans)->where('UniqId', "=", '111')->first();
+
+        $c=self::getUserModel();
+        $foundUser=$c->rowGet(['UniqId'=>$userId]);
+
+        $foundUser=reset($foundUser);
 
 
         return [
@@ -1012,7 +1114,7 @@ class Users
                 'company' => [
                     'vName' => 'Company',
                     'limit' => $plan['Company'],
-                    'usage' => 1,
+                    'usage' => $foundUser['UserCompanyCount'],
                 ]
                 ,
                 'user' => [
@@ -1474,7 +1576,7 @@ class Users
             'toNumber' => $to,
             'otp' => ($otp == null) ? Comman::random(5) : $otp
         ];
-
+        $data['channel']=1;
         if ($try > 0) $data['channel'] = 1;
         $u = [];
         // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
@@ -1484,8 +1586,8 @@ class Users
                 MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name']]) : MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name'], 'channel' => $data['channel']]);
 
         } catch (Exception $e) {
-
-            return [];
+           // dd($e);
+          //  return [];
         }
 
 
@@ -1501,12 +1603,14 @@ class Users
         ];
 
 
+
         // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
         try {
             $m = MSMail::SendMail($to, 'MS::core.layouts.Email.EmailVerify', $data);
 
         } catch (Exception $e) {
-            return [];
+            //dd($e);
+           // return [];
         }
         return $data;
     }

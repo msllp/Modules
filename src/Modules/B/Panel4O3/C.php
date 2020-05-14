@@ -19,6 +19,14 @@ class C extends BaseController
 
     protected $ln='en';
 
+    public function __construct()
+    {
+
+        $this->middleware('onlyAjax')->only(['SideNavForMaintainaceDashboard']);
+        $this->middleware('onlyUsers')->only(['SideNavForMaintainaceDashboard']);
+
+    }
+
     public function MaintainaceDashboardWithApiToken($apiToken,$ln=null,Request $r){
 
      //   dd(\MS\Mod\B\User4O3\L\Users::checkUserLoggedIn());
@@ -30,22 +38,36 @@ class C extends BaseController
             if($ln==null)$ln=$this->ln;
             session('ln',$ln);
             \App::setlocale(session('ln'));
+          $foundUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]]);
+            $firsttab= [
+                'tabCode'=>'01',
+                'modCode'=>'MAS',
+                'modDView'=>"Setup Company",
+                'modUrl'=>"/o3/Company/setup/company",
+                'data'=>'',
+            ];
+
+
+            if(array_key_exists('currentCompany',$foundUser) && $foundUser['currentCompany']!='0'){
+                $firsttab= [
+                    'tabCode'=>'01',
+                    'modCode'=>'MAS',
+                    'modDView'=>"Sales One View",
+                    'modUrl'=>"/Core/Sales/dashboard",
+                    'data'=>'',
+                ];
+            }
             $data=[
                 'path'=> [
-                    'sidebar'=> route('O3.Panel.data')
+                    'sidebar'=> route('O3.Panel.data'),
+                    'getAllCompany'=>route('O3.Company.All.For.User',['userId'=>\MS\Core\Helper\Comman::encodeLimit($foundUser['id'])]),
+                    'changeCurrentCompany'=>route('O3.Users.Current.Company',['userId'=>\MS\Core\Helper\Comman::encodeLimit($foundUser['id'])])
                 ],
                 'accessToken'=> \MS\Core\Helper\Comman::encodeLimit($apiToken,120),
-                'msUser'=>  \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]]),
+                'msUser'=> $foundUser ,
                   'msViewPanel'=>[
                 'tab'=>[
-                    [
-                        'tabCode'=>'01',
-                        'modCode'=>'MAS',
-                        'modDView'=>"Setup Company",
-                        'modUrl'=>"/o3/Company/setup/company",
-                        'data'=>'',
-
-                    ]
+                    $firsttab
                 ]
             ]
 
@@ -71,29 +93,43 @@ class C extends BaseController
 
         $checkSession=\MS\Mod\B\User4O3\F::checkUserLogin();
 
+       // dd(session()->all());
         if($ln==null)$ln=$this->ln;
         $r->session()->put('ln', $ln);
         session('ln',$ln);
         \App::setlocale(session('ln'));
         if(!$checkSession) return   \MS\Mod\B\User4O3\F::redirectToLoginPage();
         $foundUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLiveUser','data'=> [] ]]);
+      //dd($foundUser);
         if(count($foundUser)>0){
+            $firsttab= [
+                'tabCode'=>'01',
+                'modCode'=>'MAS',
+                'modDView'=>"Setup Company",
+                'modUrl'=>"/o3/Company/setup/company",
+                'data'=>'',
+            ];
+
+            if(array_key_exists('currentCompany',$foundUser) && $foundUser['currentCompany']!='0'){
+                $firsttab= [
+                    'tabCode'=>'01',
+                    'modCode'=>'MAS',
+                    'modDView'=>"Sales One View",
+                    'modUrl'=>"/Core/Sales/dashboard",
+                    'data'=>'',
+                ];
+            }
             $data=[
                 'path'=> [
-                    'sidebar'=> route('O3.Panel.data')
+                    'sidebar'=> route('O3.Panel.data'),
+                    'getAllCompany'=>route('O3.Company.All.For.User',['userId'=>\MS\Core\Helper\Comman::encodeLimit($foundUser['id'])]),
+                    'changeCurrentCompany'=>route('O3.Users.Current.Company',['userId'=>\MS\Core\Helper\Comman::encodeLimit($foundUser['id'])])
                     ],
                 'accessToken'=>( array_key_exists('apiToken',$foundUser))?\MS\Core\Helper\Comman::encodeLimit($foundUser['apiToken']) : \MS\Core\Helper\Comman::encodeLimit('UserMitul'),
                 'msUser'=>$foundUser,
                 'msViewPanel'=>[
                     'tab'=>[
-                        [
-                            'tabCode'=>'01',
-                            'modCode'=>'MAS',
-                            'modDView'=>"Setup Company",
-                            'modUrl'=>"/o3/Company/setup/company",
-                            'data'=>'',
-
-                        ]
+                        $firsttab
                     ]
                 ]
             ];
@@ -116,7 +152,7 @@ class C extends BaseController
         //dd($getLoggedUser['apiToken']);
         $rdata=['accessToken'=>$getLoggedUser['apiToken']];
 
-        $data=\MS\Mod\B\Panel4EN\L\Nav::getNavForEnv();
+        $data=\MS\Mod\B\Panel4O3\L\Nav::getNavForEnv();
 
         return \MS\Core\Helper\Comman::proccessReqNGetSideNavDataForDashboard($r,$data, $rdata);
     }

@@ -16,8 +16,39 @@ use function GuzzleHttp\Promise\all;
 use Socialite;
 class C extends BaseController
 {
+
+    public function __construct()
+    {
+        $this->middleware('onlyAjax')->only('getAllPlansForWebsite');
+        $this->middleware('onlyUsers')->only(['test']);
+
+    }
+
+    public function upgradeUser(){
+        $inputData=[
+
+        ];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'upgradeUserPage','data'=>$inputData]]);
+
+    }
+
+    public function changeCurrentCompany($userId,$companyId){
+
+         $inputData=[
+             'companyId'=>$companyId,
+             'userId'=>$userId
+         ];
+        return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'setCompany','data'=>$inputData]]);
+
+    }
+
     public function getCsrf(){
-        return csrf_token();
+        $array=[
+            'msData'=>[
+                'csrf'=>csrf_token()
+            ]
+        ];
+        return response()->json($array);
     }
 
     public function signInByToken($apiToken){
@@ -144,10 +175,14 @@ class C extends BaseController
     }
     public function test(Request $r){
        // dd(L\Users::getOtpModel());
-       // dd('Ok');
+        echo "ok";
+        exit();
+
+        //dd(F::setDefaultCompanyForUser("test"));
+      //  return view('MS::core.layouts.Email.EmailVerify');
         $m=new L\Users();
 
-        //    dd($m->migrate());
+        dd($m->migrate());
         $getCurrentUser=$m->getLiveUser();
 
         $start = microtime(true);

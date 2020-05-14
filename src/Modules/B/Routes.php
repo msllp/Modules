@@ -3,12 +3,20 @@
 
 Route::prefix('o3')->group(function (){
 
+    Route::prefix('Mod')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Mod4O3.R'],'b',true);
+    });
+
+    Route::prefix('Sales')->group(function () {
+        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Sales4O3.R'],'b',true);
+    });
+
     Route::prefix('User')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'User4O3.R'],'b',true);
     });
-Route::prefix('Panel')->group(function () {
-        \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Panel4O3.R'],'b',true);
-    });
+    Route::prefix('Panel')->group(function () {
+            \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Panel4O3.R'],'b',true);
+        });
 
     Route::prefix('Company')->group(function () {
         \MS\Core\Helper\Comman::loadCustom(['locationOfFile'=>'Company4O3.R'],'b',true);

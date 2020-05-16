@@ -2,6 +2,7 @@
 
 namespace MS\Mod\B\User4O3\L;
 
+use Carbon\Carbon;
 use Exception;
 
 use Illuminate\Support\Facades\Lang;
@@ -178,7 +179,7 @@ class Users
             ];
             return $this->throwError($er);
         }
-        dd($foundUser);
+
 
     }
 
@@ -679,6 +680,7 @@ class Users
             'UserValidUpto' => now(env('APP_TIMEZONE'))->addYear(1)->getTimestamp(),
             'UserProductCount' => 0,
             'UserInvoiceCount' => 0,
+            'UserPurchaseCount' => 0,
             'UserCompanyCount' => 0,
             'UserCompanyUserCount' => 0,
             'PaymentSuspend' => 0,
@@ -741,21 +743,21 @@ class Users
                 'UserValidUpto' => now(env('APP_TIMEZONE'))->addYear(1)->getTimestamp(),
                 'UserProductCount' => 0,
                 'UserInvoiceCount' => 0,
+                'UserPurchaseCount' => 0,
+
                 'UserCompanyCount' => 0,
                 'UserCompanyUserCount' => 0,
                 'PaymentSuspend' => 0,
                 'UserStatus' => 0,
 
             ];
-           // dd($userData);
             $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
 
-            //dd($this->sms_VerifyUserNumber($userData['ContactNo']));
             if ((array_key_exists('useMobile', $data)) ? $data['useMobile'] : false) {
 
                 $c->rowAdd($userData);
                 $verifyData = $this->sms_VerifyUserNumber($userData['ContactNo']);
-              //  dd($verifyData);
+
                 $responseJson['type'] = 'sms';
                 $responseJson['otp'] = $verifyData['otp'];
                 $responseJson['userDetails'] = $userData;
@@ -765,7 +767,7 @@ class Users
 
                 $c->rowAdd($userData);
                 $verifyData = $this->email_VerifyUserEmail($userData['Email'], implode(' ', [$userData['FirstName'], $userData['LastName']]));
-              //  dd($verifyData);
+
                 $responseJson['type'] = 'email';
                 $responseJson['otp'] = $verifyData['otp'];
                 $responseJson['userDetails'] = $userData;
@@ -786,7 +788,7 @@ class Users
 
     private function migrateForUserWhenSignup($userId){
         $this->migrateById('Payment_Ledger', [$userId]);
-        $this->migrateById('Call_Log', [$userId]);
+    //    $this->migrateById('Call_Log', [$userId]);
         $this->migrateById($this->UserNotification, [$userId]);
     }
 
@@ -831,7 +833,8 @@ class Users
 
         $fV = $m->rowGet(['UniqId' => $data['UniqId']]);
 
-        if (count($fV) > 0) {
+
+        if (count($fV) > 0 )  {
             $otpRow = reset($fV);
             $fU = $u->rowGet(['UniqId' => $otpRow['UserId']]);
             $userData = reset($fU);
@@ -844,23 +847,45 @@ class Users
                     case 'sms':
                         $this->sms_VerifyUserNumber($userData['ContactNo'], 1, $sourceOtp);
                         break;
+                    case 'email':
+                        $this->email_VerifyUserEmail($userData['Email'], implode(' ',[$userData['FirstName'],$userData['LastName']]));
+                        break;
                 }
 
                 $responseJson['status'] = 200;
-            } else {
-
-                $responseJson['status'] = 409;
-                $responseJson['errorMsg'] = [
-                    'Resend OTP Not Successfully.',
-                ];
             }
 
-            return response()->json($responseJson);
+
 
         }
+        else {
+            $dataExp=explode('_',$data['UniqId']);
+            $userId=reset($dataExp);
+
+            $userData=$u->rowGet(['UniqId'=>$userId]);
+            $userData=reset($userData);
+            if(count($userData)>0){
+                $otp=[];
+                $sourceOtp=\MS\Core\Helper\Comman::random(5);
+                switch ($data['input']['type']) {
+
+                    case 'sms':
+                        $otp= $this->sms_VerifyUserNumber($userData['ContactNo'], 1, $sourceOtp);
+                        break;
+                    case 'email':
+                        $otp=  $this->email_VerifyUserEmail($userData['Email'], implode(' ',[$userData['FirstName'],$userData['LastName']]),$sourceOtp);
+                        break;
+                }
+                $this->regOtpForUser($data['input']['type'],$userId,$otp['otp'],$data['UniqId']);
+                $responseJson['status']='200';
+            }else{
+
+            }
+
+      }
 
 
-        return response()->json($responseJson);
+        return response()->json($responseJson,$responseJson['status']);
     }
     private function initiatePaymentForUser($data)
     {
@@ -875,15 +900,13 @@ class Users
         $responseJson = [];
         $userData = $u->rowGet(['UniqId' => $UserId]);
 
-        // dd($u);
         $p = collect(Plans::getAllPlans());
 
         $p1 = $p->where('UniqId', '=', $planId);
         $invoice = [];
 
-        //   dd($planId);
         $planData = ($p1->count() > 0) ? $p1->first() : [];
-//dd($data);
+
 
         if (count($userData) > 0 && count($planData) > 0) {
             $userData = reset($userData);
@@ -919,7 +942,6 @@ class Users
             $invoice['paymentCharge'] = ($invoice['totalWithTax'] * 2.75) / 100;
             $invoice['PaymentTaxDetails'] = collect([['name' => 'GST', 'rate' => '18', 'total' => $invoice['totaTax']]])->toJson();
 
-            // dd($invoice);
 
 
             $paymentData = [
@@ -1051,7 +1073,7 @@ class Users
     {
 
         $user = $this->getLiveUser();
-        $user['plan'] = (array_key_exists('Username', $user)) ? $this->getUserPlan($user['Username']) : $this->getUserPlan($user['email']);
+        $user['plan'] = $this->getUserPlan($user['id']);
         return $user;
 
     }
@@ -1076,22 +1098,28 @@ class Users
         ];
 
     }
+
+    private function getUserPlanId(){
+
+    }
     public function getUserPlan($userId)
     {
 
         $plans = Plans::getAllPlans();
 
-        //   dd(collect($plans)->where('UniqId',"=",'111')->first());
-
-        $plan = collect($plans)->where('UniqId', "=", '111')->first();
 
         $c=self::getUserModel();
         $foundUser=$c->rowGet(['UniqId'=>$userId]);
-
         $foundUser=reset($foundUser);
 
-
-        return [
+        $userPlan= (array_key_exists('UserPlan',$foundUser) && $foundUser['UserPlan']!='')? $foundUser['UserPlan']:'111';
+       // dd($foundUser);
+        $date=Carbon::now('Asia/Kolkata');
+        $plan = collect($plans)->where('UniqId', "=", $userPlan)->first();
+       // dd($corbon->setTimestamp($foundUser['UserValidUpto']));
+        $validYear=$date->setTimestamp($foundUser['UserValidUpto'])->format('Y');
+        $validMonthDay=$date->setTimestamp($foundUser['UserValidUpto'])->format('d/m');
+        $outData=[
             'planId' => $plan['UniqId'],
             'name' => $plan['PlanName'],
             'limits' => [
@@ -1099,17 +1127,17 @@ class Users
                 'products' => [
                     'vName' => 'Products',
                     'limit' => $plan['Product'],
-                    'usage' => 1,
+                    'usage' => $foundUser['UserProductCount'],
                 ],
                 'invoice' => [
                     'vName' => 'Invoice',
                     'limit' => $plan['Invoice'],
-                    'usage' => 1,
+                    'usage' => $foundUser['UserInvoiceCount'],
                 ],
                 'purchase' => [
                     'vName' => 'Purchase',
                     'limit' => $plan['Purchase'],
-                    'usage' => 1,
+                    'usage' => $foundUser['UserPurchaseCount'],
                 ],
                 'company' => [
                     'vName' => 'Company',
@@ -1120,17 +1148,21 @@ class Users
                 'user' => [
                     'vName' => 'Users/Company',
                     'limit' => $plan['PerCompanyUser'],
-                    'usage' => 1,
+                    'usage' => $foundUser['UserCompanyCount'],
                 ],
 
                 'validupto' => [
                     'vName' => 'Valid upto',
-                    'limit' => now()->format('Y'),
-                    'usage' => now()->format('d/m'),
+                    'limit' => $validYear,
+                    'usage' => $validMonthDay,
+                    'remainingInDays'=>$date->diffInDays(Carbon::now())
                 ]
 
             ]
         ];
+
+
+        return $outData ;
     }
     public function migrate()
     {
@@ -1215,6 +1247,7 @@ class Users
         $m->setFields(['name' => 'UserValidUpto', 'type' => 'string',]);
         $m->setFields(['name' => 'UserProductCount', 'type' => 'string',]);
         $m->setFields(['name' => 'UserInvoiceCount', 'type' => 'string',]);
+        $m->setFields(['name' => 'UserPurchaseCount', 'type' => 'string',]);
 
         $m->setFields(['name' => 'UserCompanyCount', 'type' => 'string',]);
         $m->setFields(['name' => 'UserCompanyUserCount', 'type' => 'string',]);
@@ -1421,9 +1454,8 @@ class Users
     private function setUpUserPayment($userId = [])
     {
 
-        //  dd($userId);
+
         $userId2 = implode('', $userId);
-        //
 
         $data = [
             'tableId' => implode('_', [self::$modCode, 'Payment_Ledger']),
@@ -1450,9 +1482,7 @@ class Users
     private function setUpUserCall($userId = [])
     {
 
-        //  dd($userId);
         $userId2 = implode('', $userId);
-        //
 
         $data = [
             'tableId' => implode('_', [self::$modCode, 'Call_Log']),
@@ -1576,7 +1606,7 @@ class Users
             'toNumber' => $to,
             'otp' => ($otp == null) ? Comman::random(5) : $otp
         ];
-        $data['channel']=1;
+        $data['channel']=0;
         if ($try > 0) $data['channel'] = 1;
         $u = [];
         // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
@@ -1593,14 +1623,15 @@ class Users
 
         return $data;
     }
-    private function email_VerifyUserEmail($to, $name)
+    private function email_VerifyUserEmail($to,$name,$otp=null)
     {
         $data = [
             'mailSubject' => 'Email Verification for O3 ERP Account Opening',
             'name' => $name,
             //'toEmail'=>'emails@domain.com',
-            'otp' => Comman::random(5)
+            'otp' => ($otp==null)? Comman::random(5):$otp
         ];
+
 
 
 
@@ -1614,13 +1645,13 @@ class Users
         }
         return $data;
     }
-    private function regOtpForUser($channel, $userId, $otp): array
+    private function regOtpForUser($channel, $userId, $otp,$uniqId=''): array
     {
         $return = [];
 
         $m = self::getOtpModel();
         $data = [
-            'UniqId' => Comman::random(16, 1, 1),
+            'UniqId' =>($uniqId=='')?Comman::random(16, 1, 1,[$userId]):$uniqId,
             'UserId' => $userId,
             'VerifyChannel' => $channel,
             'ValidUpto' => \Carbon::now()->addHour(self::$default_otc_expire)->toDateTimeString(),

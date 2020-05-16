@@ -292,7 +292,223 @@ class Company extends Logic
 
         foreach ($data as $v)if(!$v)return['status'=>419,'debug'=>$data];
 
+
+        $nextData=\MS\Core\Helper\Comman::makeNextData('Company','Add Bank Account',route('O3.Company.Account.Setup',['companyId'=>\MS\Core\Helper\Comman::encodeLimit($companyid)]));
+        return \MS\Core\Helper\Comman::msJson([],$nextData,[]);
         return ['staus'=>true];
+
+    }
+
+    private function getCompanyIdFromAccountId($id){
+        $id='4711832393557865_oUshFzvJO_JJrDixOWi';
+        $exId=explode('_',$id);
+        array_pop($exId);
+        return implode('_',$exId);
+
+    }
+    public function checkToDelete($id){
+
+        $m=$this->getUserCompanyAccountLedgerModel($id);
+        return (count($m->rowAll())<=1)?true:false;
+    }
+
+    public function getAllCompanyAccounts($data){
+        if(array_key_exists('companyId',$data) && $data['companyId']!=null){
+            $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
+        }else{
+            $logedInUser=\MS\Mod\B\User4O3\F::getUser();
+            $companyId=$logedInUser['currentCompany'];
+        }
+        $m=$this->getUserCompanyAccountModel($companyId);
+        $allAccounts=$m->rowAll();
+        $th=$this;
+        $mapFun=function ($ar)use($th){
+            $arr=[
+                'UniqId'=>$ar['UniqId'],
+                'AccountType'=>$ar['AccountType'],
+                'BankAcNo'=>$ar['BankAcNo'],
+                'BankBranch'=>$ar['BankBranch'],
+                'BankName'=>$ar['BankName'],
+                'CurrentBalance'=>$ar['CurrentBalance'],
+                'IFSC'=>$ar['IFSC'],
+                'delete'=>$th->checkToDelete($ar['UniqId']),
+                'AccounHolder'=>$ar['AccounHolder']
+            ];
+            return $arr;
+        };
+
+        return $this->throwData(array_map($mapFun,$allAccounts)) ;
+
+    }
+
+    public function addAccountToCompany($data){
+        //dd($data);
+
+        if(array_key_exists('companyId',$data) && $data['companyId']!=null){
+            $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
+        }else{
+        $logedInUser=\MS\Mod\B\User4O3\F::getUser();
+        $companyId=$logedInUser['currentCompany'];
+        }
+
+        $data=[
+
+            'path'=>[
+                'img'=>[
+                    'ac'=>asset('ms/company/bankaccount.svg')
+                ],
+                'data'=>[
+                    'allAccounts'=>route('O3.Account.All')
+                ],
+                'form'=>[
+                    'post'=>route('O3.Company.Account.Setup.post')
+                ]
+            ]
+        ];
+
+        return view('MOD::B.Company4O3.V.Static.AddAccount')->with('data',$data);
+
+        dd($companyId);
+
+
+    }
+
+    public function addAccountToCompanyPost($data){
+        $newAccounts=(array_key_exists('input',$data))?$data['input']->all():[];
+        if(array_key_exists('companyId',$data) && $data['companyId']!=null){
+            $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
+        }else{
+            $logedInUser=\MS\Mod\B\User4O3\F::getUser();
+            $companyId=$logedInUser['currentCompany'];
+        }
+
+        $m=$this->getUserCompanyAccountModel($companyId);
+        $existingAccount=$m->rowAll();
+        if(count($newAccounts)!=count($existingAccount)){
+        dd($this->updateCompanyAccounts($newAccounts,$existingAccount,$companyId,$m));
+        }else{
+            return $this->throwError(['Nothing to Update']);
+        }
+        dd(count($newAccounts)==count($existingAccount));
+
+    }
+
+    private function updateCompanyAccounts($newAccounts,$existingAccounts,$companyId,$m){
+        $diff=[];
+        $existingAccounts=collect($existingAccounts)->groupBy('UniqId');
+        $existingAccountsId=array_keys($existingAccounts->toArray());
+        //dd($existingAccountsId);
+       // dd( array_keys($existingAccounts->toArray()) );
+
+        foreach ($newAccounts as $ac)if( !array_key_exists('UniqId',$ac) || !in_array($ac['UniqId'],$existingAccountsId))$diff[]=$ac;
+
+
+        if(count($newAccounts)>count($existingAccounts))$this->configureAccount($diff,$companyId,$m);
+        if(count($newAccounts)<count($existingAccounts))$this->configureAccountNRemoveDeleted($diff,$companyId,$m);
+
+        return true;
+    }
+
+    private function configureAccountNRemoveDeleted($ac,$companuId,MSDB $m){
+        $perFix=[$companuId];
+        dd($perFix);
+    }
+    private function configureAccount($ac,$companuId,MSDB $m){
+
+        $perFix=[$companuId];
+        foreach ($ac as $key=>$a){
+            $acMaster[$key]=[
+                'UniqId'=>\MS\Core\Helper\Comman::random('9',4,1,$perFix),
+                'BankName'=>$a['BankName'],
+                'BankBranch'=>$a['BankBranch'],
+                'IFSC'=>$a['IFSC'],
+                'AccountType'=>$a['AccountType'],
+                'BankAcNo'=>$a['BankAcNo'],
+                'AccounHolder'=>$a['AccounHolder'],
+                'CurrentBalance'=>$a['CurrentBalance'],
+                'TotalInBalance'=>0,
+                'TotalOutBalance'=>0,
+                'AccountStatus'=>1,
+            ];
+            $m->rowAdd($acMaster[$key],['UniqId']);
+            $this->migrateForAccount($acMaster[$key]['UniqId']);
+            $data=[
+                'Amount'=>$a['CurrentBalance'],
+                'InOut'=>'in',
+                'Type'=>'open'
+
+            ];
+            $this->ledgerEntry($acMaster[$key]['UniqId'],$data);
+
+        }
+        return true;
+
+
+    }
+
+    private function migrateForAccount($id){
+     //   $id='4711832393557865_oUshFzvJO_qxDeVRvIF';
+        $m=$this->getUserCompanyAccountLedgerModel($id);
+        return $m->migrate();
+    }
+
+    public function ledgerEntry($id,$data){
+    //    $id='4711832393557865_oUshFzvJO_qxDeVRvIF';
+        $m=$this->getUserCompanyAccountLedgerModel($id);
+        $currentRecords=$m->rowAll();
+        $foundUser=\MS\Mod\B\User4O3\F::getUser();
+        $allowedType=['invoice','purchase','salary','other'];
+        $data['DoneBy']=$foundUser['id'];
+        $data['Partial']=(array_key_exists('partial',$data))?$data['partial']:0;
+        if(count($currentRecords)>0){
+            $companyId=$this->getCompanyIdFromAccountId($id);
+            $allM=$this->getUserCompanyAccountModel($companyId);
+            $lastRecord=end($currentRecords);
+            $data['bBalance']=$lastRecord['TransactionCurrentBalance'];
+            $data['cBalance']=($data['InOut']=='in')?$lastRecord['TransactionCurrentBalance']+$data['Amount']:$lastRecord['TransactionCurrentBalance']-$data['Amount'];
+            $data['agintsType']=(in_array($data['Type'],$allowedType))?$data['type']:'other';
+            $data['AgaintsId']=( !array_key_exists('typeId',$data) || $data['agintsType']=='other')?0:$data['typeId'];
+            $masterAccountData=$allM->rowGet(['UniqId'=>$id]);
+            $masterAccountData=reset($masterAccountData);
+            $masteraccountEnrty=[
+                'CurrentBalance'=>$data['cBalance'],
+            ];
+            if($data['InOut']=='in'){
+                $masteraccountEnrty['TotalInBalance']=$masterAccountData['TotalInBalance']+$data['Amount'];
+            }else{
+                $masteraccountEnrty['TotalOutBalance']=$masterAccountData['TotalOutBalance']+$data['Amount'];
+            }
+            $allM->rowEdit(['UniqId'=>$id],$masteraccountEnrty);
+        }else{
+            $data['bBalance']=0;
+            $data['cBalance']=$data['Amount'];
+            $data['agintsType']='open';
+            $data['AgaintsId']=0;
+            $data['VerifiedBy']=$data['DoneBy'];
+            $data['ApprovedBy']=$data['DoneBy'];
+        }
+
+        if(!array_key_exists('VerifiedBy',$data))$data['VerifiedBy']=0;
+        if(!array_key_exists('ApprovedBy',$data))$data['ApprovedBy']=0;
+        $entryMaster=[
+            'UniqId'=>\MS\Core\Helper\Comman::random('16',4,1,[$id]),
+            'TransactionAmount'=>$data['Amount'],
+            'TransactionINOUT'=>$data['InOut'],
+            'TransactionType'=>$data['Type'],
+            'TransactionBeforBalance'=>$data['bBalance'],
+            'TransactionCurrentBalance'=>$data['cBalance'],
+            'TransactionAgaintsType'=>$data['agintsType'],
+            'TransactionAgaintsId'=>$data['AgaintsId'],
+            'TransactionDoneBy'=>$data['DoneBy'],
+            'TransactionVerifiedBy'=>$data['VerifiedBy'],
+            'TransactionApprovedBy'=>$data['ApprovedBy'],
+            'TransactionPartial'=>$data['Partial'],
+            'TransactionStatus'=>1,
+
+        ];
+       //    dd($entryMaster);
+        return $m->rowAdd($entryMaster,['UniqId']);
+
 
     }
 
@@ -454,8 +670,11 @@ class Company extends Logic
 
         $m->setFields(['name' => 'UniqId', 'type' => 'string']);
         $m->setFields(['name' => 'BankName', 'type' => 'string']);
+        $m->setFields(['name' => 'BankBranch', 'type' => 'string']);
+        $m->setFields(['name' => 'IFSC', 'type' => 'string']);
         $m->setFields(['name' => 'AccountType', 'type' => 'string']);
         $m->setFields(['name' => 'BankAcNo', 'type' => 'string',]);
+        $m->setFields(['name' => 'AccounHolder', 'type' => 'string',]);
         $m->setFields(['name' => 'CurrentBalance', 'type' => 'string',]);
         $m->setFields(['name' => 'TotalInBalance', 'type' => 'string',]);
         $m->setFields(['name' => 'TotalOutBalance', 'type' => 'string',]);
@@ -468,7 +687,7 @@ class Company extends Logic
     private function setupMasterAccountLedger(){
         $data = [
             'tableId' => implode('_', [self::$modCode, $this->CompanyAccountLedger]),
-            'tableName' => implode('_', [self::$modCode, 'CompanyAccounts']),
+            'tableName' => implode('_', [self::$modCode, 'CompanyAccountsLedger']),
             'connection' => self::$c_d,
         ];
         $m = new  MSTableSchema($data);

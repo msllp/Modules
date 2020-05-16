@@ -30,6 +30,27 @@ class B extends Master
         ],
 
         [
+            'name'=>'O3.Company.Account.Setup',
+            'route'=>'/setup/account/{companyId?}',
+            'method'=>'setupAccountForCompany',
+            'type'=>'get' ,
+        ],
+        [
+            'name'=>'O3.Company.Account.Setup.post',
+            'route'=>'/setup/account/{companyId?}',
+            'method'=>'setupAccountForCompanyPost',
+            'type'=>'post' ,
+        ],
+
+        [
+            'name'=>'O3.Account.All',
+            'route'=>'/get/account/{companyId?}',
+            'method'=>'getAccountForCompany',
+            'type'=>'get' ,
+        ],
+
+
+        [
             'name'=>'O3.CompanyDetails.For.Website',
             'route'=>'/company/forWebsite/{companyId}',
             'method'=>'getCompanyForWebsite',

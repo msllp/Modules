@@ -24,8 +24,25 @@ class C extends BaseController
 
     public function __construct()
     {
-        $this->middleware('onlyAjax')->only(['getStatesForCompany','getAllCompany']);
-        $this->middleware('onlyUsers')->only(['getStatesForCompany','getAllCompany']);
+        $onlyAjax=[
+            'getStatesForCompany',
+            'getAllCompany',
+            'setupCompany',
+            'setupCompanyPost',
+          //  'getAccountForCompany',
+            //'setupAccountForCompany',
+            'setupAccountForCompanyPost'
+        ];
+        $onlyForUsers=[
+            'getStatesForCompany',
+            'getAllCompany',
+            'setupCompany',
+            'setupCompanyPost',
+            'getAccountForCompany',
+            'setupAccountForCompany',
+            'setupAccountForCompanyPost'];
+        $this->middleware('onlyAjax')->only($onlyAjax);
+        $this->middleware('onlyUsers')->only($onlyForUsers);
 
     }
     public function test(){
@@ -33,6 +50,8 @@ class C extends BaseController
        // dd(MSDB::makeDB('O3_Company_Master'));
       //  MSDB::backUpDB('O3_Company_Data');
        // MSDB::makeDB('O3_Company_Config');
+
+
         $data=['which'=>'Company'];
         return  view('MS::core.layouts.Error.LimitOver')->with('data',$data);
 
@@ -41,6 +60,33 @@ class C extends BaseController
         dd($c->getCompanyUserMasterModel('9668431692111893')->rowAll());
         $userId=\MS\Mod\B\User4O3\F::getUser()['id'];
         dd($c->migrateById($c->CompanyMaster,[$userId]));
+    }
+
+
+    public function setupAccountForCompany($companyId=null){
+
+        $data=[
+            'companyId'=>$companyId
+        ];
+        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'addAccountToCompany','data'=>$data]]);
+
+    }
+    public function setupAccountForCompanyPost(Request $r,$companyId=null){
+
+        $data=[
+            'input'=>$r
+        ];
+        if ($companyId!=null)$data['companyId']=$companyId;
+        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'addAccountToCompanyPost','data'=>$data]]);
+
+    }
+    public function getAccountForCompany($companyId=null){
+
+        $data=[
+            'companyId'=>$companyId
+        ];
+        return \MS\Mod\B\Company4O3\L\Company::fromController([['method'=>'getAllCompanyAccounts','data'=>$data]]);
+
     }
 
 

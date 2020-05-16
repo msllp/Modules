@@ -87,8 +87,8 @@ class Nav extends baseNav
         $this->addL2Title($user,['text'=>\Lang::get('Company.Navtitle1'),'icon'=> 'fi2 flaticon-msicon-for-manageleadsnquataions']);
         $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub10'),'link'=> route('O3.Company.Setup.intial'),'icon'=>'fas fa-angle-double-right']);
         $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub11'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>'fas fa-angle-double-right']);
-        $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub12'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>'fas fa-angle-double-right']);
-        $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub13'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>'fas fa-angle-double-right']);
+     //   $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub12'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>'fas fa-angle-double-right']);
+        $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub13'),'link'=> route('O3.Company.Account.Setup'),'icon'=>'fas fa-angle-double-right']);
 
         $this->addL2Title($user,['text'=>\Lang::get('Company.Navtitle3'),'icon'=> 'fi2 flaticon-msicon-for-manageleadsnquataions']);
         $this->addL2Link($user,['text'=>\Lang::get('Company.NavSub31'),'link'=> route('MOD.User.Master.AddForm'),'icon'=>'fas fa-angle-double-right']);

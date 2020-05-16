@@ -19,8 +19,9 @@ class C extends BaseController
 
     public function __construct()
     {
-        $this->middleware('onlyAjax')->only('getAllPlansForWebsite');
-        $this->middleware('onlyUsers')->only(['test']);
+        $this->middleware('onlyAjax')->only('getAllPlansForWebsite','getUserForWebsite');
+        $this->middleware('onlyUsers')->only([]);
+
 
     }
 
@@ -175,8 +176,7 @@ class C extends BaseController
     }
     public function test(Request $r){
        // dd(L\Users::getOtpModel());
-        echo "ok";
-        exit();
+
 
         //dd(F::setDefaultCompanyForUser("test"));
       //  return view('MS::core.layouts.Email.EmailVerify');

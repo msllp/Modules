@@ -1,4 +1,4 @@
-@extends('MS::core.layouts.rootRaw')
+@extends('MS::core.layouts.root')
 @section('body')
 
     <?php
@@ -7,5 +7,5 @@
 
     ?>
 
-    <setupcompany :ms-data="{{$jsonData}}"></setupcompany>
+    <addbankaccount :ms-data="{{$jsonData}}"></addbankaccount>
 @endsection

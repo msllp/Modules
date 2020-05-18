@@ -21,6 +21,23 @@ class F
 
     }
 
+    public static function getCurrentAllBankBalanceOfCompany (){
+        $data=[];
+        return L\Company::fromController([['method'=>'getCurrentBankBalanceOfCompany','data'=>$data]]);
+
+    }
+    public static function getCurrentCashBalanceOfCompany (){
+        $data=[];
+        return L\Company::fromController([['method'=>'getCurrentCashBalanceOfCompany','data'=>$data]]);
+
+    }
+
+    public static function getCurrentCompanyData(){
+        $data=[];
+        return L\Company::fromController([['method'=>'getCurrentCompanyForUser','data'=>$data]]);
+
+    }
+
     public static function runCron()
     {
 

@@ -197,7 +197,7 @@ class Company extends Logic
 
 
     }
-    public function ForUsersetupFirstCompany(){
+    public  function ForUsersetupFirstCompany(){
         $data=[];
 
       //  dd(\MS\Mod\B\User4O3\F::checkUserLimits('company'));
@@ -224,8 +224,6 @@ class Company extends Logic
        return $this->throwData($data);
 
     }
-
-
 
     public function makeCompanyForUser($data){
 
@@ -300,16 +298,45 @@ class Company extends Logic
     }
 
     private function getCompanyIdFromAccountId($id){
-        $id='4711832393557865_oUshFzvJO_JJrDixOWi';
+       // $id='4711832393557865_oUshFzvJO_JJrDixOWi';
         $exId=explode('_',$id);
         array_pop($exId);
         return implode('_',$exId);
 
     }
-    public function checkToDelete($id){
+    public  function checkToDelete($id){
 
         $m=$this->getUserCompanyAccountLedgerModel($id);
         return (count($m->rowAll())<=1)?true:false;
+    }
+    public function getCurrentBankBalanceOfCompany(){
+        $liveUser=\MS\Mod\B\User4O3\F::getUser();
+       // dd($liveUser);
+        $m=$this->getUserCompanyAccountModel($liveUser['currentCompany']);
+        $total=collect($m->rowAll())->sum('CurrentBalance');
+
+        return $total;
+        $companyID=$liveUser['id'];
+    }
+    public function getCurrentCashBalanceOfCompany(){
+        $liveUser=\MS\Mod\B\User4O3\F::getUser();
+        $unset=['id','CompanyStatus','created_at','updated_at','CompanyHasBranch'];
+        $m=$this->getUserCompanyCashModel($liveUser['currentCompany']);
+        $foundCash=$m->rowAll();
+        if(count($foundCash)<1)return 0;
+        $foundCash=end($foundCash);
+        return $foundCash['TransactionCurrentBalance'];
+    }
+
+    public function getCurrentCompanyForUser(){
+        $liveUser=\MS\Mod\B\User4O3\F::getUser();
+        $unset=['id','CompanyStatus','created_at','updated_at','CompanyHasBranch'];
+
+        $company=$this->getCompanyById($liveUser['currentCompany'],false);
+        $company=$this->unSet($unset,$company);
+
+
+        return $company;
     }
 
     public function getAllCompanyAccounts($data){

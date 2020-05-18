@@ -29,6 +29,13 @@ class B extends Master
             'type'=>'get' ,
         ],
 
+        [
+            'name'=>'O3.Panel.AllInOne',
+            'route'=>'/home/oneview',
+            'method'=>'allInOne',
+            'type'=>'get' ,
+        ],
+
 
         [
             'name'=>'O3.Panel.From.Login',

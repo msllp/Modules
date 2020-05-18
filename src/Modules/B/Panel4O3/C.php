@@ -24,6 +24,20 @@ class C extends BaseController
 
         $this->middleware('onlyAjax')->only(['SideNavForMaintainaceDashboard']);
         $this->middleware('onlyUsers')->only(['SideNavForMaintainaceDashboard']);
+        $this->defaultLanding=[
+            'tabCode'=>'01',
+            'modCode'=>'Panel',
+            'modDView'=>"O3 One View",
+            'modUrl'=>route('O3.Panel.AllInOne'),
+            'data'=>'',
+        ];
+
+    }
+
+    public function allInOne(){
+        $data=[];
+        return L\AllInOne::fromController([['method'=>'dashboard','data'=>$data]]);
+
 
     }
 
@@ -49,13 +63,7 @@ class C extends BaseController
 
 
             if(array_key_exists('currentCompany',$foundUser) && $foundUser['currentCompany']!='0'){
-                $firsttab= [
-                    'tabCode'=>'01',
-                    'modCode'=>'MAS',
-                    'modDView'=>"Sales One View",
-                    'modUrl'=>"/Core/Sales/dashboard",
-                    'data'=>'',
-                ];
+                $firsttab= $this->defaultLanding;
             }
             $data=[
                 'path'=> [
@@ -111,13 +119,7 @@ class C extends BaseController
             ];
 
             if(array_key_exists('currentCompany',$foundUser) && $foundUser['currentCompany']!='0'){
-                $firsttab= [
-                    'tabCode'=>'01',
-                    'modCode'=>'MAS',
-                    'modDView'=>"Sales One View",
-                    'modUrl'=>"/Core/Sales/dashboard",
-                    'data'=>'',
-                ];
+                $firsttab= $this->defaultLanding;
             }
             $data=[
                 'path'=> [

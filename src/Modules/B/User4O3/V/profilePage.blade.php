@@ -1,4 +1,4 @@
-@extends('MS::core.layouts.rootRaw')
+@extends('MS::core.layouts.root')
 @section('body')
 <?php
 

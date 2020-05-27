@@ -516,10 +516,16 @@ class Users
         $er=[
             '601'=>'company not updated'
         ];
-        $c=self::getUserModel();
+
+        if(!ms()->checkRootUser()){
+            $class=new SubUser();
+            $c=$class->getUserSubUserModel();
+        }else{
+            $c=self::getUserModel();
+        }
         $outPut=false;
         $foundUser=$this->getLiveUser();
-
+       // dd($foundUser);
         if(gettype($companyId)=='array') {
             $companyId=$companyId['companyId'];
             $outPut=true;
@@ -528,7 +534,9 @@ class Users
         $changeData=['CompanyId'=>$companyId];
 
         $this->updateSessionUser('defualtCompany',$companyId);
+
         $outData=$c->rowEdit(['UniqId'=>$foundUser['id']],$changeData);
+        dd($outData);
         if($outPut)return ($outData)? $this->throwData(['status'=>true]):$this->throwError($er['601']);
         return $outData ;
 
@@ -566,6 +574,7 @@ class Users
             'mobile'=>$user['ContactNo'],
             'defualtCompany'=>$user['CompanyId'],
         ];
+        if(array_key_exists('RootId',$user))$sessionData['RootId']=$user['RootId'];
         Session::put('o3User', $sessionData);
      //   dd(Session::all());
         return true;
@@ -614,12 +623,15 @@ class Users
 
     private function signInUser($data = [], $type = '')
     {
-        //dd($data);
+
         $m = self::getUserModel();
+
         $userData=[
             'Username'=>(array_key_exists('usernameForLogin',$data['input']))?$data['input']['usernameForLogin']:''
         ];
-        $foundUser=$m->rowGet(['Username'=>$userData['Username']]);
+        $findData=['Username'=>$userData['Username']];
+        $foundUser=$m->rowGet($findData);
+
 
         if(count($foundUser)>0){
             $foundUser=reset($foundUser);
@@ -635,7 +647,31 @@ class Users
             }else{
                 goto MSError;
             }
-        }else{
+        } else{
+            $c=new SubUser();
+            $m2=$c->getUserSubUserModel();
+            $foundUser=$m2->rowGet($findData);
+            if(count($foundUser)>0){
+                $foundUser=reset($foundUser);
+                $decodePassword=\MS\Core\Helper\Comman::decode($foundUser['Password']);
+
+                if($decodePassword==$data['input']['passwordForLogin']){
+                    $finalUserData=$c->attacheDataFromRootId($foundUser);
+                    if(count($foundUser)==count($finalUserData)) goto MSError;
+                   // dd(session()->all());
+                    $this->signInUserToSession($finalUserData);
+                    $outData=[
+                        'redirectUrl'=>route('O3.Panel.From.Login',['apiToken'=>$finalUserData['apiToken']]),
+                    ];
+                    return $this->throwData($outData);
+                }else{
+                    goto MSError;
+                }
+
+            }else{
+                goto MSError;
+            }
+
             MSError:
             $er= [
                 'Username/Password is incorrect.',
@@ -788,8 +824,10 @@ class Users
 
     private function migrateForUserWhenSignup($userId){
         $this->migrateById('Payment_Ledger', [$userId]);
-    //    $this->migrateById('Call_Log', [$userId]);
         $this->migrateById($this->UserNotification, [$userId]);
+        $c=new SubUser();
+        $c=$c->getUserSubRoleModel($userId);
+        $c->migrate();
     }
 
     private function verifyUser($data = [])
@@ -1073,18 +1111,24 @@ class Users
     {
 
         $user = $this->getLiveUser();
+
+
         $user['plan'] = $this->getUserPlan($user['id']);
         return $user;
 
     }
     public function getLiveUser()
     {
-
+        $rootUser=true;
         $user=$this->getLogedInUser();
         if(!array_key_exists('apiToken',$user))return[];
         $foundUser=$this->getUserByApiToken($user['apiToken']);
-
-        return [
+        if(!array_key_exists('id',$foundUser)){
+            $rootUser=false;
+            $c=new SubUser();
+            $foundUser=$c->getUserByApiToken($user['apiToken']);
+        }
+        $returnData= [
             "id"=>$foundUser['UniqId'],
             "Username" =>(array_key_exists('username',$user))?$user['username']:$foundUser['Username'],
             "email" =>(array_key_exists('email',$user))?$user['email']:$foundUser['Email'],
@@ -1094,8 +1138,16 @@ class Users
             "phone" =>(array_key_exists('mobile',$user))? $user['mobile']:$foundUser['ContactNo'],
             "sex" => (array_key_exists('sex',$user))? $user['sex']:$foundUser['Sex'],
             'currentCompany'=>(array_key_exists('currentCompany',$user))? $user['currentCompany']:$foundUser['CompanyId'],
-            'apiToken'=>$user['apiToken']
+            'apiToken'=>$user['apiToken'],
+            'googleConnected'=>($foundUser['HookId']==null || $foundUser['HookId']=='' || strlen($foundUser['HookId']) <1)?false:true,
         ];
+
+
+        if(!$rootUser) {
+            $returnData['RootId'] = $foundUser['RootId'];
+            $returnData['CompanyPost'] = $foundUser['CompanyPost'];
+        }
+        return $returnData;
 
     }
 
@@ -1111,6 +1163,13 @@ class Users
         $c=self::getUserModel();
         $foundUser=$c->rowGet(['UniqId'=>$userId]);
         $foundUser=reset($foundUser);
+
+        if(!$foundUser) {
+            $c=new SubUser();
+            $foundUser = ms()->user();
+            $foundUser=$c->attacheDataFromRootId($foundUser) ;
+        }
+
 
         $userPlan= (array_key_exists('UserPlan',$foundUser) && $foundUser['UserPlan']!='')? $foundUser['UserPlan']:'111';
        // dd($foundUser);
@@ -1216,6 +1275,209 @@ class Users
     {
     }
 
+
+
+    private function checkUserExistOrNot($data): array
+    {
+        $UniqArray = self::$UniqColumnForUser;
+        $verifyData = [];
+        $foundData = [];
+
+        foreach ($UniqArray as $k) {
+            if (array_key_exists($k, $data) && $data[$k] != null) {
+                $foundData[0][] = $k;
+                $verifyData[$k] = $data[$k];
+            }
+        }
+
+        if (count($verifyData) > 0) {
+            $m = self::getUserModel();
+
+            foreach ($verifyData as $k => $v) {
+
+                if (!(array_key_exists(1, $foundData) && count($foundData[1]) > 0)) {
+                    $d = $m->rowGet([$k => $v]);
+                    $d2 = $m->rowGet([$k => strtolower($v)]);
+                    if ((count($d) > 0 && in_array($k, $foundData[0])) || (count($d2) > 0 && in_array($k, $foundData[0]))) {
+                        // unset($foundData[0][ array_key]);
+                        $foundData[1][] = $k;
+                    }
+                }
+            }
+
+        }
+        unset($foundData[0]);
+
+        return $foundData;
+
+    }
+    public function getNewUserNo()
+    {
+        $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
+        $code = Comman::random(16, 1, 1);
+        $d = $c->getModel();
+        while ($d->where('UniqId', $code)->get()->count() > 1) {
+            $code = Comman::random(16, 1, 1);
+        }
+        return $code;
+    }
+    public function getNewApiTokenForUser()
+    {
+        $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
+        $code = Comman::random(188, 4, 1);
+        $d = $c->getModel();
+        while ($d->where('apiToken', $code)->get()->count() > 1) {
+            $code = Comman::random(16, 1, 1);
+        }
+        return $code;
+    }
+    private function getDefault($id)
+    {
+        $d = [
+            'HookType' => 'MS',
+            'HookId' => 0,
+            'HookData' => collect([])->toJson(),
+            'UserPlan' => '111'
+        ];
+        if (array_key_exists($id, $d)) {
+            return $d[$id];
+        } else {
+            return '';
+        }
+    }
+    private function sms_VerifyUserNumber($to, $try = 0, $otp = null, $name = 'OTPforUser')
+    {
+        $data = [
+            'name' => $name,
+            'toNumber' => $to,
+            'otp' => ($otp == null) ? Comman::random(5) : $otp
+        ];
+        $data['channel']=0;
+        if ($try > 0) $data['channel'] = 1;
+        $u = [];
+        // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
+        try {
+
+            $u = (!array_key_exists('channel', $data)) ?
+                MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name']]) : MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name'], 'channel' => $data['channel']]);
+
+        } catch (Exception $e) {
+           // dd($e);
+          //  return [];
+        }
+
+
+        return $data;
+    }
+    private function email_VerifyUserEmail($to,$name,$otp=null)
+    {
+        $data = [
+            'mailSubject' => 'Email Verification for O3 ERP Account Opening',
+            'name' => $name,
+            //'toEmail'=>'emails@domain.com',
+            'otp' => ($otp==null)? Comman::random(5):$otp
+        ];
+
+
+
+
+        // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
+        try {
+            $m = MSMail::SendMail($to, 'MS::core.layouts.Email.EmailVerify', $data);
+
+        } catch (Exception $e) {
+            //dd($e);
+           // return [];
+        }
+        return $data;
+    }
+    private function regOtpForUser($channel, $userId, $otp,$uniqId=''): array
+    {
+        $return = [];
+
+        $m = self::getOtpModel();
+        $data = [
+            'UniqId' =>($uniqId=='')?Comman::random(16, 1, 1,[$userId]):$uniqId,
+            'UserId' => $userId,
+            'VerifyChannel' => $channel,
+            'ValidUpto' => \Carbon::now()->addHour(self::$default_otc_expire)->toDateTimeString(),
+            'OTP' => $otp,
+            'Verified' => false
+        ];
+        $rowAdded = $m->rowAdd($data, ['UserId']);
+
+        if (array_key_exists('UniqId', $data)) $return['UniqId'] = $data['UniqId'];
+        if (!$rowAdded) $return['foundOtp'] = $m->rowGet(['UserId' => $userId])[0];
+
+        return $return;
+    }
+
+
+    private function unSet($column, $d)
+    {
+
+        foreach ($column as $name) {
+            if (array_key_exists($name, $d)) unset($d[$name]);
+        }
+        return $d;
+    }
+
+
+    public static function getUserPaymentModel($userId)
+    {
+        $c = new self();
+        return $c = new MSDB($c->ModNameSpace, $c->UserPayment, [$userId]);
+    }
+    public static function getUserNotificationModel($userId)
+    {
+        $c = new self();
+        return $c = new MSDB($c->ModNameSpace, $c->UserNotification, [$userId]);
+    }
+
+    public static function getOtpModel()
+    {
+        $tableId = implode('_', [self::$modCode, 'Users_OTP']);
+        $c = new MSDB('MS\Mod\B\User4O3', $tableId);
+        return $c;
+
+    }
+
+    public static function getUserModel()
+    {
+        $c = new self();
+
+        return new MSDB($c->ModNameSpace, $c->UserMSDB);
+        return $c = new MSDB($c->ModNameSpace, $c->UserMSDB);
+    }
+    public static function getUserCallLogModel($userId){
+        $c = new self();
+        return $c = new MSDB($c->ModNameSpace,implode('_',[self::$modCode,'Call_Log']),[$userId]);
+    }
+
+    public static function fromController(array $methods)
+    {
+        $c = new self();
+
+
+        if (count($methods) > 1 && count($methods) != 0) {
+
+        } elseif (count($methods) != 0) {
+
+            foreach ($methods as $method) {
+                if (array_key_exists('method', $method) && array_key_exists('data', $method)) {
+                    //        dd(call_user_func([$c,$method['method']],$method['data']));
+
+                    return call_user_func([$c, $method['method']], $method['data']);
+                }
+            }
+
+        }
+
+
+    }
+
+
+
     private function setUpMasterUser()
     {
 
@@ -1227,19 +1489,23 @@ class Users
         $m = new  MSTableSchema($data);
 
         $m->setFields(['name' => 'UniqId', 'type' => 'string']);
-        $m->setFields(['name' => 'Username', 'type' => 'string']);
-        $m->setFields(['name' => 'Password', 'type' => 'string']);
+        $m->setFields(['name' => 'Username', 'type' => 'string','input'=>'text','vName'=>'Username', "validation"=>['required'=>true] ]);
+        $m->setFields(['name' => 'Password', 'type' => 'string','input'=>'password','vName'=>'Passwrod',"validation"=>['required'=>true,'length'=>['minimum'=>8],'format'=>[ 'pattern'=> "^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{1,}$",
+      'flags'> "i",
+      'message'=> "number & alphabates required" ] ]]);
         $m->setFields(['name' => 'apiToken', 'type' => 'string']);
         $m->setFields(['name' => 'HookType', 'type' => 'string']);
         $m->setFields(['name' => 'HookId', 'type' => 'string',]);
         $m->setFields(['name' => 'HookData', 'type' => 'string',]);
-        $m->setFields(['name' => 'FirstName', 'type' => 'string']);
-        $m->setFields(['name' => 'Sex', 'type' => 'string']);
-        $m->setFields(['name' => 'LastName', 'type' => 'string',]);
-        $m->setFields(['name' => 'Email', 'type' => 'string',]);
-        $m->setFields(['name' => 'ContactNo', 'type' => 'string',]);
+        $m->setFields(['name' => 'FirstName', 'type' => 'string','input'=>'text','vName'=>'First Name',"validation"=>['required'=>true]]);
+        $m->setFields(['name' => 'Sex', 'type' => 'string','input'=>'radio','vName'=>'Sex',"validation"=>['required'=>true,'existIn'=>MSCORE_User_SEX]]);
+        $m->setFields(['name' => 'LastName', 'type' => 'string','input'=>'text','vName'=>'Last Name',"validation"=>['required'=>true]]);
+        $m->setFields(['name' => 'Email', 'type' => 'string','input'=>'email','vName'=>'Email',"validation"=>['required'=>true,'email'=>true]]);
+        $m->setFields(['name' => 'ContactNo', 'type' => 'string','input'=>'number','vName'=>'Contact No',"validation"=>['length'=>['is'=>10], 'required'=>true,'numericality'=> ['strict'=> true]]]);
+
         $m->setFields(['name' => 'CompanyId', 'type' => 'string',]);
         $m->setFields(['name' => 'CompanyPost', 'type' => 'string',]);
+      //  $m->setFields(['name' => 'RootId','type'=>'string']);
         $m->setFields(['name' => 'UserTotalPaid', 'type' => 'string',]);
         $m->setFields(['name' => 'UserTotalPending', 'type' => 'string',]);
 
@@ -1270,9 +1536,9 @@ class Users
             'btnText'=>"Sign in"
         ]);
 
-        $m
 
-            ->addForm($signInGroup)
+
+        $m->addForm($signInGroup)
             ->addGroup4Form($signInGroup,[$signInGroup])
             ->addTitle4Form($signInGroup,Lang::get('UI.loginForOwner'))
             ->addAction4Form($signInGroup,['signin'])
@@ -1280,95 +1546,19 @@ class Users
 
 
 
-        $m
-            ->addLogin($loginId)
+        $m->addLogin($loginId)
             ->addGroup4Login($loginId,[$signInGroup])
             ->addTitle4Login($loginId,Lang::get('UI.loginForOwner'))
             ->setPost4Login($loginId,'O3.Users.Login.Form.Post');
 
 
 
-      //     dd($m);
+        //     dd($m);
         $m1 = $m->finalReturnForTableFile();
 
         return array_merge($m1);
     }
-    private function setUpMasterSubUser()
-    {
 
-        $data = [
-            'tableId' => implode('_', [self::$modCode, 'Sub_Users']),
-            'tableName' => implode('_', [self::$modCode, 'Sub_Users_']),
-            'connection' => self::$c_m,
-        ];
-        $m = new  MSTableSchema($data);
-
-        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
-        $m->setFields(['name' => 'Username', 'type' => 'string']);
-        $m->setFields(['name' => 'Password', 'type' => 'string']);
-        $m->setFields(['name' => 'apiToken', 'type' => 'string']);
-        $m->setFields(['name' => 'HookType', 'type' => 'string']);
-        $m->setFields(['name' => 'HookId', 'type' => 'string',]);
-        $m->setFields(['name' => 'HookData', 'type' => 'string',]);
-        $m->setFields(['name' => 'FirstName', 'type' => 'string']);
-        $m->setFields(['name' => 'Sex', 'type' => 'string']);
-        $m->setFields(['name' => 'LastName', 'type' => 'string',]);
-        $m->setFields(['name' => 'Email', 'type' => 'string',]);
-        $m->setFields(['name' => 'ContactNo', 'type' => 'string',]);
-        $m->setFields(['name' => 'CompanyId', 'type' => 'string',]);
-        $m->setFields(['name' => 'CompanyPost', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserTotalPaid', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserTotalPending', 'type' => 'string',]);
-
-        $m->setFields(['name' => 'UserPlan', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserValidUpto', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserProductCount', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserInvoiceCount', 'type' => 'string',]);
-
-        $m->setFields(['name' => 'UserCompanyCount', 'type' => 'string',]);
-        $m->setFields(['name' => 'UserCompanyUserCount', 'type' => 'string',]);
-        $m->setFields(['name' => 'PaymentSuspend', 'type' => 'boolean',]);
-        $m->setFields(['name' => 'UserStatus', 'type' => 'boolean',]);
-
-        $m->setFields(['name'=>'usernameForLogin','vName'=>Lang::get('UI.panelLoginId'),'dbOff'=>true,'input'=>'text']);
-        $m->setFields(['name'=>'passwordForLogin','vName'=>Lang::get('UI.panelLoginPassword'),'dbOff'=>true,'input'=>'password']);
-
-        $signInGroup='signInOwner';
-        $m->addGroup($signInGroup)->addField($signInGroup,['usernameForLogin','passwordForLogin']);
-
-
-        $loginId='ForOwner';
-
-        $m->addAction('signin',[
-            "btnColor"=>"bg-green",
-            "route"=>"O3.Users.Login.Form.Post",
-            "btnIcon"=>"fi2 flaticon-unlocked",
-            'btnText'=>"Sign in"
-        ]);
-
-        $m
-
-            ->addForm($signInGroup)
-            ->addGroup4Form($signInGroup,[$signInGroup])
-            ->addTitle4Form($signInGroup,Lang::get('UI.loginForOwner'))
-            ->addAction4Form($signInGroup,['signin'])
-        ;
-
-
-
-        $m
-            ->addLogin($loginId)
-            ->addGroup4Login($loginId,[$signInGroup])
-            ->addTitle4Login($loginId,Lang::get('UI.loginForOwner'))
-            ->setPost4Login($loginId,'O3.Users.Login.Form.Post');
-
-
-
-      //     dd($m);
-        $m1 = $m->finalReturnForTableFile();
-
-        return array_merge($m1);
-    }
 
     private function setUpUserSettings()
     {
@@ -1530,150 +1720,21 @@ class Users
 
         return array_merge($m1);
     }
-
-    private function checkUserExistOrNot($data): array
+    private function setUpUserSex()
     {
-        $UniqArray = self::$UniqColumnForUser;
-        $verifyData = [];
-        $foundData = [];
 
-        foreach ($UniqArray as $k) {
-            if (array_key_exists($k, $data) && $data[$k] != null) {
-                $foundData[0][] = $k;
-                $verifyData[$k] = $data[$k];
-            }
-        }
-
-        if (count($verifyData) > 0) {
-            $m = self::getUserModel();
-
-            foreach ($verifyData as $k => $v) {
-
-                if (!(array_key_exists(1, $foundData) && count($foundData[1]) > 0)) {
-                    $d = $m->rowGet([$k => $v]);
-                    $d2 = $m->rowGet([$k => strtolower($v)]);
-                    if ((count($d) > 0 && in_array($k, $foundData[0])) || (count($d2) > 0 && in_array($k, $foundData[0]))) {
-                        // unset($foundData[0][ array_key]);
-                        $foundData[1][] = $k;
-                    }
-                }
-            }
-
-        }
-        unset($foundData[0]);
-
-        return $foundData;
-
-    }
-    private function getNewUserNo()
-    {
-        $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
-        $code = Comman::random(16, 1, 1);
-        $d = $c->getModel();
-        while ($d->where('UniqId', $code)->get()->count() > 1) {
-            $code = Comman::random(16, 1, 1);
-        }
-        return $code;
-    }
-    private function getNewApiTokenForUser()
-    {
-        $c = new MSDB($this->ModNameSpace, $this->UserMSDB);
-        $code = Comman::random(188, 4, 1);
-        $d = $c->getModel();
-        while ($d->where('apiToken', $code)->get()->count() > 1) {
-            $code = Comman::random(16, 1, 1);
-        }
-        return $code;
-    }
-    private function getDefault($id)
-    {
-        $d = [
-            'HookType' => 'MS',
-            'HookId' => 0,
-            'HookData' => collect([])->toJson(),
-            'UserPlan' => '111'
-        ];
-        if (array_key_exists($id, $d)) {
-            return $d[$id];
-        } else {
-            return '';
-        }
-    }
-    private function sms_VerifyUserNumber($to, $try = 0, $otp = null, $name = 'OTPforUser')
-    {
         $data = [
-            'name' => $name,
-            'toNumber' => $to,
-            'otp' => ($otp == null) ? Comman::random(5) : $otp
+            'tableId' => implode('_', [self::$modCode, 'Users_Sex']),
+            'tableName' => implode('_', [self::$modCode, 'Users_Sex']),
+            'connection' => self::$c_c,
         ];
-        $data['channel']=0;
-        if ($try > 0) $data['channel'] = 1;
-        $u = [];
-        // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
-        try {
+        $m = new  MSTableSchema($data);
+        $m->setFields(['name' => 'BoolName', 'type' => 'string']);
+        $m->setFields(['name' => 'BoolValue', 'type' => 'string']);
 
-            $u = (!array_key_exists('channel', $data)) ?
-                MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name']]) : MSSMS::SendSMS($to, ['strData' => ['OTP' => $data['otp']], 'templateId' => $data['name'], 'channel' => $data['channel']]);
+        $m1 = $m->finalReturnForTableFile();
 
-        } catch (Exception $e) {
-           // dd($e);
-          //  return [];
-        }
-
-
-        return $data;
-    }
-    private function email_VerifyUserEmail($to,$name,$otp=null)
-    {
-        $data = [
-            'mailSubject' => 'Email Verification for O3 ERP Account Opening',
-            'name' => $name,
-            //'toEmail'=>'emails@domain.com',
-            'otp' => ($otp==null)? Comman::random(5):$otp
-        ];
-
-
-
-
-        // return view('MS::core.layouts.Email.EmailVerify')->with('data',$data);
-        try {
-            $m = MSMail::SendMail($to, 'MS::core.layouts.Email.EmailVerify', $data);
-
-        } catch (Exception $e) {
-            //dd($e);
-           // return [];
-        }
-        return $data;
-    }
-    private function regOtpForUser($channel, $userId, $otp,$uniqId=''): array
-    {
-        $return = [];
-
-        $m = self::getOtpModel();
-        $data = [
-            'UniqId' =>($uniqId=='')?Comman::random(16, 1, 1,[$userId]):$uniqId,
-            'UserId' => $userId,
-            'VerifyChannel' => $channel,
-            'ValidUpto' => \Carbon::now()->addHour(self::$default_otc_expire)->toDateTimeString(),
-            'OTP' => $otp,
-            'Verified' => false
-        ];
-        $rowAdded = $m->rowAdd($data, ['UserId']);
-
-        if (array_key_exists('UniqId', $data)) $return['UniqId'] = $data['UniqId'];
-        if (!$rowAdded) $return['foundOtp'] = $m->rowGet(['UserId' => $userId])[0];
-
-        return $return;
-    }
-
-
-    private function unSet($column, $d)
-    {
-
-        foreach ($column as $name) {
-            if (array_key_exists($name, $d)) unset($d[$name]);
-        }
-        return $d;
+        return array_merge($m1);
     }
 
 
@@ -1685,64 +1746,15 @@ class Users
             'setUpUserVerificationOTPs' => [],
             'setUpUserPayment' => [],
             'setUpUserCall'=>[],
-            'setUpUserNotification'=>[]
+            'setUpUserNotification'=>[],
+            'setUpUserSex'=>[],
+          //  'setUpMasterSubUser'=>[]
         ];
         $c = new self();
         $d = [];
         foreach ($methodToCall as $method => $data) if (method_exists($c, $method)) $d = array_merge($d, $c->$method($data));
         return $d;
         dd($d);
-
-
-    }
-
-    public static function getUserPaymentModel($userId)
-    {
-        $c = new self();
-        return $c = new MSDB($c->ModNameSpace, $c->UserPayment, [$userId]);
-    }
-    public static function getUserNotificationModel($userId)
-    {
-        $c = new self();
-        return $c = new MSDB($c->ModNameSpace, $c->UserNotification, [$userId]);
-    }
-
-    public static function getOtpModel()
-    {
-        $tableId = implode('_', [self::$modCode, 'Users_OTP']);
-        $c = new MSDB('MS\Mod\B\User4O3', $tableId);
-        return $c;
-
-    }
-
-    public static function getUserModel()
-    {
-        $c = new self();
-        return $c = new MSDB($c->ModNameSpace, $c->UserMSDB);
-    }
-    public static function getUserCallLogModel($userId){
-        $c = new self();
-        return $c = new MSDB($c->ModNameSpace,implode('_',[self::$modCode,'Call_Log']),[$userId]);
-    }
-
-    public static function fromController(array $methods)
-    {
-        $c = new self();
-
-
-        if (count($methods) > 1 && count($methods) != 0) {
-
-        } elseif (count($methods) != 0) {
-
-            foreach ($methods as $method) {
-                if (array_key_exists('method', $method) && array_key_exists('data', $method)) {
-                    //        dd(call_user_func([$c,$method['method']],$method['data']));
-
-                    return call_user_func([$c, $method['method']], $method['data']);
-                }
-            }
-
-        }
 
 
     }
@@ -1762,6 +1774,5 @@ class Users
 
         return response()->json($err,419);
     }
-
 
 }

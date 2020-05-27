@@ -399,7 +399,6 @@ class Company extends Logic
 
 
     }
-
     public function addAccountToCompanyPost($data){
         $newAccounts=(array_key_exists('input',$data))?$data['input']->all():[];
         if(array_key_exists('companyId',$data) && $data['companyId']!=null){
@@ -539,27 +538,52 @@ class Company extends Logic
 
     }
 
-    public function getAllCompanyForUser($data){
+    public function getAllCompanyForUser($data,$json=true){
         $er=[
             '601'=>['Request Id is expired'],
 
         ];
-       $userId=\MS\Core\Helper\Comman::decodeLimit($data['userId'])  ;
-       if($userId=='')return $this->throwError($er['601']);
-       $th=$this;
-       $unsafeColumn=['created_at','id','CompanyHasBranch','CompanyStatus'];
-       $m=$this->getUserCompanyModel($userId);
 
-       if(!$m->checkTableExist())$m->migrate();
-       $allCom=$m->rowGet(['CompanyStatus'=>1]);
-       $mapFunction=function ($ar) use ($th,$unsafeColumn){
+       // dd($data);
+        if(array_key_exists('json',$data))$json=$data['json'];
+    //    dd(\MS\Mod\B\User4O3\F::getUser());
+
+        if(array_key_exists('userId',$data)){
+            $userId=  \MS\Core\Helper\Comman::decodeLimit($data['userId']);
+        }else{
+            $userId=\MS\Mod\B\User4O3\F::getUser()['id'];
+        }
+        $rootUser=(\MS\Mod\B\User4O3\F::getRootIdFromSubUserId($userId) ==$userId)?true:false;
+        $userId=\MS\Mod\B\User4O3\F::getRootIdFromSubUserId($userId);
+
+        if($userId=='')return $this->throwError($er['601']);
+        $th=$this;
+        $unsafeColumn=['created_at','id','CompanyHasBranch','CompanyStatus'];
+        $m=$this->getUserCompanyModel($userId);
+
+        if(!$m->checkTableExist())$m->migrate();
+        $allCom=$m->rowGet(['CompanyStatus'=>1]);
+
+        if(!$rootUser){
+            $allCom1=[];
+            $allowedCompany=\MS\Mod\B\Mod4O3\F::getAllowedCompany();
+            foreach ($allCom as $k=>$v){
+                if(in_array($v['UniqId'],$allowedCompany))$allCom1[]=$v;
+            }
+            $allCom=$allCom1;
+
+        }
+
+        $mapFunction=function ($ar) use ($th,$unsafeColumn){
             return $th->unSet($unsafeColumn,$ar);
 
        };
-       $outData=array_map($mapFunction,$allCom);
-       if(count($outData)<1)return $this->throwError(['No Company Found Please Setup Company First']);
-       return $this->throwData($outData);
+        $outData=array_map($mapFunction,$allCom);
+        if(count($outData)<1)return $this->throwError(['No Company Found Please Setup Company First']);
+        return ($json)?$this->throwData($outData):$outData;
     }
+
+
     private function ForUsersetupForCompany($companyId){
         \MS\Mod\B\User4O3\F::setDefaultCompanyForUser($companyId,true);
         $models=[
@@ -766,7 +790,10 @@ class Company extends Logic
         return array_merge($m1);
 
     }
+
+
     public static function getTableRaw($data=[]){
+
         $allMethods=get_class_methods (__CLASS__);
         $autoMethodsGrabed=[];
         foreach ($allMethods as $k=>$m)if(strpos($m,'setup')===0)$autoMethodsGrabed[$m]=[];

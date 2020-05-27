@@ -24,6 +24,19 @@ class C extends BaseController
 
 
 
+    public function test()
+    {
+        $data=[
+            'title'=>'Add MSDB Table',
+            'path'=>[
+
+                'img'=>[
+                    'logo'=>asset('/images/logo_master.png')
+                ]
+            ]
+        ];
+        return view('MS::core.layouts.Dev.addMSDBForm')->with('data',$data);
+    }
 
     public function SideNavForMaintainaceDashboard(Request $r){
 

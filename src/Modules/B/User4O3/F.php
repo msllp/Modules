@@ -7,6 +7,14 @@ namespace MS\Mod\B\User4O3;
 class F
 {
 
+    public static function getRootIdFromSubUserId($UserId){
+
+        $exUserId=explode('_',$UserId);
+        if(count($exUserId)>1)$UserId=reset($exUserId);
+        return$UserId;
+
+
+    }
     public static function checkUserLogin($apiToken=null){
 
 

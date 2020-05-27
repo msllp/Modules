@@ -37,7 +37,13 @@ class F
         return L\Company::fromController([['method'=>'getCurrentCompanyForUser','data'=>$data]]);
 
     }
+    public static function getAllCompany(){
+        $data=[
+            'json'=>false
+        ];
+        return L\Company::fromController([['method'=>'getAllCompanyForUser','data'=>$data]]);
 
+    }
     public static function runCron()
     {
 

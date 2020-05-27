@@ -22,7 +22,7 @@ class C extends BaseController
     public function __construct()
     {
 
-        $this->middleware('onlyAjax')->only(['SideNavForMaintainaceDashboard']);
+     //   $this->middleware('onlyAjax')->only(['SideNavForMaintainaceDashboard']);
         $this->middleware('onlyUsers')->only(['SideNavForMaintainaceDashboard']);
         $this->defaultLanding=[
             'tabCode'=>'01',
@@ -45,6 +45,7 @@ class C extends BaseController
 
      //   dd(\MS\Mod\B\User4O3\L\Users::checkUserLoggedIn());
         $checkSession=\MS\Mod\B\User4O3\F::checkUserLogin($apiToken);
+
        //     \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'checkUserLoginSession','data'=> $apiToken ]]);
 
 
@@ -149,12 +150,15 @@ class C extends BaseController
      //  dd($r->all());
 
        $getLoggedUser=\MS\Mod\B\User4O3\L\Users::fromController([['method'=>'getLogedInUser','data'=> [] ]]);
-        \App::setlocale(session('ln'));
+       //dd($getLoggedUser);
+       \App::setlocale(session('ln'));
         //dd($r->session()->all());
         //dd($getLoggedUser['apiToken']);
         $rdata=['accessToken'=>$getLoggedUser['apiToken']];
 
         $data=\MS\Mod\B\Panel4O3\L\Nav::getNavForEnv();
+
+        //dd($data);
 
         return \MS\Core\Helper\Comman::proccessReqNGetSideNavDataForDashboard($r,$data, $rdata);
     }

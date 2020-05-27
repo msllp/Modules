@@ -25,6 +25,94 @@ class C extends BaseController
 
     }
 
+
+    public function getUserRole(){
+        $inputData=[
+            // 'id'=>$id
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>ms()->getFuncitonName(__METHOD__),'data'=>$inputData]]);
+
+    }
+
+
+    public function viewAllUsers(){
+        $inputData=[
+            // 'id'=>$id
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>ms()->getFuncitonName(__METHOD__),'data'=>$inputData]]);
+
+    }
+    public function viewAllUsersPagination(Request $r){
+        $inputData=[
+            'r'=>$r
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>ms()->getFuncitonName(__METHOD__),'data'=>$inputData]]);
+
+    }
+
+    public function createSubUserForm(){
+        $inputData=[
+           // 'id'=>$id
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>ms()->getFuncitonName(__METHOD__),'data'=>$inputData]]);
+
+    }
+    public function createSubUserFormPost(Request $r){
+        $inputData=[
+            'r'=>$r
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>ms()->getFuncitonName(__METHOD__),'data'=>$inputData]]);
+
+    }
+
+    public function roleEdit($id){
+        $inputData=[
+            'id'=>$id
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'editRole','data'=>$inputData]]);
+
+    }
+    public function roleEditPost(Request $r,$id){
+        $inputData=[
+            'id'=>$id,
+            'r'=>$r
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'editRolePost','data'=>$inputData]]);
+
+    }
+    public function SaveUserRole(Request $r){
+    $inputData=[
+    'r'=>$r
+    ];
+    return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'saveRole','data'=>$inputData]]);
+
+}
+    public function CreateUserRole(Request $r){
+        $inputData=[
+            'r'=>$r
+
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'addRoleForm','data'=>$inputData]]);
+
+    }
+
+    public function viewAllRoles(){
+        $inputData=[
+
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'viewRoles','data'=>$inputData]]);
+
+    }
+    public function viewAllRolesPagination(Request $r){
+        $inputData=[
+        'r'=>$r
+        ];
+        return \MS\Mod\B\User4O3\L\SubUser::fromController([['method'=>'viewRolesPagination','data'=>$inputData]]);
+
+    }
+
+
+
     public function upgradeUser(){
         $inputData=[
 
@@ -312,12 +400,15 @@ class C extends BaseController
 
     public function signInByGoogle(){
         $url=route('O3.Users.Login.Google.Callback');
+       // dd($url);
         return Socialite::driver('google')->redirectUrl($url)->redirect();
 
     }
     public function signInByGoogleCallBack(Request $r){
         $url=route('O3.Users.Login.Google.Callback');
+        //dd($url);
         $user = Socialite::driver('google')->redirectUrl($url)->user();
+     //   dd($user);
         return \MS\Mod\B\User4O3\L\Users::fromController([['method'=>'signInUserFromGoogle','data'=>$user]]);
     }
 

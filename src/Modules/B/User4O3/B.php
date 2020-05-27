@@ -66,12 +66,7 @@ class B extends Master
         ],
 
 
-        [
-            'name'=>'O3.Users.SignUp.Verify.Resend',
-            'route'=>'/verify/{token}/resend',
-            'method'=>'resendOtp',
-            'type'=>'post',
-        ],
+
         [
             'name'=>'O3.Users.SignUp.Gen.Payment',
             'route'=>'/payment/{userId}',
@@ -79,7 +74,7 @@ class B extends Master
             'type'=>'post',
         ],
             [
-            'name'=>'O3.Users.SignUp.Verify.Resend',
+            'name'=>'O3.Users.SignUp.Verify.Resend.forwebsite',
             'route'=>'/payment/track/{orderId}',
             'method'=>'trackPaymentForUserSignUp',
             'type'=>'get',
@@ -226,7 +221,7 @@ class B extends Master
         ],
 
         [
-            'name'=>'O3.Test',
+            'name'=>'O3.Test.post',
             'route'=>'/test',
             'method'=>'testPost',
             'type'=>'post',
@@ -245,11 +240,20 @@ class B extends Master
             'type'=>'get',
         ],
 
+        [
+            'NamePreFix'=>'O3.SubUser',
+            'preFix'=>'SubUser',
+            'dynamicLoadNameSpace'=>'L\\SubUser',
+            'dynamicLoadRouteMethod'=>'loadRoutes'
+        ],
+
 
 
 
 
     ];
+
+
 
     public static $tables=[];
 }

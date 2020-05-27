@@ -41,8 +41,8 @@ class C extends BaseController
             'getAccountForCompany',
             'setupAccountForCompany',
             'setupAccountForCompanyPost'];
-        $this->middleware('onlyAjax')->only($onlyAjax);
-        $this->middleware('onlyUsers')->only($onlyForUsers);
+       // $this->middleware('onlyAjax')->only($onlyAjax);
+       // $this->middleware('onlyUsers')->only($onlyForUsers);
 
     }
     public function test(){

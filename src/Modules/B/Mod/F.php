@@ -40,9 +40,11 @@ public static function getRootModuleModel(){
     return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Mod');
 }
 
-public static function getRouteModel(){
-    return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Route');
-}
+    public static function getRouteModel(){
+
+        return  ms()->msdb(__NAMESPACE__,'Master_Route');
+        return new \MS\Core\Helper\MSDB(__NAMESPACE__,'Master_Route');
+    }
 
     public static function getEventModel(){
 
@@ -102,9 +104,7 @@ public static function getRouteModel(){
     public static function checkRouteExist($r):array{
     $returnArray=['pathFound'=>false];
     $m=self::getRouteModel();
-
-
-
+//dd('ok');
     $data=[
         'path'=>$r->path()
     ];

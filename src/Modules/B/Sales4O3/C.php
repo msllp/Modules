@@ -3,27 +3,41 @@
 namespace MS\Mod\B\Sales4O3;
 
 //use B\MAS\R\AddMSCoreModule;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use MS\Core\Helper\Comman;
-use Razorpay\Api;
-use function GuzzleHttp\Promise\all;
+use MS\Core\Module\MasterController;
 use Socialite;
-class C extends BaseController
+
+class C extends MasterController
 {
-    use  DispatchesJobs, ValidatesRequests;
 
 
-    protected $data=[];
+    protected $data = [];
 
-    protected $ln='en';
+    protected $ln = 'en';
 
-    public function test(){
+    public function test()
+    {
 
 
         dd(F::setupSalesForCompany('test'));
+
+    }
+
+//    public function AddCategoryForm()
+//    {
+//        $inputData = [
+//            // 'id'=>$id
+//        ];
+//        return \MS\Mod\B\Sales4O3\L\Product::fromController([['method' => ms()->getFuncitonName(__METHOD__), 'data' => $inputData]]);
+//
+//    }
+
+    public function AddCategoryFormPost(Request $r)
+    {
+        $inputData = [
+            'r' => $r
+        ];
+        return \MS\Mod\B\Sales4O3\L\Product::fromController([['method' => ms()->getFuncitonName(__METHOD__), 'data' => $inputData]]);
 
     }
 

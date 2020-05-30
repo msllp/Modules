@@ -42,9 +42,7 @@ class SubUser extends Logic
 
     }
 
-    public function checkSubUserExiste($data){
-        dd($data);
-    }
+
 
     public function attacheDataFromRootId($data){
       //  dd($data);
@@ -84,6 +82,11 @@ class SubUser extends Logic
 
     public function createSubUserForm($data){
 
+        if(!\MS\Mod\B\User4O3\F::checkUserLimits('user')){
+            $data=['which'=>'Employee'];
+            return  view('MS::core.layouts.Error.LimitOver')->with('data',$data);
+
+        }
     $c=$this->getUserSubUserModel();
     $c->migrate();
 

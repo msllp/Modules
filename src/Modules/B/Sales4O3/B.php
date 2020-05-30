@@ -33,7 +33,13 @@ class B extends Master
             'preFix'=>'invoice',
             'dynamicLoadNameSpace'=>'L\\Invoice',
             'dynamicLoadRouteMethod'=>'loadRoutes'
-        ]
+        ],
+        [
+        'NamePreFix'=>'O3.Sales.Product',
+        'preFix'=>'Product',
+        'dynamicLoadNameSpace'=>'L\\Product',
+        'dynamicLoadRouteMethod'=>'loadRoutes'
+        ],
 
     ];
 

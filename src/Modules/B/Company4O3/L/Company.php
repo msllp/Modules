@@ -236,9 +236,10 @@ class Company extends Logic
         $com=(array_key_exists('company',$data))?$data['company']:[];
         if(count($com)< 1)return $this->throwError($er['101']);
 
-        $user=\MS\Mod\B\User4O3\F::getUser();
+        $user=ms()->user();
+        $userId=(ms()->checkRootUser())?$user['id'] :$user['RootId'];
 
-        $companyid=\MS\Core\Helper\Comman::random('9',4,1,[$user['id']]);
+        $companyid=\MS\Core\Helper\Comman::random('9',4,1,[$userId]);
         $companyData=[
 
             'UniqId'=>$companyid,
@@ -277,7 +278,7 @@ class Company extends Logic
         ];
 
 
-        $m=$this->getUserCompanyModel($user['id']);
+        $m=$this->getUserCompanyModel($userId);
         $m2=$this->getMasterCompanyModel();
 
         if(!$m->checkTableExist())$m->migrate();
@@ -310,18 +311,18 @@ class Company extends Logic
         return (count($m->rowAll())<=1)?true:false;
     }
     public function getCurrentBankBalanceOfCompany(){
+        $user=ms()->user();
         $liveUser=\MS\Mod\B\User4O3\F::getUser();
        // dd($liveUser);
-        $m=$this->getUserCompanyAccountModel($liveUser['currentCompany']);
+        $m=$this->getUserCompanyAccountModel($user['currentCompany']);
         $total=collect($m->rowAll())->sum('CurrentBalance');
 
         return $total;
-        $companyID=$liveUser['id'];
     }
     public function getCurrentCashBalanceOfCompany(){
-        $liveUser=\MS\Mod\B\User4O3\F::getUser();
+        $user=ms()->user();
         $unset=['id','CompanyStatus','created_at','updated_at','CompanyHasBranch'];
-        $m=$this->getUserCompanyCashModel($liveUser['currentCompany']);
+        $m=$this->getUserCompanyCashModel($user['currentCompany']);
         $foundCash=$m->rowAll();
         if(count($foundCash)<1)return 0;
         $foundCash=end($foundCash);
@@ -329,10 +330,10 @@ class Company extends Logic
     }
 
     public function getCurrentCompanyForUser(){
-        $liveUser=\MS\Mod\B\User4O3\F::getUser();
+        $user=ms()->user();
         $unset=['id','CompanyStatus','created_at','updated_at','CompanyHasBranch'];
 
-        $company=$this->getCompanyById($liveUser['currentCompany'],false);
+        $company=$this->getCompanyById($user['currentCompany'],false);
         $company=$this->unSet($unset,$company);
 
 
@@ -343,8 +344,8 @@ class Company extends Logic
         if(array_key_exists('companyId',$data) && $data['companyId']!=null){
             $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
         }else{
-            $logedInUser=\MS\Mod\B\User4O3\F::getUser();
-            $companyId=$logedInUser['currentCompany'];
+            $user=ms()->user();
+            $companyId=$user['currentCompany'];
         }
         $m=$this->getUserCompanyAccountModel($companyId);
         $allAccounts=$m->rowAll();
@@ -374,8 +375,8 @@ class Company extends Logic
         if(array_key_exists('companyId',$data) && $data['companyId']!=null){
             $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
         }else{
-        $logedInUser=\MS\Mod\B\User4O3\F::getUser();
-        $companyId=$logedInUser['currentCompany'];
+            $user=ms()->user();
+            $companyId=$user['currentCompany'];
         }
 
         $data=[
@@ -404,8 +405,8 @@ class Company extends Logic
         if(array_key_exists('companyId',$data) && $data['companyId']!=null){
             $companyId=\MS\Core\Helper\Comman::decodeLimit($data['companyId']);
         }else{
-            $logedInUser=\MS\Mod\B\User4O3\F::getUser();
-            $companyId=$logedInUser['currentCompany'];
+            $user=ms()->user();
+            $companyId=$user['currentCompany'];
         }
 
         $m=$this->getUserCompanyAccountModel($companyId);
@@ -482,9 +483,11 @@ class Company extends Logic
     //    $id='4711832393557865_oUshFzvJO_qxDeVRvIF';
         $m=$this->getUserCompanyAccountLedgerModel($id);
         $currentRecords=$m->rowAll();
+        $user=ms()->user();
+        $userId=(ms()->checkRootUser())?$user['id']:$user['RootId'];
         $foundUser=\MS\Mod\B\User4O3\F::getUser();
         $allowedType=['invoice','purchase','salary','other'];
-        $data['DoneBy']=$foundUser['id'];
+        $data['DoneBy']=$user['id'];
         $data['Partial']=(array_key_exists('partial',$data))?$data['partial']:0;
         if(count($currentRecords)>0){
             $companyId=$this->getCompanyIdFromAccountId($id);
@@ -551,7 +554,8 @@ class Company extends Logic
         if(array_key_exists('userId',$data)){
             $userId=  \MS\Core\Helper\Comman::decodeLimit($data['userId']);
         }else{
-            $userId=\MS\Mod\B\User4O3\F::getUser()['id'];
+            $user=ms()->user();
+            $userId=(ms()->checkRootUser())?$user['id']:$user['RootId'];
         }
         $rootUser=(\MS\Mod\B\User4O3\F::getRootIdFromSubUserId($userId) ==$userId)?true:false;
         $userId=\MS\Mod\B\User4O3\F::getRootIdFromSubUserId($userId);
@@ -586,9 +590,15 @@ class Company extends Logic
 
     private function ForUsersetupForCompany($companyId){
         \MS\Mod\B\User4O3\F::setDefaultCompanyForUser($companyId,true);
+
+        $productClass=new \MS\Mod\B\Sales4O3\L\Product();
+
+        $productModel=$productClass->getSalesMasterProductCategoryModel($companyId);
+
         $models=[
             'account'=>$this->getUserCompanyAccountModel($companyId),
             'cash'=>$this->getUserCompanyCashModel($companyId),
+            'product'=>$productModel
          //   'accountPaymentLedger'=>$this->getUserCompanyAccountLedgerModel($companyId)
         ];
         $process=[];

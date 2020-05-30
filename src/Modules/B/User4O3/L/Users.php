@@ -498,8 +498,16 @@ class Users
     public function checkUserLimits($type){
         $foundUser=$this->getLiveUser();
         $plan=$this->getUserPlan($foundUser['id']);
+       // dd($plan);
         switch ($type){
             case 'company':
+                if(array_key_exists($type,$plan['limits'])){
+                    $limit=$plan['limits'][$type];
+                    return ($limit['limit']>$limit['usage']);
+                }
+                break;
+
+            case 'user':
                 if(array_key_exists($type,$plan['limits'])){
                     $limit=$plan['limits'][$type];
                     return ($limit['limit']>$limit['usage']);

@@ -17,6 +17,7 @@ class App extends Logic
     public static $c_c = 'O3_Sales_Config';
     public static $modCode = 'Sales4O3';
     public $DB=[];
+    public $allPermisiion=[];
 
     public function getAllowedCompany(){
         $user=ms()->user();
@@ -25,7 +26,20 @@ class App extends Logic
         if(array_key_exists('CompanyPost',$user)){
            $c=new \MS\Mod\B\User4O3\L\SubUser();
            $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
-           $all=collect($m->rowAll());
+
+
+            if(count($this->allPermisiion)>0){
+                $all=collect($this->allPermisiion);
+            }else{
+                $c=new \MS\Mod\B\User4O3\L\SubUser();
+                $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
+                $this->allPermisiion=$m->rowAll();
+                $all=collect($this->allPermisiion);
+
+            }
+
+
+
            $allowedCompany=array_keys($all->groupBy('CompanyId')->toArray());
         }
         return $allowedCompany;
@@ -35,9 +49,18 @@ class App extends Logic
         $currentCompany=ms()->user()['currentCompany'];
         $allowedCompany=[];
         if(array_key_exists('CompanyPost',$user)){
-           $c=new \MS\Mod\B\User4O3\L\SubUser();
-           $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
-           $all=collect($m->rowAll());
+           if(count($this->allPermisiion)>0){
+               $all=collect($this->allPermisiion);
+
+           }else{
+               $c=new \MS\Mod\B\User4O3\L\SubUser();
+               $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
+               $this->allPermisiion=$m->rowAll();
+               $all=collect($this->allPermisiion);
+
+
+           }
+
            $allowedCompany=array_keys($all->where('CompanyId',$currentCompany)->groupBy('ModuleId')->toArray());
         }
         return $allowedCompany;
@@ -49,10 +72,37 @@ class App extends Logic
         $currentCompany=ms()->user()['currentCompany'];
       //  dd($currentCompany);
         if(array_key_exists('CompanyPost',$user)){
-           $c=new \MS\Mod\B\User4O3\L\SubUser();
-           $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
-           $all=collect($m->rowAll());
+            if(count($this->allPermisiion)>0){
+                $all=collect($this->allPermisiion);
+            }else{
+
+                $c=new \MS\Mod\B\User4O3\L\SubUser();
+                $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
+                $this->allPermisiion=$m->rowAll();
+                $all=collect($this->allPermisiion);
+            }
            $allowedCompany=array_keys($all->where('CompanyId',$currentCompany)->where('ModuleId',$sub)->groupBy('ModuleSubId')->toArray());
+        }
+        return $allowedCompany;
+    }
+    public function getAllowedModulesWithSubAction($module,$section){
+        $user=ms()->user();
+
+        $allowedCompany=[];
+        $currentCompany=ms()->user()['currentCompany'];
+        //  dd($currentCompany);
+        if(array_key_exists('CompanyPost',$user)){
+            if(count($this->allPermisiion)>0){
+                $all=collect($this->allPermisiion);
+            }else{
+                $c=new \MS\Mod\B\User4O3\L\SubUser();
+                $m=$c->getUserRolePermissionsModel(implode('_',[$user['RootId'],$user['CompanyPost']]));
+                $this->allPermisiion=$m->rowAll();
+                $all=collect($this->allPermisiion);
+            }
+           // dd($module);
+            $allowedCompany=array_keys($all->where('CompanyId',$currentCompany)->where('ModuleId',$module)->where('ModuleSubId',$section)->groupBy('ModuleActionId')->toArray());
+       // dd($allowedCompany);
         }
         return $allowedCompany;
     }
@@ -117,6 +167,7 @@ class App extends Logic
         return  collect($foundSection['methods'])->toJson();
     }
 
+
     public static function getProccessedPermissionForTableEntry($data){
         $th=new Self();
         $allCompany=$data['companies'];
@@ -175,7 +226,6 @@ class App extends Logic
 
             return $outData;
     }
-
     private function getSalesPermisions(){
 
         $data=[
@@ -317,6 +367,27 @@ class App extends Logic
                         ]
                     ]
                 ],
+                [
+                    'section'=>'Product & Services',
+                    'id'=>'product',
+                    'action'=>[
+                        [
+                            'name'=>'Add Product',
+                            'id'=>'addProduct',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'Edit Product',
+                            'id'=>'editProduct',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'View Product',
+                            'id'=>'viewProduct',
+                            'methods'=>[]
+                        ]
+                    ]
+                ],
 
             ]
         ];
@@ -429,6 +500,27 @@ class App extends Logic
                         ]
                     ]
                 ],
+                [
+                    'section'=>'Product & Services',
+                    'id'=>'product',
+                    'action'=>[
+                        [
+                            'name'=>'Add Product',
+                            'id'=>'addProduct',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'Edit Product',
+                            'id'=>'editProduct',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'View Product',
+                            'id'=>'viewProduct',
+                            'methods'=>[]
+                        ]
+                    ]
+                ],
 
             ]
         ];
@@ -470,7 +562,7 @@ class App extends Logic
                 ],
                 [
                     'section'=>'Locations',
-                    'id'=>'purchase',
+                    'id'=>'location',
                     'action'=>[
                         [
                             'name'=>'Add Location',
@@ -552,6 +644,26 @@ class App extends Logic
                             'name'=>'View Own Employee',
                             'id'=>'viewOwnEmployee',
                             'methods'=>[]
+                        ],
+                        [
+                            'name'=>'Add Role',
+                            'id'=>'addRole',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'Edit Role',
+                            'id'=>'editRole',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'View All Role',
+                            'id'=>'viewRole',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'View Own Role',
+                            'id'=>'viewOwnRole',
+                            'methods'=>[]
                         ]
                     ]
                 ],
@@ -565,18 +677,13 @@ class App extends Logic
                             'methods'=>[]
                         ],
                         [
-                            'name'=>'Edit Invoice Purchase',
-                            'id'=>'editInvoicePurchase',
+                            'name'=>'Ask/Approve Leaves',
+                            'id'=>'askapproveLeave',
                             'methods'=>[]
                         ],
                         [
-                            'name'=>'View All Invoice Purchase',
-                            'id'=>'viewInvoicePurchase',
-                            'methods'=>[]
-                        ],
-                        [
-                            'name'=>'View Own Invoice Purchase',
-                            'id'=>'viewOwnInvoicePurchase',
+                            'name'=>'Attendance Report',
+                            'id'=>'attendanceReport',
                             'methods'=>[]
                         ],
                     ]
@@ -665,6 +772,11 @@ class App extends Logic
                         [
                             'name'=>'Purchase Report',
                             'id'=>'purchasereport',
+                            'methods'=>[]
+                        ],
+                        [
+                            'name'=>'GST Report',
+                            'id'=>'gstreport',
                             'methods'=>[]
                         ],
 

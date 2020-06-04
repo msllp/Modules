@@ -352,7 +352,7 @@ class SubUser extends Logic
         $r=new \MS\Core\Helper\MSRoute();
 
         $r->n('Role.Add.Form')->m('CreateUserRole')->r('Role/add/new')->g();
-        $r->n('api.Get.All.Role')->m('getUserRole')->r('Role/get/All')->g();
+        $r->n('api.Get.All.Role')->m('getUserRolegetUserRole')->r('Role/get/All')->g();
         $r->n('Role.Add.FormPost')->m('SaveUserRole')->r('Role/save')->p();
         $r->n('Role.View.All')->m('viewAllRoles')->r('Role/view/all')->g();
         $r->n('Role.View.All.Pagination')->m('viewAllRolesPagination')->r('Role/view/all/pagination')->g();

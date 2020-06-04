@@ -34,14 +34,21 @@ class Product  extends Logic
 
     public function AddCategoryForm($data){
 
+        $input=$data['r']->all();
+    //   dd((bool)$input['modal']);
+        $modalForm=false;
+        if(array_key_exists('modal',$input)&& (bool)$input['modal'])$modalForm=true;
+
+       // dd($modalForm);
 
         $m=$this->getSalesMasterProductCategoryModel();
 
-        return $m->displayForm('addCategory');
+        return $m->displayForm('addCategory',[],$modalForm);
 
     }
 
     public function AddCategoryFormPost($data){
+
         $input=$data['r']->all();
         $companyId=ms()->companyId();
         $uniqCode=ms()->random(5,5,1,[$companyId]);
@@ -52,10 +59,6 @@ class Product  extends Logic
         if(!$valid)return $this->throwError($m->CurrentError,418)   ;
         if(!$m->checkTableExist())$m->migrate();
         $proccess[$m->rowAdd($input)]='Category Entery In table';
-
-        dd($proccess);
-
-
 
 
 
@@ -81,29 +84,62 @@ class Product  extends Logic
         return $this->throwData($m->rowAll());
     }
 
+    private function newProductUniqId(){
+        $companyId=ms()->companyId();
+        return ms()->random(16,5,1,[$companyId]);
+    }
     public function AddProductForm($data){
-
         $companyId=ms()->companyId();
         $m=$this->getSalesMasterProductModel();
-
-        return $m->displayForm('addProduct',['ProductCategory'=>['perFix'=>[$companyId]]]);
-
+        return $m->displayForm('addProduct',[ 'ProductCategory'=>['perFix'=>[$companyId]]]);
     }
     public function AddProudctFormPost($data){
+        $r=$data['r'];
+        $input=$r->all();
+        $companyId=ms()->companyId();
+        $m=$this->getSalesMasterProductModel($companyId);
+        dd($m->rowAll());
+        if(!$m->checkTableExist())$m->migrate();
+        $m->attachR($r);
+        $valid=$m->checkRulesForData(['perFix'=>['ProductCategory'=>ms()->companyId()]]);
+        //dd($valid);
+        if(!$valid)return $this->throwError($m->CurrentError,418)   ;
+        if(!$m->checkTableExist())$m->migrate();
+        $UniqId=$this->newProductUniqId();
+        if(!array_key_exists('UniqId',$input))$input['UniqId']=$UniqId;
+
+        $proccess[$m->rowAdd($input)][]='Category Entery In table';
+        $proccess[$this->migrateForWhenProductCreated($UniqId)][]='Table Migrated for Product';
+        dd($proccess);
+
+
+    }
+
+    public function migrateForWhenProductCreated($productId){
+        $tableId=implode('_',[ ms()->companyId(),$productId ]);
+        $er=[];
+        $migrate=[
+            'Product Ledger Table'=>$this->getSalesMasterProductLedgerModel($tableId)
+        ];
+        foreach ($migrate as $k=>$m){
+          $er[$m->migrate()][]=$k;
+        }
+
+        return (array_key_exists('0',$er))?false:true;
     }
 
     public static function loadRoutes(){
         $r=new \MS\Core\Helper\MSRoute();
 
-        $r->n('Category.Add.Form')->m('AddCategoryForm')->r('Category/add/new')->g();
-        $r->n('Category.Add.Form.Post')->m('__product_AddCategoryFormPost')->r('Category/add/new')->p();
+        $r->n('Category.Add.Form')->m('__product_AddCategoryForm_onlyuser_role')->r('Category/add/new')->g();
+        $r->n('Category.Add.Form.Post')->m('__product_AddCategoryFormPost_role')->r('Category/add/new')->p();
 
-        $r->n('Category.View.All')->m('__product_ViewAllProductCategory')->r('Category/view/all')->g();
-        $r->n('Category.View.All.pagination')->m('__product_viewAllProductCategoryPagination')->r('Category/view/all/pagination')->g();
-        $r->n('api.Get.All.Category')->m('__product_getAllCategoryBy_api_onlyuser')->r('/Category/view/all/api')->g();
+        $r->n('Category.View.All')->m('__product_ViewAllProductCategory_role')->r('Category/view/all')->g();
+        $r->n('Category.View.All.pagination')->m('__product_viewAllProductCategoryPagination_role')->r('Category/view/all/pagination')->g();
+        $r->n('api.Get.All.Category')->m('__product_getAllCategoryByApi__role_onlyuser')->r('/Category/view/all/api')->g();
 
-        $r->n('Add.Form')->m('__product_AddProductForm')->r('add/new')->g();
-        $r->n('Add.Form.Post')->m('__product_AddProudctFormPost')->r('add/new')->p();
+        $r->n('Add.Form')->m('__product_AddProductForm_role')->r('add/new')->g();
+        $r->n('Add.Form.Post')->m('__product_AddProudctFormPost_role')->r('add/new')->p();
 
 
         return $r->all();
@@ -118,35 +154,64 @@ class Product  extends Logic
 
         $c=new \MS\Core\Helper\MSTableFieldSchema();
 
-
-
         $m->setFields($c->n('UniqId')->flush());
         $m->setFields($c->n('ProductCodeVesrion')->flush());
-        $m->setFields($c->n('ProductBarcode')->vn('Barcode')->flush());
-        $m->setFields($c->n('ProductName')->vn('Name of Product')->flush());
-        $m->setFields($c->n('ProductUnit')->vn('Unit')->flush());
+        $m->setFields($c->n('ProductBarcode')->vn('Barcode')->i('number')->flush());
+        $m->setFields($c->n('ProductName')->vn('Name of Product')->required()->flush());
+        $m->setFields($c->n('ProductUnit')->vn('Unit')->required()->flush());
         $m->setFields($c->n('ProductDescription')->vn('Description')->flush());
         $m->setFields($c->n('ProductSaleCount')->flush());
-        $m->setFields($c->n('ProductCategory')->vn('Category')->i('option')->connectDB('MS\Mod\B\Sales4O3','Sales4O3_'.$this->SalesMasterProductCategory,'UniqId','CategoryName')->addAction('addCategory')->flush());
-        $m->setFields($c->n('ProductMadeCompany')->flush());
-        $m->setFields($c->n('ProductModel')->flush());
-        $m->setFields($c->n('ProductHsnSac')->flush());
-        $m->setFields($c->n('ProductBasePrice')->flush());
+        $m->setFields($c->n('ProductCategory')->vn('Category')->i('option')->connectDB('MS\Mod\B\Sales4O3','Sales4O3_'.$this->SalesMasterProductCategory,'UniqId','CategoryName')->addAction('addCategory')->required()->flush());
+        $m->setFields($c->n('ProductMadeCompany')->vn('Company')->flush());
+        $m->setFields($c->n('ProductModel')->vn('Version Or Model')->flush());
+        $m->setFields($c->n('ProductHsnSac')->i('number')->vn('Tax Code')->required()->flush());
+        $m->setFields($c->n('ProductBasePrice')->vn('Product Default Price')->flush());
         $m->setFields($c->n('ProductAvaragePrice')->flush());
-        $m->setFields($c->n('ProductTrade')->t('boolean')->flush());
-        $m->setFields($c->n('ProductKeepStock')->t('boolean')->flush());
-        $m->setFields($c->n('ProductStatus')->t('boolean')->flush());
+        $m->setFields($c->n('ProductTrade')->vn('Show Product In Purchase')->t('boolean')->i('radio')->connectDBRaw(MSCORE_UI_BOOL_1)->required()->flush());
+        $m->setFields($c->n('ProductKeepStock')->vn('Keep Invetory For this Product')->t('boolean')->i('radio')->connectDBRaw(MSCORE_UI_BOOL_1)->required()->flush());
+        $m->setFields($c->n('ProductStatus')->t('boolean')->i('radio')->connectDBRaw(MSCORE_UI_BOOL_1)->flush());
+
+        $m->UniqFields(['UniqId','ProductBarcode','ProductName']);
 
         $groupId='Basic Product Details';
-        $groupData=['ProductBarcode','ProductUnit','ProductName','ProductDescription','ProductCategory'];
+        //$groupData=['ProductBarcode','ProductUnit','ProductName','ProductDescription','ProductCategory'];
 
-        $m->addGroup($groupId,$groupData);
+        $groupId2='Product Make Deatils';
+        //$groupData2=['ProductMadeCompany','ProductModel'];
+
+        $groupId3='Price & Tax Details';
+        //$groupData3=['ProductHsnSac','ProductBasePrice'];
+
+        $groupId4='Product Manage Functionality';
+       // $groupData4=['ProductTrade','ProductKeepStock'];
+
+        $allGroups=[
+            [
+                'name'=>$groupId,
+                'data'=>['ProductName','ProductDescription','ProductCategory']
+            ],
+            [
+                'name'=>$groupId2,
+                'data'=>['ProductBarcode','ProductUnit','ProductMadeCompany','ProductModel']
+            ],
+            [
+                'name'=>$groupId3,
+                'data'=>['ProductHsnSac','ProductBasePrice']
+            ],
+            [
+                'name'=>$groupId4,
+                'data'=>['ProductTrade','ProductKeepStock']
+            ]
+        ];
+
+        ms()->do()->registerGroups($m,$allGroups);
+
 
         $m->addAction('add',[
             "btnColor"=>"blue",
-            "route"=>"O3.Sales.Product.Category.Add.Form.Post",
-            "btnIcon"=>"fas fa-pencil-alt",
-            'btnText'=>"Add Category",
+            "route"=>"O3.Sales.Product.Add.Form.Post",
+            "btnIcon"=>"fi2 flaticon-plus",
+            'btnText'=>"Add Product or Service",
             // "routePara"=>['id'=>'UniqId'],
             // 'msLinkKey'=>'UniqId',
             //'msLinkText'=>'RoleName',
@@ -165,12 +230,12 @@ class Product  extends Logic
                 ]);
 
         $formId='addProduct';
-        $m->addForm($formId)->addTitle4Form($formId,'Add New Product')->addGroup4Form($formId,[$groupId])->addAction4Form($formId,['add']);
+        $m->addForm($formId)->addTitle4Form($formId,'Add New Product')->addGroup4Form($formId,[$groupId,$groupId2,$groupId3,$groupId4])->addAction4Form($formId,['add']);
 
 
 
         $m1 = $m->finalReturnForTableFile();
-     //   dd($m1);
+        //dd($m1);
         return array_merge($m1);
     }
     private function setupSalesMasterProductCategory(){
@@ -227,17 +292,22 @@ class Product  extends Logic
         $data = [
             'tableId' => implode('_', [self::$modCode, $this->SalesMasterProductLedger]),
             'tableName' => implode('_', [self::$modCode, 'MasterProductLedger']),
-            'connection' => self::$c_c,
+            'connection' => self::$c_d,
         ];
         $m = new  MSTableSchema($data);
 
-        $m->setFields(['name' => 'UniqId', 'type' => 'string']);
-        $m->setFields(['name' => 'InvoiceId', 'type' => 'string']);
-        $m->setFields(['name' => 'QuotationId', 'type' => 'string']);
-        $m->setFields(['name' => 'QuotationVersion', 'type' => 'string']);
-        $m->setFields(['name' => 'LeadId', 'type' => 'string']);
-        $m->setFields(['name' => 'ProductRate', 'type' => 'string']);
-        $m->setFields(['name' => 'ProductUnit', 'type' => 'string']);
+        $c=new \MS\Core\Helper\MSTableFieldSchema();
+
+        $m->setFields($c->n('UniqId')->flush());
+        $m->setFields($c->n('InvoiceId')->flush());
+        $m->setFields($c->n('QuotationId')->flush());
+        $m->setFields($c->n('QuotationVersion')->flush());
+        $m->setFields($c->n('LeadId')->flush());
+        $m->setFields($c->n('ProductRate')->flush());
+        $m->setFields($c->n('ProductUnit')->flush());
+        $m->UniqFields(['UniqId','InvoiceId','QuotationId','QuotationVersion','LeadId']);
+
+
 
         $m1 = $m->finalReturnForTableFile();
 

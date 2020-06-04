@@ -29,9 +29,9 @@ class Invoice extends Logic
 
 
 
-        $this->SalesMasterInvoice='InvoiceLedger'; //Onlu One
+        $this->SalesMasterInvoice='InvoiceLedger'; //Onlu One invoiceid/qutation/leadId/totaxamount/totalamoint/paidstatus
         $this->SalesMasterInvoiceType='InvoiceType'; //Only One
-        $this->SalesDetailedInvoice='InvoiceDetailes'; //For Every Invoice
+        $this->SalesDetailedInvoice='InvoiceDetailes'; //For Every Invoice productId/qt/tax/arate/totalamount
         $this->SalesMasterProductInvoiceLedger='ProductLedgerInvoiceOut'; //For Every Product
         $this->SalesMasterInvoicePayment='InvoiceLedgerPayment'; //For Every Payment On Every Invoice
 

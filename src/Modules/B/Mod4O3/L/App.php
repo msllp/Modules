@@ -374,8 +374,12 @@ class App extends Logic
                         [
                             'name'=>'Add Product',
                             'id'=>'addProduct',
-                            'methods'=>[]
+                            'methods'=>[
+                                '\MS\Mod\B\Sales4O3\C@AddProductForm',
+                                '\MS\Mod\B\Sales4O3\C@AddProductFormPost'
+                            ]
                         ],
+
                         [
                             'name'=>'Edit Product',
                             'id'=>'editProduct',

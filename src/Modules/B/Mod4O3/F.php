@@ -29,6 +29,13 @@ class F
         return $c->getPermisions();
     }
 
+    public static function getPermissionsModel(){
+        $c=new App();
+        return $c->getPermisions();
+    }
+
+
+
     public static function makeDataForPermission($data){
         $c=new App();
         return $c->getProccessedPermissionForTableEntry($data);

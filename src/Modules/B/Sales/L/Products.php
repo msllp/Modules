@@ -2,7 +2,9 @@
 namespace MS\Mod\B\Sales\L;
 
 
-class Products
+use MS\Core\Module\Logic;
+
+class Products extends Logic
 {
 
     public static $c_m='MS_Sales_Master';

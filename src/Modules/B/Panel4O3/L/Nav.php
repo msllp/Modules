@@ -77,7 +77,7 @@ class Nav extends baseNav
             $this->addL2Title($user, ['text' => \Lang::get('Sales.Navtitle5'), 'icon' => 'fi2 flaticon-shipping-and-delivery-2']);
             if($root || in_array('addProduct',$allowedAction)  )$this->addL2Link($user, ['text' => \Lang::get('Sales.NavSub51'), 'link' => route('O3.Sales.Product.Add.Form'), 'icon' => ' fas fa-angle-double-right ']);
             if($root || in_array('addProductCategory',$allowedAction)  )$this->addL2Link($user, ['text' => \Lang::get('Sales.NavSub52'), 'link' => route('O3.Sales.Product.Category.Add.Form'), 'icon' => ' fas fa-angle-double-right ']);
-            if($root || in_array('viewProduct',$allowedAction)  )$this->addL2Link($user, ['text' => \Lang::get('Sales.NavSub53'), 'link' => route('O3.Panel.AllInOne'), 'icon' => ' fas fa-angle-double-right ']);
+            if($root || in_array('viewProduct',$allowedAction)  )$this->addL2Link($user, ['text' => \Lang::get('Sales.NavSub53'), 'link' => route('O3.Sales.Product.View.All'), 'icon' => ' fas fa-angle-double-right ']);
             if($root || in_array('viewProductCategory',$allowedAction)  )$this->addL2Link($user, ['text' => \Lang::get('Sales.NavSub54'), 'link' => route('O3.Sales.Product.Category.View.All'), 'icon' => ' fas fa-angle-double-right ']);
         }
         return $this;

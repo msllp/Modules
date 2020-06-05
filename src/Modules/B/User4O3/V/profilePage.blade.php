@@ -1,4 +1,8 @@
-@extends('MS::core.layouts.root')
+@if(!env('MS_DEBUG'))
+    @extends('MS::core.layouts.rootRaw')
+@else
+    @extends('MS::core.layouts.root')
+@endif
 @section('body')
 <?php
 

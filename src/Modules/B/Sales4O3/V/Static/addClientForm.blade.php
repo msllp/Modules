@@ -9,5 +9,5 @@
 
     ?>
 
-    <setupcompany :ms-data="{{$jsonData}}"></setupcompany>
+    <msclientform :ms-data="{{$jsonData}}"></msclientform>
 @endsection

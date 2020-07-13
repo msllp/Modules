@@ -66,7 +66,7 @@ class Nav extends baseNav
              if(!$root)$allowedAction=$this->permission->getAllowedModulesWithSubAction($mod,$section5);
 
            $this->addL2Title($user,['text'=>\Lang::get('Sales.Navtitle3'),'icon'=> 'fi2 flaticon-network']);
-            if($root || in_array('addCustomer',$allowedAction)  )$this->addL2Link($user,['text'=>\Lang::get('Sales.NavSub31'),'link'=> route('O3.Panel.AllInOne'),'icon'=>' fas fa-angle-double-right ']);
+            if($root || in_array('addCustomer',$allowedAction)  )$this->addL2Link($user,['text'=>\Lang::get('Sales.NavSub31'),'link'=> route('O3.Sales.Customer.Add.Form'),'icon'=>' fas fa-angle-double-right ']);
             if($root || in_array('viewCustomer',$allowedAction)  ) $this->addL2Link($user,['text'=>\Lang::get('Sales.NavSub32'),'link'=> route('O3.Sales.Product.Category.View.All'),'icon'=>' fas fa-angle-double-right ']);
 
         }

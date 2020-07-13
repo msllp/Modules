@@ -36,22 +36,22 @@ class Product extends Logic
     {
         $r = new \MS\Core\Helper\MSRoute();
 
-        $r->n('Category.Add.Form')->m('__product_AddCategoryForm_onlyuser_role')->r('Category/add/new')->g();
-        $r->n('Category.Add.Form.Post')->m('__product_AddCategoryFormPost_role')->r('Category/add/new')->p();
+        $r->n('Category.Add.Form')->m('__product_AddCategoryForm_onlyuser_api_role_onlyuser')->r('Category/add/new')->g();
+        $r->n('Category.Add.Form.Post')->m('__product_AddCategoryFormPost_api_role_onlyuser')->r('Category/add/new')->p();
 
-        $r->n('Category.View.All')->m('__product_ViewAllProductCategory_role')->r('Category/view/all')->g();
-        $r->n('Category.View.All.pagination')->m('__product_viewAllProductCategoryPagination_role')->r('Category/view/all/pagination')->g();
-        $r->n('api.Get.All.Category')->m('__product_getAllCategoryByApi__role_onlyuser')->r('/Category/view/all/api')->g();
+        $r->n('Category.View.All')->m('__product_ViewAllProductCategory_api_role_onlyuser')->r('Category/view/all')->g();
+        $r->n('Category.View.All.pagination')->m('__product_viewAllProductCategoryPagination_api_role_onlyuser')->r('Category/view/all/pagination')->g();
+        $r->n('api.Get.All.Category')->m('__product_getAllCategoryByApi_api_role_onlyuser')->r('/Category/view/all/api')->g();
 
-        $r->n('Add.Form')->m('__product_AddProductForm_role')->r('add/new')->g();
-        $r->n('Add.Form.Post')->m('__product_AddProudctFormPost_role')->r('add/new')->p();
+        $r->n('Add.Form')->m('__product_AddProductForm_api_role_onlyuser')->r('add/new')->g();
+        $r->n('Add.Form.Post')->m('__product_AddProudctFormPost_api_role_onlyuser')->r('add/new')->p();
 
-        $r->n('View.All')->m('__product_ViewAllProduct_role')->r('view/all')->g();
-        $r->n('View.All.pagination')->m('__product_viewAllProductPagination_role')->r('view/all/pagination')->g();
+        $r->n('View.All')->m('__product_ViewAllProduct_api_role_onlyuser')->r('view/all')->g();
+        $r->n('View.All.pagination')->m('__product_viewAllProductPagination_api_role_onlyuser')->r('view/all/pagination')->g();
 
-        $r->n('Edit.byId')->m('__product_EditProduct_role')->r('edit/{id?}')->g();
-        $r->n('Delete.byId')->m('__product_DeleteProduct_role')->r('delete/{id?}')->g();
-        $r->n('Edit.byId.Post')->m('__product_EditProductPost_role')->r('edit/{id?}')->p();
+        $r->n('Edit.byId')->m('__product_EditProduct_api_role_onlyuser')->r('edit/{id?}')->g();
+        $r->n('Delete.byId')->m('__product_DeleteProduct_api_role_onlyuser')->r('delete/{id?}')->g();
+        $r->n('Edit.byId.Post')->m('__product_EditProductPost_api_role_onlyuser')->r('edit/{id?}')->p();
 
         return $r->all();
     }

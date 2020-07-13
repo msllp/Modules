@@ -40,6 +40,12 @@ class B extends Master
         'dynamicLoadNameSpace'=>'L\\Product',
         'dynamicLoadRouteMethod'=>'loadRoutes'
         ],
+        [
+        'NamePreFix'=>'O3.Sales.Customer',
+        'preFix'=>'Customer',
+        'dynamicLoadNameSpace'=>'L\\Client',
+        'dynamicLoadRouteMethod'=>'loadRoutes'
+        ],
 
     ];
 

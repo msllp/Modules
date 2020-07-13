@@ -381,6 +381,7 @@ class Company extends Logic
 
         $data=[
 
+
             'path'=>[
                 'img'=>[
                     'ac'=>asset('ms/company/bankaccount.svg')
@@ -396,7 +397,7 @@ class Company extends Logic
 
         return view('MOD::B.Company4O3.V.Static.AddAccount')->with('data',$data);
 
-        dd($companyId);
+
 
 
     }

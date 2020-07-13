@@ -1,8 +1,5 @@
-@if(!env('MS_DEBUG'))
-    @extends('MS::core.layouts.rootRaw')
-@else
-    @extends('MS::core.layouts.root')
-@endif
+@extends((env('MS_DEBUG'))? 'MS::core.layouts.root':'MS::core.layouts.rootRaw')
+
 @section('body')
 
 <?php

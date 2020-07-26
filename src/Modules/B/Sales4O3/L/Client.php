@@ -184,11 +184,34 @@ class Client extends Logic
     private function checkTableOrMigrate(\MS\Core\Helper\MSDB $m):void {
         if(!$m->allOk()) $m->migrate();
     }
+
+    public function TestModel(){
+
+
+        $fun=implode('',['get','SalesMasterClient','Model']);
+        $companyid=ms()->companyId();
+        $m= call_user_func([$this,$fun],'1321196489262681_hLwTNvgch');
+        $model=$m->getModel();
+        $companyid=ms()->companyid();
+        $m2=$this->getSalesMasterClientLedgerModel('1321196489262681_hLwTNvgch_7945374683173483');
+
+        $dataToAttach=[
+            'type'=>'this',
+            'class'=>$this,
+            'method'=>'getSalesMasterClientLedgerModel',
+            'connectId'=>"UniqId"
+        ];
+        $m->attach('payment',$dataToAttach);
+
+        dd($m->rowGet());
+    }
+
     public static function loadRoutes(){
         $r = new \MS\Core\Helper\MSRoute();
 
         $r->n('Add.Form')->m('__client_AddCustomerForm_onlyuser_role')->r('add/new')->g();
         $r->n('Add.Form.Post')->m('__client_AddCustomerFormPost_onlyuser_role')->r('add/new')->p();
+        $r->n('Test')->m('__client_TestModel')->r('test')->g();
 
         return $r->all();
     }
@@ -289,7 +312,7 @@ class Client extends Logic
         $data = [
             'tableId' => implode('_', [self::$modCode, $this->SalesMasterClientLedger]),
             'tableName' => implode('_', [self::$modCode, 'MasterClientLedger']),
-            'connection' => self::$c_m,
+            'connection' => self::$c_d,
         ];
         $m = new  MSTableSchema($data);
 
@@ -311,9 +334,9 @@ class Client extends Logic
     }
     private function setupSalesMasterClientPaymentLedger(){
         $data = [
-            'tableId' => implode('_', [self::$modCode, $this->SalesMasterClientLedger]),
-            'tableName' => implode('_', [self::$modCode, 'MasterClientLedger']),
-            'connection' => self::$c_m,
+            'tableId' => implode('_', [self::$modCode, $this->SalesMasterClientPaymentLedger]),
+            'tableName' => implode('_', [self::$modCode, $this->SalesMasterClientPaymentLedger]),
+            'connection' => self::$c_d,
         ];
         $m = new  MSTableSchema($data);
 
